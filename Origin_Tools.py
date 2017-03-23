@@ -695,6 +695,27 @@ class ColourInterpolation():
                     (table_interp_Clrs[theta_position+1,ipoly]-table_interp_Clrs[theta_position,ipoly])
         return
 
+class Gaia():
+	"""Interpolation in the Gaia colours and bolometric correction from [Fe/H], g, and Teff.
+	   Values from Jordi et al. (2010) A&A 523 A48"""
+	def __init__(self):
+		self.FileName = MyDriver.Config.get('Paths','DataPath')+'GaiaColours.dat'
+		self.dim = 2582
+		self.Colours_ind = 17
+		self.BC_ind = 3
+		self.Vector_Teff = np.zeros(self.dim)
+		self.Vector_logg = np.zeros(self.dim)
+		self.Vector_FeH = np.zeros(self.dim)
+		self.Colours = np.zeros(self.Colours_ind+self.BC_ind)
+		self.tableColours = np.zeros((self.Colours_ind+self.BC_ind,self.dim))
+
+	def ReadGaiaData(self):
+		Gaia_table = np.loadtxt(self.FileName,skiprows=3)
+		self.Vector_Teff,self.Vector_logg,self.Vector_FeH = Gaia_table[:,0],Gaia_table[:,1],Gaia_table[:,2]
+		self.tableColours = Gaia_table[:,3:3+self.Colours_ind+self_BC_ind].T
+
+#	def GaiaColours_conversion(self,ZZ,g_surf,Teff):
+		
 def Localise_and_Factor(Wanted,array_in,mode):
     """Localise in the table the position surrounding the current value, and return the interpolation factor.
        Two modes are available, linear or logarithmic."""
