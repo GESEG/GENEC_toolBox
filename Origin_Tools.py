@@ -58,7 +58,6 @@ rc('font',**{'family':'serif','serif':['Times New Roman']})
 import ConfigParser
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
-from .astrophyscst import sicgs as apc
 import time
 import subprocess
 rcParams['figure.subplot.left'] = 0.2
@@ -66,7 +65,28 @@ rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
 
 class OT_version():
-    OT_version = '6.4'
+    OT_version = '6.5'
+
+class Cst():
+    """Physical and astrophysical constants used by Origin_Tools"""
+    Msol = 1.9885e33
+    Rsol = 6.9951e10
+    Lsol = 3.828e33
+    Zsol = 1.40e-2
+    Teffsol = 5778.
+    c = 2.99792458e10
+    G = 6.6738e-8
+    k = 1.3806488e-16
+    sigma = 5.670373e-5
+    Avo = 6.02214129e23
+    a = 4.*sigma/c
+    R_gaz = k*Avo
+    year=3.15569252e7
+    Hsol = 0.720e0
+    C12sol = 2.283152454926108e-3
+    C13sol = 2.770743611425104e-5
+    Nsol = 6.587580293386503e-4
+    Osol = 5.718475172229120e-3
 
 class FormatError(EnvironmentError):
     pass
@@ -1057,12 +1077,12 @@ class Model(Outputs):
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
 
         for i in range(self.imax):
-            Actual_Surface = 10.**self.Variables['L'][0][i]*apc.CGS.Lsol /(apc.CGS.sigma*10.**(4.*self.Variables['Teff'][0][i]))
+            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
             try:
             	Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
             	r_pol = math.sqrt(Actual_Surface/Norm_Surface)
-            	g_pol = np.log10(apc.CGS.G*apc.CGS.Msol*self.Variables['M'][0][i]/r_pol**2.)
-            	self.Variables['Rpol'][0][i] = r_pol/apc.CGS.Rsol
+            	g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
+            	self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
             	self.Variables['gpol'][0][i] = g_pol
             except ValueError:
             	print 'problem at line ',i+1
@@ -1084,12 +1104,12 @@ class Model(Outputs):
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
 
         for i in range(self.imax):
-            Actual_Surface = 10.**self.Variables['L'][0][i]*apc.CGS.Lsol /(apc.CGS.sigma*10.**(4.*self.Variables['Teff'][0][i]))
+            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
             try:
             	Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
             	r_pol = math.sqrt(Actual_Surface/Norm_Surface)
-            	g_pol = np.log10(apc.CGS.G*apc.CGS.Msol*self.Variables['M'][0][i]/r_pol**2.)
-            	self.Variables['Rpol'][0][i] = r_pol/apc.CGS.Rsol
+            	g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
+            	self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
             	self.Variables['gpol'][0][i] = g_pol
             except ValueError:
             	print 'problem at line ',i+1
@@ -1126,12 +1146,12 @@ class Model(Outputs):
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
 
         for i in range(self.imax):
-            Actual_Surface = 10.**self.Variables['L'][0][i]*apc.CGS.Lsol /(apc.CGS.sigma*10.**(4.*self.Variables['Teff'][0][i]))
+            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
             try:
             	Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
             	r_pol = math.sqrt(Actual_Surface/Norm_Surface)
-            	g_pol = np.log10(apc.CGS.G*apc.CGS.Msol*self.Variables['M'][0][i]/r_pol**2.)
-            	self.Variables['Rpol'][0][i] = r_pol/apc.CGS.Rsol
+            	g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
+            	self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
             	self.Variables['gpol'][0][i] = g_pol
             except ValueError:
             	print 'problem at line ',i+1
@@ -1155,12 +1175,12 @@ class Model(Outputs):
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
 
         for i in range(self.imax):
-            Actual_Surface = 10.**self.Variables['L'][0][i]*apc.CGS.Lsol /(apc.CGS.sigma*10.**(4.*self.Variables['Teff'][0][i]))
+            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
             try:
             	Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
             	r_pol = math.sqrt(Actual_Surface/Norm_Surface)
-            	g_pol = np.log10(apc.CGS.G*apc.CGS.Msol*self.Variables['M'][0][i]/r_pol**2.)
-            	self.Variables['Rpol'][0][i] = r_pol/apc.CGS.Rsol
+            	g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
+            	self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
             	self.Variables['gpol'][0][i] = g_pol
             except ValueError:
             	print 'problem at line ',i+1
@@ -1347,28 +1367,28 @@ class Model(Outputs):
             self.Variables['OOc'] = [np.zeros((len(self.Variables['line'])))]
         self.Variables['Mbol'] = [-2.5*self.Variables['L'][0]+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
         if format != 'nami':
-            self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*apc.CGS.Lsol/(4.*math.pi*apc.CGS.sigma))/(10.**(2.*self.Variables['Teff'][0])*apc.CGS.Rsol),'$R\ [R_\odot]$','surface']
-            self.Variables['rhom'] = [3.*self.Variables['M'][0]*apc.CGS.Msol/(4.*math.pi*(self.Variables['R'][0]*apc.CGS.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
-        self.Variables['gsurf'] = [np.log10(apc.CGS.G*self.Variables['M'][0]*apc.CGS.Msol/(self.Variables['R'][0]*apc.CGS.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
+            self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff'][0])*Cst.Rsol),'$R\ [R_\odot]$','surface']
+            self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
+        self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
         self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
-        self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*apc.CGS.Rsol**2./(apc.CGS.G*apc.CGS.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
+        self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
         if format not in ['nami']:
             if not all(v==0. for v in self.Variables['Vsurf'][0]):
                 Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
                 self.Variables['VVc'] = [[veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)],'V/V_\mathrm{crit}','rotation']
                 self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\mathrm{P\,[d]}$','rotation']
-            self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*apc.CGS.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\mathrm{esc}\ [\mathrm{km\,s}^{-1}]$','winds']
+            self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\mathrm{esc}\ [\mathrm{km\,s}^{-1}]$','winds']
             CTeff = np.zeros((self.imax))
             CTeff[self.Variables['Teff'][0]>=np.log10(21000.)] = 2.65
             CTeff[(self.Variables['Teff'][0] < np.log10(21000.)) & (self.Variables['Teff'][0] > 4.0)] = 1.40
             CTeff[self.Variables['Teff'][0] <= 4.0] = 1.
             self.Variables['Vinf'] = [CTeff*self.Variables['Vesc'][0],'$V_\infty\ [\mathrm{km\,s}^{-1}]$','winds']
             self.Variables['Mdot'][0][self.Variables['Mdot'][0] == 0.] = -30.
-            self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*apc.CGS.Msol/apc.CGS.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
-            self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*apc.CGS.Msol/apc.CGS.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*apc.CGS.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
+            self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
+            self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/apc.CGS.Zsol)-np.log10(self.Variables['H1s'][0]/apc.Abund.Hsol),'Fe/H','abundances']
-        self.Variables['tauKH'] = [3.*apc.CGS.G*(self.Variables['M'][0]*apc.CGS.Msol)**2./(4.*self.Variables['R'][0]*apc.CGS.Rsol*10.**self.Variables['L'][0]*apc.CGS.Lsol*apc.CGS.year),r'$\tau_{KH}$ [yr]','model']
+        self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/apc.Abund.Hsol),'Fe/H','abundances']
+        self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
         mask = self.Variables['H1s'][0]<=0.
         self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
@@ -1534,7 +1554,7 @@ class Struc(Outputs):
             return
         self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
-        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/apc.CGS.Rsol
+        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
         self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
         H_P = self.Variables['Hp'][0]
         if H_P[0] == 0.:
@@ -1555,7 +1575,7 @@ class Struc(Outputs):
                                 *self.Variables['T'][0]),r'$\mathrm{C}_P\ [\mathrm{ergs\,g}^{-1}\,\mathrm{K}^{-1}]$','thermo']
 
     #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
-        U = 3.*apc.CGS.a*apc.CGS.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
+        U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
             *self.Variables['Cp'][0]*self.Variables['kappa'][0]*(1.6*self.Variables['Hp'][0])**2.) \
             *np.sqrt(8.*self.Variables['Hp'][0]/(g_r*self.Variables['delta'][0]))
         U[np.logical_not(self.Convection)] = 0.
@@ -1595,19 +1615,19 @@ class Struc(Outputs):
         if not (self.Variables['Omega'][0]==0.).all():
             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\Omega_r/\Omega_\mathrm{crit}$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [apc.CGS.G*self.Variables['Mr'][0]*apc.CGS.Msol/apc.CGS.c,'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jS'] = [np.sqrt(12.)*apc.CGS.G*self.Variables['Mr'][0]*apc.CGS.Msol/apc.CGS.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jK'] = [Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         Lin = np.cumsum(self.Variables['Lang'][0])
         Mr = self.Variables['Mr'][0]
         Mr[Mr == 0.] = 1.e-10
 # a/M with a from Shapiro & Teukolsky, eq. 12.7.2
-        a_om = Lin*apc.CGS.c/(apc.CGS.G*(Mr*apc.CGS.Msol)**2.)
+        a_om = Lin*Cst.c/(Cst.G*(Mr*Cst.Msol)**2.)
         a_om = np.minimum(a_om,1.)
 # Shapiro & Teukolsky, eq. 12.7.24
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        self.Variables['jKmax'] = [r_msco*apc.CGS.G*Mr*apc.CGS.Msol/apc.CGS.c,\
+        self.Variables['jKmax'] = [r_msco*Cst.G*Mr*Cst.Msol/Cst.c,\
             '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
                         /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
@@ -1619,7 +1639,7 @@ class Struc(Outputs):
             return
         self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
-        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/apc.CGS.Rsol
+        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
         self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
         H_P = self.Variables['Hp'][0]
         if H_P[0] == 0.:
@@ -1640,7 +1660,7 @@ class Struc(Outputs):
                                 *self.Variables['T'][0]),r'$\mathrm{C}_P\ [\mathrm{ergs\,g}^{-1}\,\mathrm{K}^{-1}]$','thermo']
 
     #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
-        U = 3.*apc.CGS.a*apc.CGS.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
+        U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
             *self.Variables['Cp'][0]*self.Variables['kappa'][0]*(1.6*self.Variables['Hp'][0])**2.) \
             *np.sqrt(8.*self.Variables['Hp'][0]/(g_r*self.Variables['delta'][0]))
         U[np.logical_not(self.Convection)] = 0.
@@ -1678,19 +1698,19 @@ class Struc(Outputs):
         self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\epsilon_\mathrm{nucl}+\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\mathrm{eq}\ [\mathrm{km\,s}^{-1}]$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [apc.CGS.G*self.Variables['Mr'][0]*apc.CGS.Msol/apc.CGS.c,'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jS'] = [np.sqrt(12.)*apc.CGS.G*self.Variables['Mr'][0]*apc.CGS.Msol/apc.CGS.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jK'] = [Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         Lin = np.cumsum(self.Variables['Lang'][0])
         Mr = self.Variables['Mr'][0]
         Mr[Mr == 0.] = 1.e-10
 # a/M with a from Shapiro & Teukolsky, eq. 12.7.2
-        a_om = Lin*apc.CGS.c/(apc.CGS.G*(Mr*apc.CGS.Msol)**2.)
+        a_om = Lin*Cst.c/(Cst.G*(Mr*Cst.Msol)**2.)
         a_om = np.minimum(a_om,1.)
 # Shapiro & Teukolsky, eq. 12.7.24
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        self.Variables['jKmax'] = [r_msco*apc.CGS.G*Mr*apc.CGS.Msol/apc.CGS.c,\
+        self.Variables['jKmax'] = [r_msco*Cst.G*Mr*Cst.Msol/Cst.c,\
             '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
 
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
@@ -1701,22 +1721,22 @@ class Struc(Outputs):
     def Spec_var_full(self):
         if self.Variables['format'][0] != 'full':
             return
-        self.Variables['Mr'][0] = self.Variables['Mr'][0]/apc.CGS.Msol
+        self.Variables['Mr'][0] = self.Variables['Mr'][0]/Cst.Msol
         self.Variables['Mfrac'] = [self.Variables['Mr'][0]/self.Variables['M_tot'][0],'$M_r/M_\mathrm{tot}$','structure']
-        self.Variables['L'][0][self.Variables['L'][0]>0.] = np.log10(self.Variables['L'][0][self.Variables['L'][0]>0.]/apc.CGS.Lsol)
+        self.Variables['L'][0][self.Variables['L'][0]>0.] = np.log10(self.Variables['L'][0][self.Variables['L'][0]>0.]/Cst.Lsol)
         self.Variables['L'][0][self.Variables['L'][0]<=0.] = -5.
-        self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.] = np.log10(self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.]/apc.CGS.Lsol)
+        self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.] = np.log10(self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.]/Cst.Lsol)
         self.Variables['Lrad'][0][self.Variables['Lrad'][0]<=0.] = -5.
         return
 
     def Spec_var_fullold(self):
         if self.Variables['format'][0] != 'full_old':
             return
-        self.Variables['Mr'][0] = self.Variables['Mr'][0]/apc.CGS.Msol
+        self.Variables['Mr'][0] = self.Variables['Mr'][0]/Cst.Msol
         self.Variables['Mfrac'] = [self.Variables['Mr'][0]/self.Variables['M_tot'][0],'$M_r/M_\mathrm{tot}$','structure']
-        self.Variables['L'][0][self.Variables['L'][0]>0.] = np.log10(self.Variables['L'][0][self.Variables['L'][0]>0.]/apc.CGS.Lsol)
+        self.Variables['L'][0][self.Variables['L'][0]>0.] = np.log10(self.Variables['L'][0][self.Variables['L'][0]>0.]/Cst.Lsol)
         self.Variables['L'][0][self.Variables['L'][0]<=0.] = -5.
-        self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.] = np.log10(self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.]/apc.CGS.Lsol)
+        self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.] = np.log10(self.Variables['Lrad'][0][self.Variables['Lrad'][0]>0.]/Cst.Lsol)
         self.Variables['Lrad'][0][self.Variables['Lrad'][0]<=0.] = -5.
         return
 
@@ -1827,7 +1847,7 @@ class Struc(Outputs):
         self.Variables['age'] = [float(self.age),'age [yr]','model']
 
         self.Variables['r_cm'] = [10.**self.Variables['r'][0],'$r$ [cm]','structure']
-        self.Variables['r'][0] = 10.**self.Variables['r'][0]/apc.CGS.Rsol
+        self.Variables['r'][0] = 10.**self.Variables['r'][0]/Cst.Rsol
         self.Variables['P'][0] = 10.**self.Variables['P'][0]
         self.Variables['T'][0] = 10.**self.Variables['T'][0]
         self.Variables['kappa'][0] = 10.**self.Variables['kappa'][0]
@@ -1859,11 +1879,11 @@ class Cluster(Outputs):
         if self.Variables['format'][0][0] != 'cluster':
             return
         self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\,\sin\,i\ [\mathrm{km\,s}^{-1}]$','rotation']
-        self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*apc.CGS.Lsol/(4.*math.pi*apc.CGS.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*apc.CGS.Rsol),'$R\ [R_\odot]$','global properties']
-        self.Variables['rhom'] = [3.*self.Variables['M'][0]*apc.CGS.Msol/(4.*math.pi*(self.Variables['R'][0]*apc.CGS.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','global properties']
-        self.Variables['gsurf'] = [np.log10(apc.CGS.G*self.Variables['M'][0]*apc.CGS.Msol/(self.Variables['R'][0]*apc.CGS.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','global properties']
-        self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*apc.CGS.Rsol**2./(apc.CGS.G*apc.CGS.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
-        self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(apc.CGS.Teffsol**4.*apc.CGS.Rsol**2./(apc.CGS.G*apc.CGS.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\ [R_\odot]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','global properties']
+        self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','global properties']
+        self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
         self.Variables['fwg'] = [self.Variables['gmean'][0]-self.Variables['Teff_lgd'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
         self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
         return
@@ -1872,11 +1892,11 @@ class Cluster(Outputs):
         if self.Variables['format'][0][0] != 'cluster_old':
             return
         self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\,\sin\,i\ [\mathrm{km\,s}^{-1}]$','rotation']
-        self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*apc.CGS.Lsol/(4.*math.pi*apc.CGS.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*apc.CGS.Rsol),'$R\ [R_\odot]$','global properties']
-        self.Variables['rhom'] = [3.*self.Variables['M'][0]*apc.CGS.Msol/(4.*math.pi*(self.Variables['R'][0]*apc.CGS.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','global properties']
-        self.Variables['gsurf'] = [np.log10(apc.CGS.G*self.Variables['M'][0]*apc.CGS.Msol/(self.Variables['R'][0]*apc.CGS.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','global properties']
-        self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*apc.CGS.Rsol**2./(apc.CGS.G*apc.CGS.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
-        self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(apc.CGS.Teffsol**4.*apc.CGS.Rsol**2./(apc.CGS.G*apc.CGS.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\ [R_\odot]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','global properties']
+        self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','global properties']
+        self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
         self.Variables['fwg'] = [self.Variables['gmean'][0]-self.Variables['Teff_lgd'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
         self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
         return
@@ -4489,9 +4509,9 @@ def constant_entropy(*args):
        If 'legend' is passed as an argument, it draws the legend of the lines."""
     rho_Sg = np.arange(-7,7.,0.1)
 # Arnett: Supernovae & Nucleosynthesis, Eq. (7.66), Fig. 7.5
-    T_Sg01 = (1./3.)*(np.log10(3.*0.1/4.)+rho_Sg-np.log10(apc.CGS.a)+np.log10(apc.CGS.R_gaz))
-    T_Sg1 = (1./3.)*(np.log10(3./4.)+rho_Sg-np.log10(apc.CGS.a)+np.log10(apc.CGS.R_gaz))
-    T_Sg10 = (1./3.)*(np.log10(3.*10./4.)+rho_Sg-np.log10(apc.CGS.a)+np.log10(apc.CGS.R_gaz))
+    T_Sg01 = (1./3.)*(np.log10(3.*0.1/4.)+rho_Sg-np.log10(Cst.a)+np.log10(Cst.R_gaz))
+    T_Sg1 = (1./3.)*(np.log10(3./4.)+rho_Sg-np.log10(Cst.a)+np.log10(Cst.R_gaz))
+    T_Sg10 = (1./3.)*(np.log10(3.*10./4.)+rho_Sg-np.log10(Cst.a)+np.log10(Cst.R_gaz))
     plt.plot(rho_Sg,T_Sg01,'--',color='0.6',label=r'$S_\gamma/N_Ak\ (T\sim\rho^{1/3})=0.1$')
     plt.plot(rho_Sg,T_Sg1,'-',color='0.6',label=r'$S_\gamma/N_Ak\ (T\sim\rho^{1/3})=1$')
     plt.plot(rho_Sg,T_Sg10,'--',color='0.6',label=r'$S_\gamma/N_Ak\ (T\sim\rho^{1/3})=10$')
@@ -4506,8 +4526,8 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
 	teff_range=np.arange(teff_min,teff_max,0.1)
 	teff_range=np.hstack((teff_range,teff_max))
 	for i in [0.01,0.1,1.,10.,100.,1000.,10000.]:
-		L_range = 4.*math.pi*apc.CGS.sigma* 10.**(4.*teff_range) *(i*apc.CGS.Rsol)**2.
-		L_range = np.log10(L_range/ apc.CGS.Lsol)
+		L_range = 4.*math.pi*Cst.sigma* 10.**(4.*teff_range) *(i*Cst.Rsol)**2.
+		L_range = np.log10(L_range/Cst.Lsol)
 		plt.plot(teff_range,L_range,color=colour,ls=line)
 		if L_range[-1] < lum_max:
 			lpos = L_range[-1]
