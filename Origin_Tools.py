@@ -65,7 +65,7 @@ rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
 
 class OT_version():
-    OT_version = '6.5'
+    OT_version = '7.0'
 
 class Cst():
     """Physical and astrophysical constants used by Origin_Tools"""
@@ -163,9 +163,9 @@ class readList():
                     'abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation','rotation',\
                     'rotation','rotation','rotation','rotation','rotation','rotation','rotation','winds','winds','winds','winds',\
                     'energetics','energetics','energetics','energetics'],'header':0,'column_number':110}
-    Evol_formats['tgrids'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',40],['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He4s',6],\
-                    ['C12s',7],['C13s',8],['N14s',9],['O16s',10],['O17s',11],['O18s',12],['Ne20s',13],['Ne22s',14],['Al26s',15],['H1c',21],['He4c',22],\
-                    ['C12c',23],['C13c',24],['N14c',25],['O16c',26],['O17c',27],['O18c',28],['Ne20c',29],['Ne22c',30],['Al26c',31],\
+    Evol_formats['tgrids'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',40],['Mccrel',16],['rhoc',19],['Tc',20],\
+                    ['H1s',5],['He4s',6],['C12s',7],['C13s',8],['N14s',9],['O16s',10],['O17s',11],['O18s',12],['Ne20s',13],['Ne22s',14],['Al26s',15],\
+                    ['H1c',21],['He4c',22],['C12c',23],['C13c',24],['N14c',25],['O16c',26],['O17c',27],['O18c',28],['Ne20c',29],['Ne22c',30],['Al26c',31],\
                     ['Vsurf',38],['Vcrit1',36],['Vcrit2',37],['OOc',39],['Omega_surf',32],['Omega_cen',33],['oblat',34],['rot_corr',35],['Ltot',42],\
                     ['Mdot',18],['Mdot_mech',41]],'unitsList':['model num','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
                     '$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\Gamma_\mathrm{Edd}$','$M_\mathrm{cc}/M_\mathrm{tot}$',\
@@ -1387,7 +1387,7 @@ class Model(Outputs):
             self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
             self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/apc.Abund.Hsol),'Fe/H','abundances']
+        self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/Cst.Hsol),'Fe/H','abundances']
         self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
         mask = self.Variables['H1s'][0]<=0.
@@ -1987,17 +1987,17 @@ class Cluster(Outputs):
         mask = self.Variables['C12s'][0]<=0.
         self.Variables['NC'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
         self.Variables['NC'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)
-        self.Variables['NCrel'] = [self.Variables['NC'][0]-np.log10(12.*apc.Abund.Nsol/(14.*apc.Abund.C12sol)),'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
+        self.Variables['NCrel'] = [self.Variables['NC'][0]-np.log10(12.*Cst.Nsol/(14.*Cst.C12sol)),'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
         self.Variables['NO'] = [np.zeros((imax)),'log(N/O [numb.])','abundances']
         mask = self.Variables['O16s'][0]<=0.
         self.Variables['NO'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
         self.Variables['NO'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)]/16.)
-        self.Variables['NOrel'] = [self.Variables['NO'][0]-np.log10(16.*apc.Abund.Nsol/(14.*apc.Abund.Osol)),'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
+        self.Variables['NOrel'] = [self.Variables['NO'][0]-np.log10(16.*Cst.Nsol/(14.*Cst.Osol)),'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
         self.Variables['C12C13'] = [np.zeros((imax)),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         mask = self.Variables['C13s'][0]<=0.
         self.Variables['C12C13'][0][mask] = np.log10(self.Variables['C12s'][0][mask]/12.)-30.
         self.Variables['C12C13'][0][np.logical_not(mask)] = np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)]/13.)
-        self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-np.log10(13.*apc.Abund.C12sol/(12.*apc.Abund.C13sol)),'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
+        self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-np.log10(13.*Cst.C12sol/(12.*Cst.C13sol)),'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
         self.ColoursCalc()
@@ -4918,10 +4918,15 @@ def noLimits(*args):
             else:
                 print('Bad argument for function noLimits. Should be "x", "y", or "xy".')
 
-def keep_limits():
-    """Fixes the limits to the actual ones."""
-    [xmin,xmax,ymin,ymax] = get_limits()
-    Limits(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
+def keep_limits(choice=None):
+    """Fixes the limits to the actual ones if set to True."""
+    if choice == True or choice == None:
+        [xmin,xmax,ymin,ymax] = get_limits()
+        Limits(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
+    elif choice == False:
+        noLimits()
+    else:
+        print('Wrong value: should be True or False.')
 
 def Points(NewValue):
     """Switches from plotting with line to plotting with points if set at True"""
