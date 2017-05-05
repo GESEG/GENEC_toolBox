@@ -3612,7 +3612,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],*args):
     	no_logVar()
     MyDriver.Xvar = Xvar_save
 
-def gTeff(dark=False,mean=False,zcol='',binz=256,plotif=['',''],ticks=[]):
+def gTeff(dark=False,mean=False,corr=False,zcol='',binz=256,plotif=['',''],ticks=[]):
     """Plots a diagram of g as a function of Teff."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -3623,6 +3623,8 @@ def gTeff(dark=False,mean=False,zcol='',binz=256,plotif=['',''],ticks=[]):
     Xvar_save = MyDriver.Xvar
     if dark:
         MyDriver.Xvar = 'Teff_lgd'
+    elif corr:
+        MyDriver.Xvar = 'Teffcorr'
     else:
         MyDriver.Xvar = 'Teff'
     if mean:
@@ -3637,16 +3639,20 @@ def gTeff(dark=False,mean=False,zcol='',binz=256,plotif=['',''],ticks=[]):
     no_axis_inv()
     MyDriver.Xvar = Xvar_save
 
-def YTeff(zcol='',binz=256,plotif=['',''],ticks=[]):
+def YTeff(corr=False,zcol='',binz=256,plotif=['',''],ticks=[]):
     """Plots a diagram of Teff as a function of the central He abundance."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
     Xvar_save = MyDriver.Xvar
     MyDriver.Xvar = 'He4c'
-    if zcol:
-    	Plot_colour('Teff',zcol,binz=binz,plotif=plotif,ticks=ticks)
+    if corr:
+        yvar = 'Teffcorr'
     else:
-    	Plot('Teff',plotif=plotif)
+        yvar = 'Teff'
+    if zcol:
+    	Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+    else:
+    	Plot(yvar,plotif=plotif)
     MyDriver.Xvar = Xvar_save
 
 def Abund(where='x'):
