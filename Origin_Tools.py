@@ -5017,14 +5017,26 @@ def timestep_marker(NewValue):
         print 'The value you entered is not correct, please choose one of the following: o,^,s,p,v,d,>,<'
 
 def set_colourSequence(NewValue):
-    """Sets the colour sequence for plotting several models.
-       The allowed values are the following: 'c' for contrast, 'i' for iris' """
+    """Sets the colour sequence when plotting more than one model.
+       The allowed values are the following: 'c' for contrast, 'i' for iris,
+       'p' to create a new sequence (following instructions), or any existing sequence name."""
     if NewValue == 'c':
         MyDriver.colourSequence = 'contrast'
     elif NewValue == 'i':
         MyDriver.colourSequence = 'iris'
+    elif NewValue == 'p':
+    	print 'Personnalised colour sequence'
+    	cseq_key = raw_input('Enter new sequence name: ')
+    	cseq_list = raw_input('Enter new list (format: [[colours],[names]]): ')
+    	Rendering.Colours_list[cseq_key] = eval(cseq_list)
+    	MyDriver.colourSequence = cseq_key
     else:
-        print 'The value you entered is not correct, please choose one of the following: "c" for contrast, "i" for iris.'
+    	if NewValue not in Rendering.Colours_list.keys():
+        	print 'The value you entered is not correct. Existing sequences are:'
+        	for i in Rendering.Colours_list.keys():
+        		print i+': '+ str(Rendering.Colours_list[i][1])
+        else:
+        	MyDriver.colourSequence = NewValue
 
 def set_colourMap(NewValue):
     """Sets the colour map for plots with Plot_colour.
@@ -5256,6 +5268,8 @@ def default_settings():
     MyDriver.colourSequence = 'contrast'
     MyDriver.colourMap = 'gist_rainbow'
     MyDriver.pointSize = 24
+    MyDriver.PSmin = 5
+    MyDriver.PSmax = 200
     MyDriver.pointFlag = 'cycle_colour'
     MyDriver.emptyPoint = False
     MyDriver.axisFlag = [False,False,False,False]
