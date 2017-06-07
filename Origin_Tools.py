@@ -65,7 +65,7 @@ rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
 
 class OT_version():
-    OT_version = '7.0'
+    OT_version = '7.1'
 
 class Cst():
     """Physical and astrophysical constants used by Origin_Tools"""
@@ -3561,12 +3561,15 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plot
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
-def CMD(c='',zcol='',binz=256,plotif=['',''],ticks=[]):
+def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[]):
     """Plots a CMD for the colours entered in parameters. If called without argument, M_V versus B-V is plotted.
        Usage: CMD(), or CMD('VBV')"""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
         print 'Wrong mode for HRD'
         return
+    if noised and MyDriver.modeplot != 'cluster':
+    	print 'Argument "noised" only available for clusters'
+    	noised = ''
     Xvar_save = MyDriver.Xvar
     if c == '':
         vary = 'M_V'
@@ -3576,6 +3579,10 @@ def CMD(c='',zcol='',binz=256,plotif=['',''],ticks=[]):
     else:
         vary = 'M_'+c[0]
         varx = c[1]+'-'+c[2]
+    if 'x' in noised.lower():
+    	varx = varx+'_noised'
+    if 'y' in noised.lower():
+    	vary = vary+'_noised'
     defX(varx)
     axis_inv('y')
     if zcol:
@@ -3616,25 +3623,30 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],*args):
     	no_logVar()
     MyDriver.Xvar = Xvar_save
 
-def gTeff(dark=False,mean=False,corr=False,zcol='',binz=256,plotif=['',''],ticks=[]):
+def gTeff(dark=False,mean=False,corr=False,noised='',zcol='',binz=256,plotif=['',''],ticks=[]):
     """Plots a diagram of g as a function of Teff."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
     if MyDriver.modeplot != 'cluster' and (dark or mean):
-        print 'arguments "dark" or "mean" available only for clusters'
+        print 'arguments "dark", "mean", or "noised" available only for clusters'
         dark=False
         mean=False
+        noised=False
     Xvar_save = MyDriver.Xvar
     if dark:
         MyDriver.Xvar = 'Teff_lgd'
     elif corr:
-        MyDriver.Xvar = 'Teffcorr'
+    	MyDriver.Xvar = 'Teffcorr'
     else:
         MyDriver.Xvar = 'Teff'
     if mean:
         yvar = 'gmean'
     else:
         yvar = 'gpol'
+    if 'x' in noised.lower():
+    	MyDriver.Xvar = MyDriver.Xvar+'_noised'
+    if 'y' in noised.lower():
+    	yvar = yvar+'_noised'
     axis_inv('y')
     if zcol:
         Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
