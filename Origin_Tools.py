@@ -1933,7 +1933,7 @@ class Cluster(Outputs):
 
         return switcher.get(fmt,'Unknown format')
 
-    def read(self,FileName,num_deb,format,quiet):
+    def read(self,FileName,num_deb,format,quiet,random):
         if not os.path.isfile(FileName):
             raise IOError(1,'File does not exist, check name and path',FileName)
             return
@@ -1966,6 +1966,10 @@ class Cluster(Outputs):
            self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
 
         BigArray = np.loadtxt(FileName,skiprows=num_deb)
+
+        if random != 0:
+            ind = np.random.randint(0,BigArray.shape[0]-1,random)
+            BigArray = BigArray[ind,:]
 
         for i,myVar in zip([varList[1] for varList in Cluster_varList],[varList[0] for varList in Cluster_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
@@ -2434,7 +2438,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
         os.system(CommandZip)
     return len(ToReadModels)
 
-def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False):
+def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False,random=0):
     """Loads a new cluster/isochrone file in the database.
        Usage: loadC(Filename,num_star[,num_deb,format='fmt',forced=True])
        Optional argument is:
@@ -2452,7 +2456,7 @@ def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False):
         Checked, num_star = Driver.checknumber(MyDriver,num_star)
     if Checked or forced:
         try:
-            MyModel.read(FileName,num_deb,format=format,quiet=quiet)
+            MyModel.read(FileName,num_deb,format=format,quiet=quiet, random=random)
             MyDriver.store_model(MyModel,num_star)
             if not num_star in MyDriver.SelectedModels:
                 MyDriver.SelectedModels.append(num_star)
