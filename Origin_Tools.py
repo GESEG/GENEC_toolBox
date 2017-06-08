@@ -922,6 +922,9 @@ class Outputs():
     def Plot(self,x,y,myMask,iColour,iStyle,myLegend,timestep):
         tempX = self.Variables[x][0]
         tempY = self.Variables[y][0]
+        if 'cluster' in self.Variables['format'][0] and not MyDriver.iPoints:
+            tempX = tempX[self.Variables['sorted'][0]]
+            tempY = tempY[self.Variables['sorted'][0]]
         parseX,parseY = self.parseMask(tempX,tempY,myMask)
         one_legend = True
         plotSettings={}
@@ -1980,6 +1983,8 @@ class Cluster(Outputs):
         self.Variables['line_num'] = [num_deb,'starting line','reading']
         self.Variables['Mdot'][0][self.Variables['Mdot'][0]==0.] = -30.
         imax = np.size(self.Variables['Mini'][0])
+        if 'cluster' in format:
+            self.Variables['sorted'] = [np.argsort(self.Variables['Mini'][0]),'Mini-sorted index','reading']
         if not quiet:
             print str(imax)+' lines read.'
 
@@ -3583,6 +3588,7 @@ def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[]):
     	varx = varx+'_noised'
     if 'y' in noised.lower():
     	vary = vary+'_noised'
+
     defX(varx)
     axis_inv('y')
     if zcol:
