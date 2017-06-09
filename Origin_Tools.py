@@ -919,13 +919,19 @@ class Outputs():
     def __init__(self):
         pass
 
-    def Plot(self,x,y,myMask,iColour,iStyle,myLegend,timestep):
+    def Plot(self,x,y,myMask,iColour,iStyle,myLegend,timestep,forced_line=False):
         tempX = self.Variables[x][0]
         tempY = self.Variables[y][0]
         if 'cluster' in self.Variables['format'][0] and not MyDriver.iPoints:
             tempX = tempX[self.Variables['sorted'][0]]
             tempY = tempY[self.Variables['sorted'][0]]
-        parseX,parseY = self.parseMask(tempX,tempY,myMask)
+        # Here we force to connect every segments in case forced_line = True. Otherwise,
+        # disconnected segments are not connected (default behaviour).
+        if forced_line:
+            parseX = tempX
+            parseY = tempY
+        else:
+            parseX,parseY = self.parseMask(tempX,tempY,myMask)
         one_legend = True
         plotSettings={}
         for myX,myY in zip(parseX,parseY):
@@ -3018,11 +3024,12 @@ def Vector_split(varName,num_star,quiet=False):
     if not quiet:
     	print 'The positive and negative values can be plotted under the name '+varName+'_pos and '+varName+'_neg respectively'
 
-def Plot(y,plotif=['','']):
+def Plot(y,plotif=['',''],forced_line=False):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name).
        Usage:Plot('VarName')
        Possibility to restrict the data plotted to a condition on a variable:
-          Example: Plot('He4s',plotif=['H1c','>0.'])"""
+          Example: Plot('He4s',plotif=['H1c','>0.'])
+       In case you want to force coneection of all line segments (with plotif), use forced_line = True"""
     rc('text', usetex=MyDriver.LatexEnabled)
 
     if plotif == ['','']:
@@ -3178,9 +3185,9 @@ def Plot(y,plotif=['','']):
                     if np.nanmax(MyDriver.Model_list[i].Variables[y][0][myMask]) > MyDriver.axisLimits[3]:
                         MyDriver.axisLimits[3] = np.nanmax(MyDriver.Model_list[i].Variables[y][0][myMask])
         if MyDriver.modeplot != 'evol':
-            MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,[])
+            MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,[],forced_line=forced_line)
         else:
-            MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,MyDriver.Model_list[i].timestep)
+            MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,MyDriver.Model_list[i].timestep,forced_line=forced_line)
         if MyDriver.Link_ModelCurve:
             if MyDriver.modeplot != 'struc':
                 if len(ColourName) > 5:
