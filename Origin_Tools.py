@@ -891,7 +891,7 @@ class Driver():
 
     def AddFigure(self,size):
         """Defines the current figure"""
-        self.current_Fig = plt.figure(num=None, figsize=size, dpi=80, facecolor='w', edgecolor='k', frameon=False)
+        self.current_Fig = plt.figure(num=None, figsize=size, dpi=80, facecolor='w', edgecolor='k', frameon=True)
 
     def Store_Axes(self,axe):
         """Saves the figure axes"""
@@ -1088,7 +1088,7 @@ class Model(Outputs):
         self.Variables['M_J'][0] = self.Variables['J-K'][0]+self.Variables['M_K'][0]
         return
 
-     def Spec_var_o2013(self):
+    def Spec_var_o2013(self):
         if self.Variables['format'][0][0] != 'o2013':
             return
         line_skip = False
@@ -1315,59 +1315,59 @@ class Model(Outputs):
         if not quiet:
             print 'File read, '+str(self.imax)+' lines.'
 
-		ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi = 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-		self.Variables['phase'] = [np.array(['' for x in range(self.imax)],dtype=object),'combustion phase','energetics']
-		if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0]:
-			ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
-		try:
-			ind_endH = np.where(self.Variables['H1c'][0]<1.e-5)[0][0]
-			ind_begHe = ind_endH + np.where(self.Variables['He4c'][0][ind_endH:]<np.max(self.Variables['He4c'][0])-3.e-3)[0][0]
-			ind_endHe = np.where(self.Variables['He4c'][0]<1.e-5)[0][0]
-			if ind_endHe != -1:
-				ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-3.e-3)[0][0]
-				if ind_begC != -1:
-					ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-4)[0][0]
-			if ind_endC != -1:
-				ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<np.max(self.Variables['Ne20c'][0])-3.e-3)[0][0]
-				if ind_begNe != -1:
-					ind_endNe = ind_begNe + np.where(self.Variables['Ne20c'][0][ind_begNe:]<1.e-3)[0][0]
-			if ind_endNe != -1:
-				ind_begO = ind_endNe + np.where(self.Variables['O16c'][0][ind_endNe:]<np.max(self.Variables['O16c'][0])-3.e-3)[0][0]
-				if ind_begO != -1:
-					ind_endO = ind_begO + np.where(self.Variables['O16c'][0][ind_begO:]<1.e-3)[0][0]
-			if ind_endO != -1:
-				ind_begSi = ind_endO + np.where(self.Variables['Si28c'][0][ind_endO:]<np.max(self.Variables['Si28c'][0])-3.e-3)[0][0]
-				if ind_begSi != -1:
-					ind_endSi = ind_begSi + np.where(self.Variables['Si28c'][0][ind_begSi:]<1.e-3)[0][0]
-		except:
-			pass
-		if not quiet:
-			print 'limits of burning phases:',ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi
-		if ind_begH != 0:
-			self.Variables['phase'][0][:ind_begH] = 'preH'
-		self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
-		if ind_endH != -1:
-			self.Variables['phase'][0][ind_endH:ind_begHe] = 'HHe'
-		if ind_begHe != -1:
-			self.Variables['phase'][0][ind_begHe:ind_endHe] = 'He'
-		if ind_endHe != -1:
-			self.Variables['phase'][0][ind_endHe:ind_begC] = 'HeC'
-		if ind_begC != -1:
-			self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
-		if ind_endC != -1:
-			self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
-		if ind_begNe != -1:
-			self.Variables['phase'][0][ind_begNe:ind_endNe] = 'Ne'
-		if ind_endNe != -1:
-			self.Variables['phase'][0][ind_endNe:ind_begO] = 'NeO'
-		if ind_begO != -1:
-			self.Variables['phase'][0][ind_begO:ind_endO] = 'O'
-		if ind_endO != -1:
-			self.Variables['phase'][0][ind_endO:ind_begSi] = 'OSi'
-		if ind_begSi != -1:
-			self.Variables['phase'][0][ind_begSi:ind_endSi] = 'Si'
-		if ind_endSi != -1:
-			self.Variables['phase'][0][ind_endSi:-1] = 'collapse'
+        ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi = 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+        self.Variables['phase'] = [np.array(['' for x in range(self.imax)],dtype=object),'combustion phase','energetics']
+        if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0]:
+            ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
+        try:
+            ind_endH = np.where(self.Variables['H1c'][0]<1.e-5)[0][0]
+            ind_begHe = ind_endH + np.where(self.Variables['He4c'][0][ind_endH:]<np.max(self.Variables['He4c'][0])-3.e-3)[0][0]
+            ind_endHe = np.where(self.Variables['He4c'][0]<1.e-5)[0][0]
+            if ind_endHe != -1:
+                ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-3.e-3)[0][0]
+            if ind_begC != -1:
+                ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-4)[0][0]
+            if ind_endC != -1:
+                ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<np.max(self.Variables['Ne20c'][0])-3.e-3)[0][0]
+            if ind_begNe != -1:
+                ind_endNe = ind_begNe + np.where(self.Variables['Ne20c'][0][ind_begNe:]<1.e-3)[0][0]
+            if ind_endNe != -1:
+                ind_begO = ind_endNe + np.where(self.Variables['O16c'][0][ind_endNe:]<np.max(self.Variables['O16c'][0])-3.e-3)[0][0]
+            if ind_begO != -1:
+                ind_endO = ind_begO + np.where(self.Variables['O16c'][0][ind_begO:]<1.e-3)[0][0]
+            if ind_endO != -1:
+                ind_begSi = ind_endO + np.where(self.Variables['Si28c'][0][ind_endO:]<np.max(self.Variables['Si28c'][0])-3.e-3)[0][0]
+            if ind_begSi != -1:
+                ind_endSi = ind_begSi + np.where(self.Variables['Si28c'][0][ind_begSi:]<1.e-3)[0][0]
+        except:
+		         	pass
+        if not quiet:
+		         	print 'limits of burning phases:',ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi
+        if ind_begH != 0:
+            self.Variables['phase'][0][:ind_begH] = 'preH'
+            self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
+        if ind_endH != -1:
+            self.Variables['phase'][0][ind_endH:ind_begHe] = 'HHe'
+        if ind_begHe != -1:
+            self.Variables['phase'][0][ind_begHe:ind_endHe] = 'He'
+        if ind_endHe != -1:
+            self.Variables['phase'][0][ind_endHe:ind_begC] = 'HeC'
+        if ind_begC != -1:
+            self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
+        if ind_endC != -1:
+            self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
+        if ind_begNe != -1:
+            self.Variables['phase'][0][ind_begNe:ind_endNe] = 'Ne'
+        if ind_endNe != -1:
+            self.Variables['phase'][0][ind_endNe:ind_begO] = 'NeO'
+        if ind_begO != -1:
+            self.Variables['phase'][0][ind_begO:ind_endO] = 'O'
+        if ind_endO != -1:
+            self.Variables['phase'][0][ind_endO:ind_begSi] = 'OSi'
+        if ind_begSi != -1:
+            self.Variables['phase'][0][ind_begSi:ind_endSi] = 'Si'
+        if ind_endSi != -1:
+            self.Variables['phase'][0][ind_endSi:-1] = 'collapse'
         self.Variables['t6'] = [self.Variables['t'][0]/1.e6,'t [Myr]','model']
         self.Variables['t9'] = [self.Variables['t'][0]/1.e9,'t [Gyr]','model']
         self.Variables['ageadv'] = [self.Variables['t'][0][-1] - self.Variables['t'][0],'log(time before collapse [yr])','model']
