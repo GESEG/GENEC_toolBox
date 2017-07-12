@@ -109,7 +109,7 @@ class Rendering():
                                ['black','red','green','blue','cyan','magenta','orange','olive','pink','brown','grey']]
     Colours_list['iris'] = [[(0,0,0),(0,0,1),(0,0.8,1),(0,0.8,0),(1,0.8,0),(1,0.4,0),(1,0,0),(1,0,1),(0.6,0,0.8),(0.6,0.6,0.6)], \
                            ['black','blue','cyan','green','yellow','orange','red','magenta','purple','grey']]
-    Line_list = ['-', '--', ':', '-.']
+    Line_list = ['-', (0,(8,1)), '--', ':',(0,(1,1,3,1)),(0,(1,1,8,1))]
     Point_list = ['o','^','*','s','p','v','d','>','<']
     Authorised_LineStyle=['cycle_colour','cycle_all']+Line_list
     Authorised_PointStyle=['cycle_colour','cycle_all']+Point_list
@@ -803,7 +803,7 @@ class Driver():
         self.colourSequence = 'contrast'
         self.colourMap = 'gist_rainbow'
         self.iPoints = False
-        self.pointSize = 24
+        self.pointSize = 12
         self.pointFlag = 'cycle_colour'
         self.PSmin = 5
         self.PSmax = 200
@@ -812,6 +812,7 @@ class Driver():
         self.axisLimits = [0.,0.,0.,0.]
         self.CBFlag = [False,False]
         self.CBLimits = [0.,0.]
+        self.get_CBlimits = [0.,0.]
         self.axisInv = [False,False]
         self.ilog = [False,False,False]
         self.keepplot = False
@@ -870,7 +871,7 @@ class Driver():
 
     def AddFigure(self,size):
         """Defines the current figure"""
-        self.current_Fig = plt.figure(num=None, figsize=size, dpi=80, facecolor='w', edgecolor='k', frameon=False)
+        self.current_Fig = plt.figure(num=None, figsize=size, dpi=80, facecolor='w', edgecolor='k')
 
     def Store_Axes(self,axe):
         """Saves the figure axes"""
@@ -3452,6 +3453,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
     else:
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
+    MyDriver.get_CBlimits = MyCB.get_clim()
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -3640,7 +3642,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line
         no_logVar()
     MyDriver.Xvar = Xvar_save
 
-def gTeff(dark=False,mean=False,corr=False,noised='',zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of g as a function of Teff."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -3658,6 +3660,8 @@ def gTeff(dark=False,mean=False,corr=False,noised='',zcol='',binz=256,plotif=[''
         MyDriver.Xvar = 'Teff'
     if mean:
         yvar = 'gmean'
+    elif surf:
+        yvar = 'gsurf'
     else:
         yvar = 'gpol'
     if 'x' in noised.lower():
@@ -4962,6 +4966,7 @@ def keep_limits(choice=None):
     if choice == True or choice == None:
         [xmin,xmax,ymin,ymax] = get_limits()
         Limits(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
+        print 'limits:',xmin,xmax,ymin,ymax
     elif choice == False:
         noLimits()
     else:
@@ -4974,10 +4979,10 @@ def Points(NewValue):
     else:
         print('Wrong value: should be True or False.')
 
-def emptyPoints(NewValue):
+def emptyPoints(choice):
     """Switches from plotting with line to plotting with points if set at True"""
-    if NewValue in [True,False]:
-        MyDriver.emptyPoint = NewValue
+    if choice in [True,False]:
+        MyDriver.emptyPoint = choice
     else:
         print('Wrong value: should be True or False.')
 
@@ -5102,7 +5107,7 @@ def set_colourFlag(NewValue):
         print 'The value you entered is not correct'
 
 def CBLimits(**args):
-    """Defines the limits for the colorbar manually.
+    """Defines the limits for the colourbar manually.
        Usage: CBLimits(min=2.,max=4.5)
        All arguments are optional."""
     for arg in args.keys():
@@ -5116,7 +5121,7 @@ def CBLimits(**args):
             print('Bad argument for function CBLimits. Should be min=..., or max=... .')
 
 def noCBLimits(*args):
-    """Returns to automatically defined limits for the colorbar.
+    """Returns to automatically defined limits for the colourbar.
        Usage: noCBLimits("value") with value = 'min', 'max', or none for both."""
     if not args:
         MyDriver.CBFlag = [False,False]
@@ -5127,6 +5132,16 @@ def noCBLimits(*args):
             if arg == 'max':
                 MyDriver.CBFlag[1] = False
 
+def keep_CBlimits(choice=None):
+    """Fixes the limits of the colourbar to the actual ones"""
+    if choice == True or choice == None:
+        [min,max] = MyDriver.get_CBlimits
+        print 'colour limits:',min,max
+    elif choice == False:
+        noCBLimits()
+    else:
+       print('Wrong value: should be True or False.')
+
 def axis_inv(*args):
     """Inversion of axis.
        Usage: axis_inv("axis") with axis = 'x', 'y', 'xy'."""
@@ -5134,9 +5149,9 @@ def axis_inv(*args):
         print 'You need to precise wich axis you want to invert: x, y, or both (xy)?'
     else:
         for arg in args:
-            if arg == 'X' or arg == 'x' or arg == 'XY' or arg == 'xy':
+            if 'x' in arg.lower():
                 MyDriver.axisInv[0] = True
-            if arg == 'Y' or arg == 'y' or arg == 'XY' or arg == 'xy':
+            if 'y' in arg.lower():
                 MyDriver.axisInv[1] = True
 
 def no_axis_inv(*args):
@@ -5146,9 +5161,9 @@ def no_axis_inv(*args):
         MyDriver.axisInv = [False,False]
     else:
         for arg in args:
-            if arg == 'X' or arg == 'x' or arg == 'XY' or arg == 'xy':
+            if 'x' in arg.lower():
                 MyDriver.axisInv[0] = False
-            if arg == 'Y' or arg == 'y' or arg == 'XY' or arg == 'xy':
+            if 'y' in arg.lower():
                 MyDriver.axisInv[1] = False
 
 def logVar(*args):
@@ -5158,11 +5173,11 @@ def logVar(*args):
         print 'You need to precise for wich axis you want the logarithmic value: x, y, z, or anycombination (xy)?'
     else:
         for arg in args:
-            if 'x' in arg or 'X' in arg:
+            if 'x' in arg.lower():
                 MyDriver.ilog[0] = True
-            if 'y' in arg or 'Y' in arg:
+            if 'y' in arg.lower():
                 MyDriver.ilog[1] = True
-            if 'z' in arg or 'Z' in arg:
+            if 'z' in arg.lower():
                 MyDriver.ilog[2] = True
 
 def log_Var(*args):
@@ -5176,11 +5191,11 @@ def no_logVar(*args):
         MyDriver.ilog = [False,False,False]
     else:
         for arg in args:
-            if 'x' in arg or 'X' in arg:
+            if 'x' in arg.lower():
                 MyDriver.ilog[0] = False
-            if 'y' in arg or 'Y' in arg:
+            if 'y' in arg.lower():
                 MyDriver.ilog[1] = False
-            if 'z' in arg or 'Z' in arg:
+            if 'z' in arg.lower():
                 MyDriver.ilog[2] = False
 
 def no_log_Var(*args):
@@ -5195,9 +5210,9 @@ def logScale(*args):
         print 'You need to precise for wich axis you want the logarithmic scale: x, y, or both (xy)?'
     else:
         for arg in args:
-            if arg == 'X' or arg == 'x' or arg == 'XY' or arg == 'xy':
+            if 'x' in arg.lower():
                 MyDriver.logScale[0] = True
-            if arg == 'Y' or arg == 'y' or arg == 'XY' or arg == 'xy':
+            if 'y' in arg.lower():
                 MyDriver.logScale[1] = True
 
 def no_logScale(*args):
@@ -5207,9 +5222,9 @@ def no_logScale(*args):
         MyDriver.logScale = [False,False]
     else:
         for arg in args:
-            if arg == 'X' or arg == 'x' or arg == 'XY' or arg == 'xy':
+            if 'x' in arg,lower():
                 MyDriver.logScale[0] = False
-            if arg == 'Y' or arg == 'y' or arg == 'XY' or arg == 'xy':
+            if 'y' in arg.lower():
                 MyDriver.logScale[1] = False
 
 def configPlot():
@@ -5306,7 +5321,7 @@ def default_settings():
     MyDriver.colourFlag = 'cycle'
     MyDriver.colourSequence = 'contrast'
     MyDriver.colourMap = 'gist_rainbow'
-    MyDriver.pointSize = 24
+    MyDriver.pointSize = 12
     MyDriver.PSmin = 5
     MyDriver.PSmax = 200
     MyDriver.pointFlag = 'cycle_colour'
@@ -5404,7 +5419,7 @@ def slope(value,centre=[0.,0.],colour='0.80',line='-'):
     plt.plot([xinf,xsup],[y1,y2],color=colour,ls=line)
     plt.show()
 
-def dotxy(x,y,style='',err=[]):
+def dotxy(x,y,style='',err=[],label='',ha='left',fontsize=0):
     """Puts a dot at the (x,y) position entered as input argument.
        The optional arguments are:
         - 'style' for setting the style of the dot;
@@ -5420,7 +5435,7 @@ def dotxy(x,y,style='',err=[]):
     if style != '':
         if err != []:
             plt.errorbar(x,y,xerr=err[0],yerr=err[1],ecolor='k')
-        plt.plot(x,y,style,markeredgecolor='none')
+        plt.plot(x,y,style,markeredgecolor='none',markersize=MyDriver.pointSize)
     else:
         if MyDriver.colourFlag == 'cycle':
             set_colourFlag(0.80)
@@ -5429,6 +5444,12 @@ def dotxy(x,y,style='',err=[]):
         if err != []:
             plt.errorbar(x,y,xerr=err[0],yerr=err[1],ecolor='k')
         plt.scatter(x,y,marker=MyDriver.pointFlag,c=MyDriver.colourFlag,s=MyDriver.pointSize,edgecolors='none')
+    if label:
+        if fontsize == 0:
+            fontsize = MyDriver.fontSize
+        else:
+            fontsize = fontsize
+        add_label(x,y,'$\ \ $'+label,va='center',ha=ha,fontsize=fontsize)
     MyDriver.colourFlag = colourFlag_save
     MyDriver.pointFlag = pointFlag_save
 
@@ -5583,6 +5604,7 @@ def blabla(string):
     x = [0,1]
     y = [0,1]
     plt.figure()
+    rc('text', usetex=True)
     plt.plot(x,y,'o')
     plt.text(0.05,0.1,string)
     plt.show()
@@ -5642,7 +5664,8 @@ def plotExternal(fileName,colX,colY,*argus,**args):
          - colz = n (to colour-code the points with the value of a variable at column n)
          - cols = n (to resize the points with the value of a variable at column n)
          - style = style (for changing the line/point style)
-         - log = x,y,z, or s (for getting the log of the value read for x,y,z, or s)."""
+         - log = x,y,z, or s (for getting the log of the value read for x,y,z, or s)
+         - clim = 'new' or 'old' to define new colour limits or keep the previous ones."""
     skip = 0
     last = -1
     myStyle = ''
@@ -5653,8 +5676,10 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     newFig = False
     zcolour = False
     varsize = False
+    invS = False
     zlabel = ''
     binz = 0
+    clim = 'new'
     iColour = MyDriver.colourFlag
     points = MyDriver.pointSize
     lineFlag_save = MyDriver.lineFlag
@@ -5700,9 +5725,13 @@ def plotExternal(fileName,colX,colY,*argus,**args):
             zlabel = args[arg]
         if arg == 'binz':
             binz=args[arg]
+        if arg == 'clim':
+            clim = args[arg]
     for arg in argus:
         if arg == 'new':
             newFig = True
+        if arg == 'invS':
+            invS == True
     if newFig:
         if MyDriver.closeFig:
             plt.close()
@@ -5722,6 +5751,8 @@ def plotExternal(fileName,colX,colY,*argus,**args):
             myZ = np.log10(myZ)
     if varsize:
         myS = table[:last,inds]
+        if invS:
+            myS = np.max(myS)/myS
         if logs:
             myS = np.log10(myS)
         Smin = np.min(myS)
@@ -5734,6 +5765,10 @@ def plotExternal(fileName,colX,colY,*argus,**args):
 
     if zcolour:
         iColour = myZ
+    	if clim == 'old':
+    	    minZ,maxZ = MyDriver.get_CBlimits
+    	else:
+    	    minZ,maxZ = np.min(myZ),np.max(myZ)
     if varsize:
         points = myS
 
@@ -5744,16 +5779,17 @@ def plotExternal(fileName,colX,colY,*argus,**args):
             if zcolour:
                 cmap=cm.get_cmap(MyDriver.colourMap)
                 if binz != 0:
-                    bounds = np.linspace(np.min(myZ),np.max(myZ),binz+1)
+                    bounds = np.linspace(minZ,maxZ,binz+1)
                 else:
-                    bounds = np.linspace(np.min(myZ),np.max(myZ))
+                    bounds = np.linspace(minZ,maxZ)
                 norm = colors.BoundaryNorm(bounds,cmap.N)
-                ColorBarSettings = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-                ColorBarSettings._A = []
-                MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08)
-                if zlabel:
-                    MyCB.ax.set_ylabel(zlabel,fontsize=MyDriver.fontSize/1.5)
-                    MyCB.ax.yaxis.set_label_position('right')
+                if newFig or clim == 'new':
+                    ColorBarSettings = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+                    ColorBarSettings._A = []
+                    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08)
+                    if zlabel:
+                        MyCB.ax.set_ylabel(zlabel,fontsize=MyDriver.fontSize/1.5)
+                        MyCB.ax.yaxis.set_label_position('right')
                 New_Axes.scatter(myX,myY,c=iColour,marker=MyDriver.pointFlag,cmap=cmap,norm=norm,s=points,edgecolors='none')
             else:
                 New_Axes.scatter(myX,myY,c=iColour,marker=MyDriver.pointFlag,s=points,edgecolors='none')
