@@ -803,7 +803,7 @@ class Driver():
         self.colourSequence = 'contrast'
         self.colourMap = 'gist_rainbow'
         self.iPoints = False
-        self.pointSize = 12
+        self.pointSize = 24
         self.pointFlag = 'cycle_colour'
         self.PSmin = 5
         self.PSmax = 200
@@ -813,6 +813,7 @@ class Driver():
         self.CBFlag = [False,False]
         self.CBLimits = [0.,0.]
         self.get_CBlimits = [0.,0.]
+        self.CBticksN = 11
         self.axisInv = [False,False]
         self.ilog = [False,False,False]
         self.keepplot = False
@@ -3443,7 +3444,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
     ColorBarSettings = plt.cm.ScalarMappable(cmap=MyDriver.colourMap, norm=norm)
     ColorBarSettings._A = []
     if ticks==[]:
-        CBticks = np.linspace(MinMap,MaxMap,11)
+        CBticks = np.linspace(MinMap,MaxMap,MyDriver.CBticksN)
     else:
         CBticks = ticks
     MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks)
@@ -4915,7 +4916,7 @@ def DefNewLimits(CurrentLimits):
 
     return Xmin,Xmax,Ymin,Ymax,Xmin_save,Xmax_save,Ymin_save,Ymax_save
 
-def get_limits():
+def get_limits(quiet=False):
     """Returns the limits of the actual figure."""
     actualLimits = []
     xmin = plt.gca().get_xbound()[0]
@@ -4923,6 +4924,8 @@ def get_limits():
     ymin = plt.gca().get_ybound()[0]
     ymax = plt.gca().get_ybound()[1]
     actualLimits = [xmin,xmax,ymin,ymax]
+    if not quiet:
+        print 'To use these limits:\n Limits(xmin='+str(xmin)+',xmax='+str(xmax)+',ymin='+str(ymin)+',ymax='+str(ymax)+')'
     return actualLimits
 
 def Limits(**args):
@@ -4930,16 +4933,16 @@ def Limits(**args):
        Usage: Limits(xmin=2.,xmax=4.5,ymin=0.,ymax=1.)
        All arguments are optional."""
     for arg in args.keys():
-        if arg == 'Xmin' or arg == 'xmin':
+        if arg.lower() == 'xmin':
             MyDriver.axisFlag[0] = True
             MyDriver.axisLimits[0] = args[arg]
-        elif arg == 'Xmax' or arg == 'xmax':
+        elif arg.lower() == 'xmax':
             MyDriver.axisFlag[1] = True
             MyDriver.axisLimits[1] = args[arg]
-        elif arg == 'Ymin' or arg == 'ymin':
+        elif arg.lower() == 'ymin':
             MyDriver.axisFlag[2] = True
             MyDriver.axisLimits[2] = args[arg]
-        elif arg == 'Ymax' or arg == 'ymax':
+        elif arg.lower() == 'ymax':
             MyDriver.axisFlag[3] = True
             MyDriver.axisLimits[3] = args[arg]
         else:
@@ -4948,17 +4951,18 @@ def Limits(**args):
 def noLimits(*args):
     """Returns to automatically defined axis limits.
        Usage: noLimits("axis") with axis = 'x', 'y', 'xy'."""
+    authorised = ['x','y','xy','yx']
     if not args:
         MyDriver.axisFlag = [False,False,False,False]
     else:
         for arg in args:
-            if arg == 'X' or arg == 'x' or arg == 'XY' or arg == 'xy':
+            if 'x' in arg.lower():
                 MyDriver.axisFlag[0] = False
                 MyDriver.axisFlag[1] = False
-            elif arg == 'Y' or arg == 'y' or arg == 'XY' or arg == 'xy':
+            if 'y' in arg.lower():
                 MyDriver.axisFlag[2] = False
                 MyDriver.axisFlag[3] = False
-            else:
+            if arg not in authorised:
                 print('Bad argument for function noLimits. Should be "x", "y", or "xy".')
 
 def keep_limits(choice=None):
@@ -4966,7 +4970,6 @@ def keep_limits(choice=None):
     if choice == True or choice == None:
         [xmin,xmax,ymin,ymax] = get_limits()
         Limits(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
-        print 'limits:',xmin,xmax,ymin,ymax
     elif choice == False:
         noLimits()
     else:
@@ -5114,9 +5117,11 @@ def CBLimits(**args):
         if arg == 'min':
             MyDriver.CBFlag[0] = True
             MyDriver.CBLimits[0] = args[arg]
+            MyDriver.get_CBlimits[0] = args[arg]
         elif arg == 'max':
             MyDriver.CBFlag[1] = True
             MyDriver.CBLimits[1] = args[arg]
+            MyDriver.get_CBlimits[1] = args[arg]
         else:
             print('Bad argument for function CBLimits. Should be min=..., or max=... .')
 
@@ -5141,6 +5146,10 @@ def keep_CBlimits(choice=None):
         noCBLimits()
     else:
        print('Wrong value: should be True or False.')
+
+def CB_tickN(ticks=10):
+    """Resets the number of ticks in the colour bar"""
+    MyDriver.CBticksN = ticks
 
 def axis_inv(*args):
     """Inversion of axis.
@@ -5222,7 +5231,7 @@ def no_logScale(*args):
         MyDriver.logScale = [False,False]
     else:
         for arg in args:
-            if 'x' in arg,lower():
+            if 'x' in arg.lower():
                 MyDriver.logScale[0] = False
             if 'y' in arg.lower():
                 MyDriver.logScale[1] = False
@@ -5330,6 +5339,7 @@ def default_settings():
     MyDriver.axisLimits = [0.,0.,0.,0.]
     MyDriver.CBFlag = [False,False]
     MyDriver.CBLimits = [0.,0.]
+    MyDriver.CBticksN = 11
     MyDriver.axisInv = [False,False]
     MyDriver.ilog = [False,False,False]
     MyDriver.keepplot = False
@@ -5410,8 +5420,7 @@ def slope(value,centre=[0.,0.],colour='0.80',line='-'):
     """Draws a line of slope 'value' on an existing graph.
        The optional parameter centre=[x,y] allows to centre the line on point (x,y)"""
     print 'slope : ',value
-    xinf,xsup = plt.gca().get_xbound()
-    yinf,ysup = plt.gca().get_ybound()
+    xinf,xsup,yinf,ysup = get_limits(quiet=True)
     if centre == [0.,0.]:
         centre = [xinf+(xsup-xinf)/2.,yinf+(ysup-yinf)/2.]
     y1 = centre[1] + value*(xinf-centre[0])
@@ -5659,13 +5668,15 @@ def plotExternal(fileName,colX,colY,*argus,**args):
        Usage: plotExternal(file_name,col_x,col_y[,skip=skip_header_lines,style=myStyle,log='xy']).
        The optional parameters are:
          - 'new' (to generate a new figure, False by default).
+         - 'invS' (to get point size that are 1./cols)
          - skip = n (to skip n lines at the beginning of the file)
          - last = n (last line to be read)
          - colz = n (to colour-code the points with the value of a variable at column n)
          - cols = n (to resize the points with the value of a variable at column n)
          - style = style (for changing the line/point style)
-         - log = x,y,z, or s (for getting the log of the value read for x,y,z, or s)
-         - clim = 'new' or 'old' to define new colour limits or keep the previous ones."""
+         - log = x,y,z, and/or s (for getting the log of the value read for x,y,z, or s)
+         - clim = 'new' or 'old' to define new colour limits or keep the previous ones
+         - zlabel = str to set the colour bar label."""
     skip = 0
     last = -1
     myStyle = ''
@@ -5684,6 +5695,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     points = MyDriver.pointSize
     lineFlag_save = MyDriver.lineFlag
     pointFlag_save = MyDriver.pointFlag
+    point_save = MyDriver.iPoints
     mycols = [colX,colY]
     if 'cycle' in MyDriver.colourFlag:
         iColour = 'Black'
@@ -5731,7 +5743,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
         if arg == 'new':
             newFig = True
         if arg == 'invS':
-            invS == True
+            invS = True
     if newFig:
         if MyDriver.closeFig:
             plt.close()
@@ -5752,7 +5764,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     if varsize:
         myS = table[:last,inds]
         if invS:
-            myS = np.max(myS)/myS
+            myS = 1./myS
         if logs:
             myS = np.log10(myS)
         Smin = np.min(myS)
@@ -5768,7 +5780,14 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     	if clim == 'old':
     	    minZ,maxZ = MyDriver.get_CBlimits
     	else:
-    	    minZ,maxZ = np.min(myZ),np.max(myZ)
+    	    if MyDriver.CBFlag[0]:
+    	        minZ = MyDriver.CBLimits[0]
+    	    else:
+    	        minZ = np.min(myZ)
+    	    if MyDriver.CBFlag[1]:
+    	        maxZ = MyDriver.CBLimits[1]
+    	    else:
+    	        maxZ = np.max(myZ)
     if varsize:
         points = myS
 
@@ -5787,6 +5806,8 @@ def plotExternal(fileName,colX,colY,*argus,**args):
                     ColorBarSettings = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
                     ColorBarSettings._A = []
                     MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08)
+                    MyCB.locator = mptick.MaxNLocator(nbins=MyDriver.CBticksN)
+                    MyCB.update_ticks()
                     if zlabel:
                         MyCB.ax.set_ylabel(zlabel,fontsize=MyDriver.fontSize/1.5)
                         MyCB.ax.yaxis.set_label_position('right')
@@ -5810,6 +5831,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     plt.draw()
 
     set_lineStyle(lineFlag_save)
+    Points(point_save)
     set_pointStyle(pointFlag_save)
 
 MyDriver = Driver()
