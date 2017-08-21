@@ -3030,7 +3030,7 @@ def Vector_split(varName,num_star,quiet=False):
     if not quiet:
         print 'The positive and negative values can be plotted under the name '+varName+'_pos and '+varName+'_neg respectively'
 
-def Plot(y,plotif=['',''],forced_line=False):
+def Plot(y,plotif=['',''],cshift=0,forced_line=False):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name).
        Usage:Plot('VarName')
        Possibility to restrict the data plotted to a condition on a variable:
@@ -3082,8 +3082,8 @@ def Plot(y,plotif=['',''],forced_line=False):
     j = 0
     for i in Star_list:
         if MyDriver.colourFlag == 'cycle':
-            iColour = Rendering.Colours_list[MyDriver.colourSequence][0][j % len(Rendering.Colours_list[MyDriver.colourSequence][0])]
-            ColourName = Rendering.Colours_list[MyDriver.colourSequence][1][j % len(Rendering.Colours_list[MyDriver.colourSequence][1])]
+            iColour = Rendering.Colours_list[MyDriver.colourSequence][0][j+cshift % len(Rendering.Colours_list[MyDriver.colourSequence][0])]
+            ColourName = Rendering.Colours_list[MyDriver.colourSequence][1][j+cshift % len(Rendering.Colours_list[MyDriver.colourSequence][1])]
             MyDriver.Link_ModelCurve = True
         else:
             iColour = MyDriver.colourFlag
@@ -3197,9 +3197,9 @@ def Plot(y,plotif=['',''],forced_line=False):
         if MyDriver.Link_ModelCurve:
             if MyDriver.modeplot != 'struc':
                 if len(ColourName) > 5:
-                    print ColourName,':\t',MyDriver.Model_list[i].Variables['FileName'][0]
+                    print ColourName,':\t',str(i)+' -',MyDriver.Model_list[i].Variables['FileName'][0]
                 else:
-                    print ColourName,':\t\t',MyDriver.Model_list[i].Variables['FileName'][0]
+                    print ColourName,':\t\t',str(i)+' -',MyDriver.Model_list[i].Variables['FileName'][0]
             else:
                 if len(ColourName) > 5:
                     print ColourName,':\t',MyDriver.Model_list[i].Variables['FileName'][0],'\t',MyDriver.Model_list[i].Variables['Model'][0]
@@ -3455,6 +3455,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
     MyDriver.get_CBlimits = MyCB.get_clim()
+    print MyDriver.get_CBlimits
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -5117,11 +5118,9 @@ def CBLimits(**args):
         if arg == 'min':
             MyDriver.CBFlag[0] = True
             MyDriver.CBLimits[0] = args[arg]
-            MyDriver.get_CBlimits[0] = args[arg]
         elif arg == 'max':
             MyDriver.CBFlag[1] = True
             MyDriver.CBLimits[1] = args[arg]
-            MyDriver.get_CBlimits[1] = args[arg]
         else:
             print('Bad argument for function CBLimits. Should be min=..., or max=... .')
 
@@ -5482,6 +5481,16 @@ def shade(x,y,colour='0.80',alpha=0.20,hatch=''):
             print "Problem with the kind of data in shade."
     plt.fill(x,y,color=colour,alpha=alpha,hatch=hatch)
     plt.draw()
+    
+def shade_x(x1,x2,colour='0.80',alpha=0.20,hatch=''):
+	"""Shades the zone between x1 and x2 in the actual limits of the window."""
+	xmin,xmax,ymin,ymax=get_limits(quiet=True)
+	shade([x1,x1,x2,x2,x1],[ymin,ymax,ymax,ymin,ymin],colour=colour,alpha=alpha,hatch=hatch)
+
+def shade_y(y1,y2,colour='0.80',alpha=0.20,hatch=''):
+	"""Shades the zone between y1 and y2 in the actual limits of the window."""
+	xmin,xmax,ymin,ymax=get_limits(quiet=True)
+	shade([xmin,xmin,xmax,xmax,xmin],[y1,y2,y2,y1,y1],colour=colour,alpha=alpha,hatch=hatch)
 
 def iLatex(NewValue):
     """Enables LaTeX strings if set to True.
