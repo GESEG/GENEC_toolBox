@@ -803,7 +803,7 @@ class Driver():
         self.colourSequence = 'contrast'
         self.colourMap = 'gist_rainbow'
         self.iPoints = False
-        self.pointSize = 24
+        self.pointSize = 18
         self.pointFlag = 'cycle_colour'
         self.PSmin = 5
         self.PSmax = 200
@@ -3082,8 +3082,8 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
     j = 0
     for i in Star_list:
         if MyDriver.colourFlag == 'cycle':
-            iColour = Rendering.Colours_list[MyDriver.colourSequence][0][j+cshift % len(Rendering.Colours_list[MyDriver.colourSequence][0])]
-            ColourName = Rendering.Colours_list[MyDriver.colourSequence][1][j+cshift % len(Rendering.Colours_list[MyDriver.colourSequence][1])]
+            iColour = Rendering.Colours_list[MyDriver.colourSequence][0][(j+cshift) % len(Rendering.Colours_list[MyDriver.colourSequence][0])]
+            ColourName = Rendering.Colours_list[MyDriver.colourSequence][1][(j+cshift) % len(Rendering.Colours_list[MyDriver.colourSequence][1])]
             MyDriver.Link_ModelCurve = True
         else:
             iColour = MyDriver.colourFlag
@@ -5329,7 +5329,7 @@ def default_settings():
     MyDriver.colourFlag = 'cycle'
     MyDriver.colourSequence = 'contrast'
     MyDriver.colourMap = 'gist_rainbow'
-    MyDriver.pointSize = 12
+    MyDriver.pointSize = 18
     MyDriver.PSmin = 5
     MyDriver.PSmax = 200
     MyDriver.pointFlag = 'cycle_colour'
@@ -5427,23 +5427,33 @@ def slope(value,centre=[0.,0.],colour='0.80',line='-'):
     plt.plot([xinf,xsup],[y1,y2],color=colour,ls=line)
     plt.show()
 
-def dotxy(x,y,style='',err=[],label='',ha='left',fontsize=0):
+def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
     """Puts a dot at the (x,y) position entered as input argument.
        The optional arguments are:
         - 'style' for setting the style of the dot;
         - err=[xerr,yerr] for plotting errorbars. The errors can be asymmetric:
-             err=[[xerr_left,xerr_right],[yerr_up,yerr_down]]."""
+             err=[[xerr_left,xerr_right],[yerr_up,yerr_down]];
+        - size=n for changing directly the point size to n;
+        - f=float for applying factor f to the actual size of points;
+        - label='string' for writing 'string' beside the point;
+        - pos='pos' for setting the position of the string wrt point ('left','center', or 'right');
+        - fontsize=n for setting the fontsize of the string."""
     colourFlag_save = MyDriver.colourFlag
     pointFlag_save = MyDriver.pointFlag
+    pointSize = MyDriver.pointSize
     if err != []:
         if np.size(err[0]) > 1:
             err[0] = [[err[0][0]],[err[0][1]]]
         if np.size(err[1]) > 1:
             err[1] = [[err[1][0]],[err[1][1]]]
+    if size != 0:
+        pointSize = size
+    elif f != 0:
+        pointSize = pointSize * f
     if style != '':
         if err != []:
             plt.errorbar(x,y,xerr=err[0],yerr=err[1],ecolor='k')
-        plt.plot(x,y,style,markeredgecolor='none',markersize=MyDriver.pointSize)
+        plt.plot(x,y,style,markeredgecolor='none',markersize=pointSize)
     else:
         if MyDriver.colourFlag == 'cycle':
             set_colourFlag(0.80)
@@ -5451,13 +5461,34 @@ def dotxy(x,y,style='',err=[],label='',ha='left',fontsize=0):
             set_pointStyle('o')
         if err != []:
             plt.errorbar(x,y,xerr=err[0],yerr=err[1],ecolor='k')
-        plt.scatter(x,y,marker=MyDriver.pointFlag,c=MyDriver.colourFlag,s=MyDriver.pointSize,edgecolors='none')
+        plt.scatter(x,y,marker=MyDriver.pointFlag,c=MyDriver.colourFlag,s=pointSize,edgecolors='none')
     if label:
+    	if pos == 'left':
+    		ha = 'right'
+    	elif pos == 'center' or pos == 'centre':
+    		ha = 'center'
+    	elif pos == 'right':
+    		ha = 'left'
+    	else:
+    		print "wrong position, should be 'left', 'center', or 'right'. Set to 'right'."
+    		pos = 'right'
+    		ha = 'left'
         if fontsize == 0:
             fontsize = MyDriver.fontSize
         else:
             fontsize = fontsize
-        add_label(x,y,'$\ \ $'+label,va='center',ha=ha,fontsize=fontsize)
+        xmin,xmax,ymin,ymax=get_limits(quiet=True)
+        delta_x = (xmax-xmin)*0.03
+        if pos == 'left' and not MyDriver.axisInv[0]:
+        	new_x = x - delta_x
+        elif pos == 'right' or MyDriver.axisInv[0]:
+        	new_x = x + delta_x
+        elif pos == 'center' or pos == 'centre':
+        	new_x = x
+        else:
+        	new_x = x + delta_x
+        add_label(new_x,y,label,va='center',ha=ha,fontsize=fontsize)
+
     MyDriver.colourFlag = colourFlag_save
     MyDriver.pointFlag = pointFlag_save
 
