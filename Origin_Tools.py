@@ -3196,15 +3196,9 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
             MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,MyDriver.Model_list[i].timestep,forced_line=forced_line)
         if MyDriver.Link_ModelCurve:
             if MyDriver.modeplot != 'struc':
-                if len(ColourName) > 5:
-                    print ColourName,':\t',str(i)+' -',MyDriver.Model_list[i].Variables['FileName'][0]
-                else:
-                    print ColourName,':\t\t',str(i)+' -',MyDriver.Model_list[i].Variables['FileName'][0]
+                print '{0: <7s}: {1: 4d} - {2}'.format(ColourName,i,MyDriver.Model_list[i].Variables['FileName'][0])
             else:
-                if len(ColourName) > 5:
-                    print ColourName,':\t',MyDriver.Model_list[i].Variables['FileName'][0],'\t',MyDriver.Model_list[i].Variables['Model'][0]
-                else:
-                    print ColourName,':\t\t',MyDriver.Model_list[i].Variables['FileName'][0],'\t',MyDriver.Model_list[i].Variables['Model'][0]
+                print '{0: <7s}: {1: 4d} - {2} ({3})'.format(ColourName,i,MyDriver.Model_list[i].Variables['FileName'][0],MyDriver.Model_list[i].Variables['Model'][0])
         j += 1
 
     axisInv_save = list(MyDriver.axisInv)
