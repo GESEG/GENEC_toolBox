@@ -872,7 +872,7 @@ class Driver():
 
     def AddFigure(self,size):
         """Defines the current figure"""
-        self.current_Fig = plt.figure(num=None, figsize=size, dpi=80, facecolor='w', edgecolor='k')
+        self.current_Fig = plt.figure(num=None, figsize=size, dpi=80, facecolor='w', edgecolor='k', frameon=True)
 
     def Store_Axes(self,axe):
         """Saves the figure axes"""
