@@ -1630,7 +1630,7 @@ class Struc(Outputs):
         if not (self.Variables['Omega'][0]==0.).all():
             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\Omega_r/\Omega_\mathrm{crit}$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         Lin = np.cumsum(self.Variables['Lang'][0])
         Mr = self.Variables['Mr'][0]
@@ -1642,7 +1642,12 @@ class Struc(Outputs):
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        self.Variables['jKmax'] = [r_msco*Cst.G*Mr*Cst.Msol/Cst.c,\
+        if a_om == 1:
+            self.Variables['jKmax'] = self.Variables['jK']
+        else:
+# Shapiro & Teukolsky, eq. 12.7.18
+            Numerical_Factor = (a_om**2. - 2.*a_om*math.sqrt(r_msco)+r_msco**2.)/math.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*math.sqrt(r_msco**3.))
+            self.Variables['jKmax'] = [Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c,\
             '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
                         /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
@@ -1713,7 +1718,7 @@ class Struc(Outputs):
         self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\epsilon_\mathrm{nucl}+\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\mathrm{eq}\ [\mathrm{km\,s}^{-1}]$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         Lin = np.cumsum(self.Variables['Lang'][0])
         Mr = self.Variables['Mr'][0]
@@ -1725,8 +1730,15 @@ class Struc(Outputs):
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        self.Variables['jKmax'] = [r_msco*Cst.G*Mr*Cst.Msol/Cst.c,\
+        if a_om == 1:
+            self.Variables['jKmax'] = self.Variables['jK']
+        else:
+# Shapiro & Teukolsky, eq. 12.7.18
+            Numerical_Factor = (a_om**2. - 2.*a_om*math.sqrt(r_msco)+r_msco**2.)/math.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*math.sqrt(r_msco**3.))
+            self.Variables['jKmax'] = [Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c,\
             '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
+                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
 
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
                         /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
@@ -5506,7 +5518,7 @@ def shade(x,y,colour='0.80',alpha=0.20,hatch=''):
             print "Problem with the kind of data in shade."
     plt.fill(x,y,color=colour,alpha=alpha,hatch=hatch)
     plt.draw()
-    
+
 def shade_x(x1,x2,colour='0.80',alpha=0.20,hatch=''):
 	"""Shades the zone between x1 and x2 in the actual limits of the window."""
 	xmin,xmax,ymin,ymax=get_limits(quiet=True)
