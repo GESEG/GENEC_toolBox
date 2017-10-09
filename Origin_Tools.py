@@ -1646,7 +1646,7 @@ class Struc(Outputs):
             self.Variables['jKmax'] = self.Variables['jK']
         else:
 # Shapiro & Teukolsky, eq. 12.7.18
-            Numerical_Factor = (a_om**2. - 2.*a_om*math.sqrt(r_msco)+r_msco**2.)/math.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*math.sqrt(r_msco**3.))
+            Numerical_Factor = (a_om**2. - 2.*a_om*np.sqrt(r_msco)+r_msco**2.)/np.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*np.sqrt(r_msco**3.))
             self.Variables['jKmax'] = [Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c,\
             '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
@@ -1734,7 +1734,7 @@ class Struc(Outputs):
             self.Variables['jKmax'] = self.Variables['jK']
         else:
 # Shapiro & Teukolsky, eq. 12.7.18
-            Numerical_Factor = (a_om**2. - 2.*a_om*math.sqrt(r_msco)+r_msco**2.)/math.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*math.sqrt(r_msco**3.))
+            Numerical_Factor = (a_om**2. - 2.*a_om*np.sqrt(r_msco)+r_msco**2.)/np.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*np.sqrt(r_msco**3.))
             self.Variables['jKmax'] = [Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c,\
             '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
