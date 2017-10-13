@@ -63,6 +63,8 @@ import subprocess
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
+rcParams['xtick.direction'] = 'in'
+rcParams['ytick.direction'] = 'in'
 
 class OT_version():
     OT_version = '7.1'
@@ -1642,13 +1644,14 @@ class Struc(Outputs):
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        if a_om == 1:
-            self.Variables['jKmax'] = self.Variables['jK']
-        else:
+        self.Variables['jKmax'] = [self.Variables['jK'][0],\
+                       '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
 # Shapiro & Teukolsky, eq. 12.7.18
-            Numerical_Factor = (a_om**2. - 2.*a_om*np.sqrt(r_msco)+r_msco**2.)/np.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*np.sqrt(r_msco**3.))
-            self.Variables['jKmax'] = [Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c,\
-            '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
+                                                 r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
+                                                 2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
+        self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
                         /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
 
@@ -1730,13 +1733,14 @@ class Struc(Outputs):
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        if a_om == 1:
-            self.Variables['jKmax'] = self.Variables['jK']
-        else:
+        self.Variables['jKmax'] = [self.Variables['jK'][0],\
+                       '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
 # Shapiro & Teukolsky, eq. 12.7.18
-            Numerical_Factor = (a_om**2. - 2.*a_om*np.sqrt(r_msco)+r_msco**2.)/np.sqrt(r_msco**2.*(r_msco-3.)+2*a_om*np.sqrt(r_msco**3.))
-            self.Variables['jKmax'] = [Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c,\
-            '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
+                                                 r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
+                                                 2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
+        self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
         self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
                         /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
 
