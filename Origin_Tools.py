@@ -5671,6 +5671,9 @@ def blabla(string):
 
 def clickcursor(event):
     """Needed by the command cursor()."""
+    global coords
+    coords=[]
+    coords.append((event.xdata,event.ydata))
     print 'x=%f, y=%f'%(event.xdata, event.ydata)
     Points = plt.plot(event.xdata,event.ydata,'ob')
 
@@ -5678,6 +5681,7 @@ def cursor():
     """Retrieves the position of mouseclicks on the plot."""
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickcursor)
     raw_input('Press enter when finished.\n')
+    return coords[-1]
 
 def clickdist(event):
     """Needed by the command dist()."""
