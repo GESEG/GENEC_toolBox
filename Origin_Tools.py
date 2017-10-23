@@ -1391,8 +1391,8 @@ class Model(Outputs):
         self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
         if format not in ['nami']:
             if not all(v==0. for v in self.Variables['Vsurf'][0]):
-                Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
-                self.Variables['VVc'] = [[veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)],'V/V_\mathrm{crit}','rotation']
+                Vcrit = [np.array(min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0]))]
+                self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\mathrm{crit}$','rotation']
                 self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\mathrm{P\,[d]}$','rotation']
             self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\mathrm{esc}\ [\mathrm{km\,s}^{-1}]$','winds']
             CTeff = np.zeros((self.imax))
@@ -3168,7 +3168,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
                 else:
                     if np.nanmax(MyDriver.Model_list[i].Variables[MyDriver.Xvar][0][myMask]) > MyDriver.axisLimits[1]:
                         MyDriver.axisLimits[1] = np.nanmax(MyDriver.Model_list[i].Variables[MyDriver.Xvar][0][myMask])
-        if MyDriver.axisFlag[2] == False:
+        if not MyDriver.axisFlag[2]:
             if j==0 and (not MyDriver.keepplot or MyDriver.multiplot):
                 MyDriver.axisLimits[2] = np.nanmin(MyDriver.Model_list[i].Variables[y][0][myMask])
                 if MyDriver.ilog[1]:
