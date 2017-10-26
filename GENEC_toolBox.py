@@ -687,26 +687,33 @@ class Driver():
             with open(os.path.expanduser('~/.GENEC_toolBox.ini')):
                 pass
         except IOError:
-            print('Config file not found: creation of ~/.GENEC_toolBox.ini')
-            Conf_File = open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w')
-            Conf_File.write('[Paths]\n')
-            Data_Path=raw_input('Enter the path to the data directory (for default, leave blank):')
-            if Data_Path == '':
-                Mod_File = __file__
-                iMod_File = Mod_File.rfind('/')
-                if iMod_File == -1:
-                    Data_Path = os.getcwd()+'/data/'
-                else:
-                    Data_Path = __file__[:iMod_File]+'/data/'
-            Conf_File.write('DataPath: '+Data_Path+'\n')
-            Fig_Path = raw_input('Enter the path where you want the figure to be created (for default, leave blank):')
-            if Fig_Path == '':
-                Fig_Path = './'
-            Conf_File.write('FigPath: '+Fig_Path+'\n')
-            print 'Configuration file created at: ~/.GENEC_toolBox.ini'
-            print 'Data file: ',Data_Path
-            print 'Figures directory: ',Fig_Path
-            Conf_File.seek(0)
+            try:
+                with open(os.path.expanduser('~/.Origin_Tools.ini')) as old_config:
+                    with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w') as Conf_File:
+                        for line in old_config:
+                            Conf_File.write(line)
+                        Conf_File.seek(0)
+            except IOError:
+                print('Config file not found: creation of ~/.GENEC_toolBox.ini')
+                Conf_File = open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w')
+                Conf_File.write('[Paths]\n')
+                Data_Path=raw_input('Enter the path to the data directory (for default, leave blank):')
+                if Data_Path == '':
+                    Mod_File = __file__
+                    iMod_File = Mod_File.rfind('/')
+                    if iMod_File == -1:
+                        Data_Path = os.getcwd()+'/data/'
+                    else:
+                        Data_Path = __file__[:iMod_File]+'/data/'
+                Conf_File.write('DataPath: '+Data_Path+'\n')
+                Fig_Path = raw_input('Enter the path where you want the figure to be created (for default, leave blank):')
+                if Fig_Path == '':
+                    Fig_Path = './'
+                Conf_File.write('FigPath: '+Fig_Path+'\n')
+                print 'Configuration file created at: ~/.GENEC_toolBox.ini'
+                print 'Data file: ',Data_Path
+                print 'Figures directory: ',Fig_Path
+                Conf_File.seek(0)
         finally:
             self.Config.read(os.path.expanduser('~/.GENEC_toolBox.ini'))
 
@@ -1321,7 +1328,7 @@ class Model(Outputs):
         self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
         if format not in ['nami']:
             if not all(v==0. for v in self.Variables['Vsurf'][0]):
-                Vcrit = [np.array(min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0]))]
+                Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
                 self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\mathrm{crit}$','rotation']
                 self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\mathrm{P\,[d]}$','rotation']
             self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\mathrm{esc}\ [\mathrm{km\,s}^{-1}]$','winds']
