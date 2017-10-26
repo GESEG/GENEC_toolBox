@@ -2733,7 +2733,7 @@ def VarEvol(num=''):
     Category_list.remove('reading')
     for Category in sorted(Category_list):
         print '\n'+Category.upper()+':'
-        for key in MyDriver.Model_list_evol[num].Variables.keys():
+        for key in sorted(MyDriver.Model_list_evol[num].Variables.keys(), key=lambda s: s.lower()):
             if MyDriver.Model_list_evol[num].Variables[key][2] == Category:
                 if len(key) > 6:
                     print '\t'+key+':\t'+MyDriver.Model_list_evol[num].Variables[key][1]
@@ -2751,7 +2751,7 @@ def VarStruc(num=''):
             Category_list.append(MyDriver.Model_list_struc[num].Variables.values()[i][2])
     for Category in sorted(Category_list):
         print '\n'+Category.upper()+':'
-        for key in MyDriver.Model_list_struc[num].Variables.keys():
+        for key in sorted(MyDriver.Model_list_struc[num].Variables.keys(), key=lambda s: s.lower()):
             if MyDriver.Model_list_struc[num].Variables[key][2] == Category:
                 if len(key) > 6:
                     print '\t'+key+':\t'+MyDriver.Model_list_struc[num].Variables[key][1]
@@ -2770,7 +2770,7 @@ def VarCluster(num=''):
     Category_list.remove('reading')
     for Category in sorted(Category_list):
         print '\n'+Category.upper()+':'
-        for key in MyDriver.Model_list_cluster[num].Variables.keys():
+        for key in sorted(MyDriver.Model_list_cluster[num].Variables.keys(), key=lambda s: s.lower()):
             if MyDriver.Model_list_cluster[num].Variables[key][2] == Category:
                 if len(key) > 6:
                     print '\t'+key+':\t'+MyDriver.Model_list_cluster[num].Variables[key][1]
@@ -2884,16 +2884,23 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
             New_Axes = MyDriver.Previous_Axe
 
     Star_list=MyDriver.list_keyOK(y,MyDriver.SelectedModels)
-    Star_list=MyDriver.list_keyOK(MyDriver.Xvar,Star_list)
     Star_list=MyDriver.Zero_LengthOK(y,Star_list)
+    if len(Star_list) != len(MyDriver.SelectedModels):
+        bad_var = y
+
+    Star_list=MyDriver.list_keyOK(MyDriver.Xvar,Star_list)
     Star_list=MyDriver.Zero_LengthOK(MyDriver.Xvar,Star_list)
+    if len(Star_list) != len(MyDriver.SelectedModels):
+        bad_var = MyDriver.Xvar
 
     if len(Star_list) == 0:
-        print 'No star knows variable',y
+        print 'No star knows variable',bad_var
+        print 'Available variables are:'
+        print sorted(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys(), key=lambda s: s.lower())
         return
     else:
         if len(Star_list) != len(MyDriver.SelectedModels):
-            print 'The variable',y,'does not exist for model(s)',[x for x in MyDriver.SelectedModels if x not in Star_list],'. They will not appear on the plot.'
+            print 'The variable',bad_var,'does not exist for model(s)',[x for x in MyDriver.SelectedModels if x not in Star_list],'. They will not appear on the plot.'
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
