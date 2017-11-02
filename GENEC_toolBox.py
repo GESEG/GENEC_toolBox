@@ -697,25 +697,39 @@ class Driver():
                 print('Config file not found: creation of ~/.GENEC_toolBox.ini')
                 Conf_File = open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w')
                 Conf_File.write('[Paths]\n')
-                Data_Path=raw_input('Enter the path to the data directory (for default, leave blank):')
+                source_dir = os.path.dirname(os.path.abspath(__file__))
+                Conf_File.write('ProgPath: '+source_dir+'/\n')
+                Data_Path=raw_input('Enter the path to the data directory (for default, leave blank): ')
                 if Data_Path == '':
-                    Mod_File = __file__
-                    iMod_File = Mod_File.rfind('/')
-                    if iMod_File == -1:
-                        Data_Path = os.getcwd()+'/data/'
-                    else:
-                        Data_Path = __file__[:iMod_File]+'/data/'
+                    Data_Path = source_dir+'/data/'
+                if Data_Path[0] == '~':
+                    Data_Path = os.path.expanduser(Data_Path)
+                if Data_Path[-1] != '/':
+                    Data_Path = Data_Path+'/'
                 Conf_File.write('DataPath: '+Data_Path+'\n')
-                Fig_Path = raw_input('Enter the path where you want the figure to be created (for default, leave blank):')
+                Fig_Path = raw_input('Enter the path where you want the figure to be created (for default, leave blank): ')
                 if Fig_Path == '':
                     Fig_Path = './'
+                if Fig_Path[0] == '~':
+                    Fig_Path = os.path.expanduser(Fig_Path)
+                if Fig_Path[-1] != '/':
+                    Fig_Path = Fig_Path+'/'
                 Conf_File.write('FigPath: '+Fig_Path+'\n')
-                print 'Configuration file created at: ~/.GENEC_toolBox.ini'
-                print 'Data file: ',Data_Path
-                print 'Figures directory: ',Fig_Path
                 Conf_File.seek(0)
+                with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'r') as config_file:
+                    config_file.readline()
+                    print 'Configuration file created at: ~/.GENEC_toolBox.ini'
+                    settings = config_file.readlines()
+                    for line in settings:
+                        opt,key = line.split(':')
+                        print '   {0}: {1}'.format(opt,key[:key.find('\n')])
         finally:
             self.Config.read(os.path.expanduser('~/.GENEC_toolBox.ini'))
+            try:
+                program_path=self.Config.get('Paths','ProgPath')
+            except ConfigParser.NoOptionError:
+                with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'a') as Conf_File:
+                    Conf_File.write('ProgPath: '+os.path.dirname(os.path.abspath(__file__))+'/\n')
 
         self.Model_list = {}
         self.Model_list_evol = {}
