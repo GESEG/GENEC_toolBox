@@ -560,7 +560,7 @@ class readList():
 class ShapeInterpolation():
     """Data and methods needed to determine the surface of a rotating star."""
     def __init__(self):
-        self.FileName = MyDriver.Config.get('Paths','DataPath')+'Surface_Omega.dat'
+        self.FileName = os.path.join(MyDriver.Config.get('Paths','DataPath'),'Surface_Omega.dat')
         self.Vector_Omega_Omega_crit = []
         self.Vector_Surface = []
         self.interpolation = interpolate.interp1d([0,0],[0,0])
@@ -594,7 +594,7 @@ class ColourInterpolation():
     """Interpolation in colours and bolometric correction from [Fe/H], g, and Teff.
        Values from Worthey & Lee, ApJS 193 1 (2011)"""
     def __init__(self):
-        self.FileName = MyDriver.Config.get('Paths','DataPath')+'DataColours.dat'
+        self.FileName = os.path.join(MyDriver.Config.get('Paths','DataPath'),'DataColours.dat')
         self.FeH_ind = 7
         self.g_ind = 13
         self.Teff_ind = 75
@@ -683,6 +683,7 @@ class Driver():
        Uses a config file that is created on the fly if absent."""
     def __init__(self):
         self.Config = ConfigParser.ConfigParser()
+        self.Config.optionxform = str
         try:
             with open(os.path.expanduser('~/.GENEC_toolBox.ini')):
                 pass
@@ -692,37 +693,29 @@ class Driver():
                     with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w') as Conf_File:
                         for line in old_config:
                             Conf_File.write(line)
-                        Conf_File.seek(0)
             except IOError:
                 print('Config file not found: creation of ~/.GENEC_toolBox.ini')
-                Conf_File = open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w')
-                Conf_File.write('[Paths]\n')
-                source_dir = os.path.dirname(os.path.abspath(__file__))
-                Conf_File.write('ProgPath: '+source_dir+'/\n')
-                Data_Path=raw_input('Enter the path to the data directory (for default, leave blank): ')
-                if Data_Path == '':
-                    Data_Path = source_dir+'/data/'
-                if Data_Path[0] == '~':
-                    Data_Path = os.path.expanduser(Data_Path)
-                if Data_Path[-1] != '/':
-                    Data_Path = Data_Path+'/'
-                Conf_File.write('DataPath: '+Data_Path+'\n')
-                Fig_Path = raw_input('Enter the path where you want the figure to be created (for default, leave blank): ')
-                if Fig_Path == '':
-                    Fig_Path = './'
-                if Fig_Path[0] == '~':
-                    Fig_Path = os.path.expanduser(Fig_Path)
-                if Fig_Path[-1] != '/':
-                    Fig_Path = Fig_Path+'/'
-                Conf_File.write('FigPath: '+Fig_Path+'\n')
-                Conf_File.seek(0)
-                with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'r') as config_file:
-                    config_file.readline()
+                with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'w') as Conf_File:
+                    self.Config.add_section('Paths')
+                    source_dir = os.path.dirname(os.path.abspath(__file__))
+                    self.Config.set('Paths','ProgPath',source_dir+os.path.sep)
+                    Data_Path=os.path.expanduser(raw_input('Enter the path to the data directory (for default, leave blank): '))
+                    if Data_Path == '':
+                        Data_Path = os .path.join(source_dir,'data/')
+                        print 'Data_Path:',Data_Path
+                    elif not Data_Path.endswith(os.path.sep):
+                        Data_Path += os.path.sep
+                    self.Config.set('Paths','DataPath',Data_Path)
+                    Fig_Path = os.path.expanduser(raw_input('Enter the path where you want the figure to be created (for default, leave blank): '))
+                    if Fig_Path == '':
+                        Fig_Path = './'
+                    elif not Fig_Path.endswith(os.path.sep):
+                        Fig_Path += os.path.sep
+                    self.Config.set('Paths','FigPath',Fig_Path)
+                    self.Config.write(Conf_File)
                     print 'Configuration file created at: ~/.GENEC_toolBox.ini'
-                    settings = config_file.readlines()
-                    for line in settings:
-                        opt,key = line.split(':')
-                        print '   {0}: {1}'.format(opt,key[:key.find('\n')])
+                    for (key,opt) in self.Config.items('Paths'):
+                        print '   {0}: {1}'.format(key,opt)
         finally:
             self.Config.read(os.path.expanduser('~/.GENEC_toolBox.ini'))
             try:
