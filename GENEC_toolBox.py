@@ -1229,6 +1229,8 @@ class Model(Outputs):
         if BigArray.shape[1] != col_num:
             raise FormatError(1,'column number does not match, make sure you entered the correct format for file',FileName)
             return
+        if num_fin == -1:
+            num_fin = BigArray.shape[0]
 
         for i,myVar in zip([varList[1] for varList in Evol_varList],[varList[0] for varList in Evol_varList]):
             self.Variables[myVar][0] = BigArray[:num_fin,i]
