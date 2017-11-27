@@ -1210,7 +1210,7 @@ class Model(Outputs):
             Evol_catList = readList.Evol_formats[format]['catList'] + MyDriver.added_columns['catList']
             col_num = readList.Evol_formats[format]['column_number'] + len(MyDriver.added_columns['varList'])
         header = readList.Evol_formats[format]['header']
-        num_deb = num_deb + readList.Evol_formats[format]['header']
+        num_deb = num_deb + header
 
         for MyVar,colNum,MyUnit,MyType in zip([varList[0] for varList in Evol_varList],[varList[1] for varList in Evol_varList],Evol_unitsList,Evol_catList):
             self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
@@ -1394,7 +1394,7 @@ class Model(Outputs):
         if wa:
             WAfile = FileName.replace('.wg','.wa')
             if WAfile != FileName:
-                self.read_wa(WAfile)
+                self.read_wa(WAfile,num_deb-header,num_fin)
             else:
                 print 'The wa option is valid only when charging a complete wg file.'
 
@@ -1410,7 +1410,7 @@ class Model(Outputs):
         except ValueError:
             return '0.0'
 
-    def read_wa(self,FileName):
+    def read_wa(self,FileName,num_deb,num_fin):
         """Reads the wa file. Called by the option wa=True in loadE()"""
         try:
             wafile = open(FileName,'r')
@@ -1429,12 +1429,12 @@ class Model(Outputs):
                 return
 
         wafile = open(FileName,'r')
-        BigArray = np.genfromtxt(wafile,comments=None)
+        BigArray = np.genfromtxt(wafile,skip_header=num_deb,comments=None)
         el_num = (BigArray.shape[1]-3)/2
         print el_num,' isotopes read in .wa file'
         for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
-            self.Variables[str(el)+str(A)+'s'] = [BigArray[:,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
-            self.Variables[str(el)+str(A)+'c'] = [BigArray[:,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
+            self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
+            self.Variables[str(el)+str(A)+'c'] = [BigArray[:num_fin,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
 
     def read_BurnFile(self,MyBurnFile):
         """Reads the .burn file associated to an evolution file.
