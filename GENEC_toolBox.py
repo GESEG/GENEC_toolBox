@@ -1519,16 +1519,20 @@ class Struc(Outputs):
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
         self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
         self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
-        H_P = self.Variables['Hp'][0]
-        if H_P[0] == 0.:
-            H_P[0] = H_P[1]
-        if H_P[-1] == 0.:
-            H_P[-1] = H_P[-2]
+        if all(g==0. for g in self.Variables['g'][0]):
+            self.Variables['g'][0] = Cst.G*self.Variables['Mr'][0]*Cst.Msol/self.Variables['r_cm'][0]**2.
         g_r = self.Variables['g'][0]
         if g_r[0] == 0.:
             g_r[0] = g_r[1]
         if g_r[-1] == 0.:
             g_r[-1] = g_r[-2]
+        if all(hp==0 for hp in self.Variables['Hp'][0]):
+            self.Variables['Hp'][0] = self.Variables['P'][0] / (self.Variables['rho'][0]*self.Variables['g'][0])
+        H_P = self.Variables['Hp'][0]
+        if H_P[0] == 0.:
+            H_P[0] = H_P[1]
+        if H_P[-1] == 0.:
+            H_P[-1] = H_P[-2]
         self.Variables['N2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0] \
                             -self.Variables['Nabrad'][0]+self.Variables['Nabmu'][0]/self.Variables['delta'][0]), \
                             '$N^2\ [\mathrm{s}^{-1}]$','structure']
@@ -2892,14 +2896,16 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         else:
             New_Axes = MyDriver.Previous_Axe
 
+    bad_y = False
     Star_list=MyDriver.list_keyOK(y,MyDriver.SelectedModels)
     Star_list=MyDriver.Zero_LengthOK(y,Star_list)
     if len(Star_list) != len(MyDriver.SelectedModels):
         bad_var = y
+        bad_y = True
 
     Star_list=MyDriver.list_keyOK(MyDriver.Xvar,Star_list)
     Star_list=MyDriver.Zero_LengthOK(MyDriver.Xvar,Star_list)
-    if len(Star_list) != len(MyDriver.SelectedModels):
+    if len(Star_list) != len(MyDriver.SelectedModels) and not bad_y:
         bad_var = MyDriver.Xvar
 
     if len(Star_list) == 0:
