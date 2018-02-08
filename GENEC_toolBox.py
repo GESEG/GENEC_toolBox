@@ -1459,9 +1459,14 @@ class Model(Outputs):
                 epsH = 0.
                 epsHe = 0.
                 epsC = 0.
-                return lineB,ageB,massB,epsH,epsHe,epsC
+                epsNe = 0.
+                epsO = 0.
+                epsSi = 0.
+                return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
 
         BurnFile = open(MyBurnFile,'r')
+        lastline = os.popen('tail -1 '+MyBurnFile).readline().replace('\n','')
+        adv_burn = len(lastline.split()) > 12
         BigArray = np.genfromtxt(MyBurnFile,comments=None)
         lineB = BigArray[:,0]
         ageB = BigArray[:,1]
@@ -1469,7 +1474,15 @@ class Model(Outputs):
         epsH = np.array((BigArray[:,4],BigArray[:,3],BigArray[:,5]))
         epsHe = np.array((BigArray[:,7],BigArray[:,6],BigArray[:,8]))
         epsC = np.array((BigArray[:,10],BigArray[:,9],BigArray[:,11]))
-        return lineB,ageB,massB,epsH,epsHe,epsC
+        if adv_burn:
+            epsNe = np.array((BigArray[:,13],BigArray[:,12],BigArray[:,14]))
+            epsO = np.array((BigArray[:,16],BigArray[:,15],BigArray[:,17]))
+            epsSi = np.array((BigArray[:,19],BigArray[:,18],BigArray[:,20]))
+        else:
+            epsNe = np.zeros((3,len(lineB)))
+            epsO = np.zeros((3,len(lineB)))
+            epsSi = np.zeros((3,len(lineB)))
+        return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
 
 class Struc(Outputs):
     """Contains all the utilities to read and process the structure files.
@@ -3881,7 +3894,8 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
             Evol_file = MyDriver.Model_list[num_star].Variables['FileName'][0]
             i_ext = Evol_file.rfind('.')
             rootName = Evol_file[:i_ext]
-            lineB,ageB,massB,epsH,epsHe,epsC = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
+            lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
+            marine = (0,0,0.4)
             if not isinstance(lineB,float):
                 if MyDriver.Xvar == 't6':
                     ageBplot = ageB/1.e6
@@ -3892,15 +3906,28 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
                     mask = ageadvB<=0.
                     ageadvB[mask] = 1.e-2
                     ageBplot = np.log10(ageadvB)
-                plt.plot(ageBplot,epsH[0],'b-')
-                plt.plot(ageBplot,epsH[1],'b--')
-                plt.plot(ageBplot,epsH[2],'b--')
+                plt.plot(ageBplot,epsH[0],c=marine,ls='-')
+                plt.plot(ageBplot,epsH[1],ls='--',c=marine)
+                plt.plot(ageBplot,epsH[2],ls='--',c=marine)
                 plt.plot(ageBplot,epsHe[0],'g-')
                 plt.plot(ageBplot,epsHe[1],'g--')
                 plt.plot(ageBplot,epsHe[2],'g--')
-                plt.plot(ageBplot,epsC[0],'r-')
-                plt.plot(ageBplot,epsC[1],'r--')
-                plt.plot(ageBplot,epsC[2],'r--')
+                if not all(epsC[1]==0.):
+                    plt.plot(ageBplot,epsC[0],'r-')
+                    plt.plot(ageBplot,epsC[1],'r--')
+                    plt.plot(ageBplot,epsC[2],'r--')
+                if not all(epsNe[1]==0.):
+                    plt.plot(ageBplot,epsNe[0],'c-')
+                    plt.plot(ageBplot,epsNe[1],'c--')
+                    plt.plot(ageBplot,epsNe[2],'c--')
+                if not all(epsO[1]==0.):
+                    plt.plot(ageBplot,epsO[0],'b-')
+                    plt.plot(ageBplot,epsO[1],'b--')
+                    plt.plot(ageBplot,epsO[2],'b--')
+                if not all(epsSi[1]==0.):
+                    plt.plot(ageBplot,epsSi[0],c='orange',ls='-')
+                    plt.plot(ageBplot,epsSi[1],c='orange',ls='--')
+                    plt.plot(ageBplot,epsSi[2],c='orange',ls='--')
 
         KippenSub.tick_params(axis='x', labelsize = MyDriver.fontSize)
         KippenSub.tick_params(axis='y', labelsize = MyDriver.fontSize)
