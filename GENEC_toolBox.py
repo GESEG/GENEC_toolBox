@@ -1210,7 +1210,7 @@ class Model(Outputs):
             Evol_catList = readList.Evol_formats[format]['catList'] + MyDriver.added_columns['catList']
             col_num = readList.Evol_formats[format]['column_number'] + len(MyDriver.added_columns['varList'])
         header = readList.Evol_formats[format]['header']
-        num_deb = num_deb + readList.Evol_formats[format]['header']
+        num_deb = num_deb + header
 
         for MyVar,colNum,MyUnit,MyType in zip([varList[0] for varList in Evol_varList],[varList[1] for varList in Evol_varList],Evol_unitsList,Evol_catList):
             self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
@@ -1394,7 +1394,7 @@ class Model(Outputs):
         if wa:
             WAfile = FileName.replace('.wg','.wa')
             if WAfile != FileName:
-                self.read_wa(WAfile)
+                self.read_wa(WAfile,num_deb-header,num_fin)
             else:
                 print 'The wa option is valid only when charging a complete wg file.'
 
@@ -1410,7 +1410,7 @@ class Model(Outputs):
         except ValueError:
             return '0.0'
 
-    def read_wa(self,FileName):
+    def read_wa(self,FileName,num_deb,num_fin):
         """Reads the wa file. Called by the option wa=True in loadE()"""
         try:
             wafile = open(FileName,'r')
@@ -1429,12 +1429,12 @@ class Model(Outputs):
                 return
 
         wafile = open(FileName,'r')
-        BigArray = np.genfromtxt(wafile,comments=None)
+        BigArray = np.genfromtxt(wafile,skip_header=num_deb,comments=None)
         el_num = (BigArray.shape[1]-3)/2
         print el_num,' isotopes read in .wa file'
         for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
-            self.Variables[str(el)+str(A)+'s'] = [BigArray[:,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
-            self.Variables[str(el)+str(A)+'c'] = [BigArray[:,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
+            self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
+            self.Variables[str(el)+str(A)+'c'] = [BigArray[:num_fin,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
 
     def read_BurnFile(self,MyBurnFile):
         """Reads the .burn file associated to an evolution file.
@@ -1519,16 +1519,20 @@ class Struc(Outputs):
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
         self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
         self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
-        H_P = self.Variables['Hp'][0]
-        if H_P[0] == 0.:
-            H_P[0] = H_P[1]
-        if H_P[-1] == 0.:
-            H_P[-1] = H_P[-2]
+        if all(g==0. for g in self.Variables['g'][0]):
+            self.Variables['g'][0] = Cst.G*self.Variables['Mr'][0]*Cst.Msol/self.Variables['r_cm'][0]**2.
         g_r = self.Variables['g'][0]
         if g_r[0] == 0.:
             g_r[0] = g_r[1]
         if g_r[-1] == 0.:
             g_r[-1] = g_r[-2]
+        if all(hp==0 for hp in self.Variables['Hp'][0]):
+            self.Variables['Hp'][0] = self.Variables['P'][0] / (self.Variables['rho'][0]*self.Variables['g'][0])
+        H_P = self.Variables['Hp'][0]
+        if H_P[0] == 0.:
+            H_P[0] = H_P[1]
+        if H_P[-1] == 0.:
+            H_P[-1] = H_P[-2]
         self.Variables['N2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0] \
                             -self.Variables['Nabrad'][0]+self.Variables['Nabmu'][0]/self.Variables['delta'][0]), \
                             '$N^2\ [\mathrm{s}^{-1}]$','structure']
@@ -1773,17 +1777,18 @@ class Struc(Outputs):
             nfoot = fileLength-self.n_shell-num_deb-header
         elif format in ['full','full_old']:
             self.num_model=MyFile.readline().split()[3]
-            print 'Model number: ',self.num_model
             self.age=MyFile.readline().split()[3]
-            print 'Time: ',self.age
             self.mass=MyFile.readline().split()[3]
-            print 'Mass: ',self.mass
             self.radius=MyFile.readline().split()[3]
-            print 'R: ',self.radius
             self.Ltot=MyFile.readline().split()[2]
-            print 'L: ',self.Ltot
             self.Teff=MyFile.readline().split()[2]
-            print 'Teff: ',self.Teff
+            if not quiet:
+                print 'Model number: ',self.num_model
+                print 'Time: ',self.age
+                print 'Mass: ',self.mass
+                print 'R: ',self.radius
+                print 'L: ',self.Ltot
+                print 'Teff: ',self.Teff
             nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
 
         MyFile.seek(0)
@@ -1815,7 +1820,6 @@ class Struc(Outputs):
 
         StarName = os.path.splitext(FileName)[0][FileName.rfind('/')+1:]
         if format in ['full','full_old']:
-            self.num_model = int(StarName[StarName.rfind('_')+1:])
             StarName = StarName[:StarName.find('_')]
         self.Variables['FileName'] = [FileName,StarName,'model']
         self.Variables['format'] = [format,format,'model']
@@ -1918,7 +1922,8 @@ class Cluster(Outputs):
             print 'Loading file ',FileName,'...'
         lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
         file_cols = len(lastline.split())
-        print 'number of columns:',file_cols
+        if not quiet:
+            print 'number of columns:',file_cols
         if format == '':
             if 'WARNING' in os.popen('head -1 '+FileName).readline():
                 for fmt in readList.Cluster_fmt[0:2]:
@@ -2568,7 +2573,8 @@ def loadCFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         print 'No files matching your request.'
         return
     for file in [i for i in Selected_files if (os.path.splitext(i)[1] == '.dat' and os.path.splitext(i)[0][i.rfind('/')+1:i.rfind('/')+4] in ['Clu','Iso'])]:
-        print 'loading',file
+        if not quiet:
+            print 'loading',file
         try:
             loadC(file,index,num_deb,format=format,forced=forced,quiet=quiet)
             if not quiet:
@@ -2892,14 +2898,16 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         else:
             New_Axes = MyDriver.Previous_Axe
 
+    bad_y = False
     Star_list=MyDriver.list_keyOK(y,MyDriver.SelectedModels)
     Star_list=MyDriver.Zero_LengthOK(y,Star_list)
     if len(Star_list) != len(MyDriver.SelectedModels):
         bad_var = y
+        bad_y = True
 
     Star_list=MyDriver.list_keyOK(MyDriver.Xvar,Star_list)
     Star_list=MyDriver.Zero_LengthOK(MyDriver.Xvar,Star_list)
-    if len(Star_list) != len(MyDriver.SelectedModels):
+    if len(Star_list) != len(MyDriver.SelectedModels) and not bad_y:
         bad_var = MyDriver.Xvar
 
     if len(Star_list) == 0:
