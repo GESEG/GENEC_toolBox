@@ -1934,7 +1934,7 @@ class Cluster(Outputs):
         if not quiet:
             print 'Loading file ',FileName,'...'
         lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
-        fileLength = file_len(FileName)
+        fileLength = file_len(FileName)+1
         file_cols = len(lastline.split())
         if not quiet:
             print 'number of columns:',file_cols
@@ -1951,10 +1951,8 @@ class Cluster(Outputs):
                         break
         if not quiet:
             print 'format identified=',format
-        if num_fin != -1:
-            nfoot = fileLength-num_fin
-        else:
-            nfoot = 0
+        if num_fin == -1:
+            num_fin = fileLength
 
         Cluster_varList = readList.Cluster_formats[format]['varList'] + MyDriver.added_columns['varList']
         Cluster_unitsList = readList.Cluster_formats[format]['unitsList'] + MyDriver.added_columns['unitsList']
@@ -1965,7 +1963,7 @@ class Cluster(Outputs):
         for MyVar,MyUnit,MyType in zip([varList[0] for varList in Cluster_varList],Cluster_unitsList,Cluster_catList):
            self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
 
-        BigArray = np.genfromtxt(FileName,skip_header=num_deb,skip_footer=nfoot)
+        BigArray = np.genfromtxt(FileName,skip_header=num_deb,max_rows=num_fin-num_deb-1)
 
         if random != 0:
             ind = np.random.randint(0,BigArray.shape[0]-1,random)
@@ -2405,7 +2403,6 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
           format ('cluster', 'cluster_old', 'isochr', 'isochr_old'. By default: auto-detection)
           forced (False by default, True to avoid the checking of the star number)
           quiet (False by default, True to avoid all the babbling)."""
-    MyModel = Cluster()
     Checked = False
     multi_iso = False
     if MyDriver.modeplot != 'cluster':
@@ -2417,18 +2414,20 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
         search_line = 'Isochrone for log(time) = '
         iso_time_dic = {}
         i=0
-        for MyLine in MyFile:
-            i += 1
+        for i,MyLine in enumerate(MyFile):
             if MyLine[0:len(search_line)] == search_line:
                 iso_time_dic[float(MyLine.split('=')[1])] = i-1
         if iso_time_dic:
             multi_iso = True
         iso_times = sorted(iso_time_dic.keys())
-        print 'isochrone file with ages:',iso_times
+        if not quiet:
+            print 'isochrone file with ages:',iso_times
         iso_beg = [iso_time_dic[t] for t in sorted(iso_time_dic.keys())]
-        iso_end = [iso_beg[i]-1 for i in range(1,len(iso_beg))]
+        iso_end = [iso_beg[i]+1 for i in range(1,len(iso_beg))]
         iso_end.append(-1)
+        print 'iso_beg,iso_end:',iso_beg,iso_end
     if not multi_iso:
+        MyModel = Cluster()
         if not forced:
             Checked, num_star = Driver.checknumber(MyDriver,num_star)
             if Checked or forced:
@@ -2442,13 +2441,16 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                 except IOError as IOerr:
                     print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
     else:
-        for (i,beg),end in zip(enumerate(iso_beg),iso_end):
+        for (i,beg),end,time in zip(enumerate(iso_beg),iso_end,iso_times):
+            MyModel = Cluster()
             if not forced:
                 Checked, mynum_star = Driver.checknumber(MyDriver,num_star+i)
             else:
                 mynum_star = num_star+i
             if Checked or forced:
                 try:
+                    if not quiet:
+                        print '***** loading isochrone at age ',time,' *****'
                     MyModel.read(FileName,beg,end,format=format,quiet=quiet, random=random)
                     MyDriver.store_model(MyModel,mynum_star)
                     if not mynum_star in MyDriver.SelectedModels:
