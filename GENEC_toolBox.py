@@ -1927,13 +1927,14 @@ class Cluster(Outputs):
 
         return switcher.get(fmt,'Unknown format')
 
-    def read(self,FileName,num_deb,format,quiet,random):
+    def read(self,FileName,num_deb,num_fin,format,quiet,random):
         if not os.path.isfile(FileName):
             raise IOError(1,'File does not exist, check name and path',FileName)
             return
         if not quiet:
             print 'Loading file ',FileName,'...'
         lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
+        fileLength = file_len(FileName)
         file_cols = len(lastline.split())
         if not quiet:
             print 'number of columns:',file_cols
@@ -1950,17 +1951,21 @@ class Cluster(Outputs):
                         break
         if not quiet:
             print 'format identified=',format
+        if num_fin != -1:
+            nfoot = fileLength-num_fin
+        else:
+            nfoot = 0
 
         Cluster_varList = readList.Cluster_formats[format]['varList'] + MyDriver.added_columns['varList']
         Cluster_unitsList = readList.Cluster_formats[format]['unitsList'] + MyDriver.added_columns['unitsList']
         Cluster_catList = readList.Cluster_formats[format]['catList'] + MyDriver.added_columns['catList']
         header = readList.Cluster_formats[format]['header']
-        num_deb = num_deb + readList.Cluster_formats[format]['header']
+        num_deb = num_deb + header
 
         for MyVar,MyUnit,MyType in zip([varList[0] for varList in Cluster_varList],Cluster_unitsList,Cluster_catList):
            self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
 
-        BigArray = np.loadtxt(FileName,skiprows=num_deb)
+        BigArray = np.genfromtxt(FileName,skip_header=num_deb,skip_footer=nfoot)
 
         if random != 0:
             ind = np.random.randint(0,BigArray.shape[0]-1,random)
@@ -2392,7 +2397,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
         os.system(CommandZip)
     return len(ToReadModels)
 
-def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False,random=0):
+def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=False,random=0):
     """Loads a new cluster/isochrone file in the database.
        Usage: loadC(Filename,num_star[,num_deb,format='fmt',forced=True])
        Optional argument is:
@@ -2402,22 +2407,56 @@ def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False,rando
           quiet (False by default, True to avoid all the babbling)."""
     MyModel = Cluster()
     Checked = False
+    multi_iso = False
     if MyDriver.modeplot != 'cluster':
         if not quiet:
             print 'Switch to cluster mode.'
         switch('cluster')
-    if not forced:
-        Checked, num_star = Driver.checknumber(MyDriver,num_star)
-    if Checked or forced:
-        try:
-            MyModel.read(FileName,num_deb,format=format,quiet=quiet, random=random)
-            MyDriver.store_model(MyModel,num_star)
-            if not num_star in MyDriver.SelectedModels:
-                MyDriver.SelectedModels.append(num_star)
-            if not num_star in MyDriver.SelectedModels_cluster:
-                MyDriver.SelectedModels_cluster.append(num_star)
-        except IOError as IOerr:
-            print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+    if num_fin == -1:
+        MyFile = open(FileName)
+        search_line = 'Isochrone for log(time) = '
+        iso_time_dic = {}
+        i=0
+        for MyLine in MyFile:
+            i += 1
+            if MyLine[0:len(search_line)] == search_line:
+                iso_time_dic[float(MyLine.split('=')[1])] = i-1
+        if iso_time_dic:
+            multi_iso = True
+        iso_times = sorted(iso_time_dic.keys())
+        print 'isochrone file with ages:',iso_times
+        iso_beg = [iso_time_dic[t] for t in sorted(iso_time_dic.keys())]
+        iso_end = [iso_beg[i]-1 for i in range(1,len(iso_beg))]
+        iso_end.append(-1)
+    if not multi_iso:
+        if not forced:
+            Checked, num_star = Driver.checknumber(MyDriver,num_star)
+            if Checked or forced:
+                try:
+                    MyModel.read(FileName,num_deb,num_fin,format=format,quiet=quiet, random=random)
+                    MyDriver.store_model(MyModel,num_star)
+                    if not num_star in MyDriver.SelectedModels:
+                        MyDriver.SelectedModels.append(num_star)
+                        if not num_star in MyDriver.SelectedModels_cluster:
+                            MyDriver.SelectedModels_cluster.append(num_star)
+                except IOError as IOerr:
+                    print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+    else:
+        for (i,beg),end in zip(enumerate(iso_beg),iso_end):
+            if not forced:
+                Checked, mynum_star = Driver.checknumber(MyDriver,num_star+i)
+            else:
+                mynum_star = num_star+i
+            if Checked or forced:
+                try:
+                    MyModel.read(FileName,beg,end,format=format,quiet=quiet, random=random)
+                    MyDriver.store_model(MyModel,mynum_star)
+                    if not mynum_star in MyDriver.SelectedModels:
+                        MyDriver.SelectedModels.append(mynum_star)
+                        if not mynum_star in MyDriver.SelectedModels_cluster:
+                            MyDriver.SelectedModels_cluster.append(mynum_star)
+                except IOError as IOerr:
+                    print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
 
 def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False):
     """ Loads a list of models from a file.
