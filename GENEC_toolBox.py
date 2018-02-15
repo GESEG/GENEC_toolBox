@@ -107,9 +107,9 @@ class Rendering():
        List of variables for which the axis needs to be inverted by default:
           'ageadv', 'H1c', 'He4c', 'M_V', 'Teff', 'Teffcorr'."""
     Colours_list = {}
-    Colours_list['contrast'] = [[(0,0,0),(1,0,0),(0,0.8,0),(0,0,1),(0,0.8,1),(1,0,1),(1,0.4,0),(0.2,0.4,0),(1,0.6,0.6),(0.4,0.2,0.2),(0.6,0.6,0.6)], \
+    Colours_list['contrast'] = [[(0.,0.,0.),(1.,0.,0.),(0.,0.8,0.),(0.,0.,1.),(0.,0.8,1.),(1.,0.,1.),(1.,0.4,0.),(0.2,0.4,0.),(1.,0.6,0.6),(0.4,0.2,0.2),(0.6,0.6,0.6)], \
                                ['black','red','green','blue','cyan','magenta','orange','olive','pink','brown','grey']]
-    Colours_list['iris'] = [[(0,0,0),(0,0,1),(0,0.8,1),(0,0.8,0),(1,0.8,0),(1,0.4,0),(1,0,0),(1,0,1),(0.6,0,0.8),(0.6,0.6,0.6)], \
+    Colours_list['iris'] = [[(0.,0.,0.),(0.,0.,1.),(0.,0.8,1.),(0.,0.8,0.),(1.,0.8,0.),(1.,0.4,0.),(1.,0.,0.),(1.,0.,1.),(0.6,0.,0.8),(0.6,0.6,0.6)], \
                            ['black','blue','cyan','green','yellow','orange','red','magenta','purple','grey']]
     Line_list = ['-', (0,(8,1)), '--', ':',(0,(1,1,3,1)),(0,(1,1,8,1))]
     Point_list = ['o','^','*','s','p','v','d','>','<']
@@ -5424,11 +5424,11 @@ def ChangeKippenTolerence(new_tol):
        Typical value is 0.005."""
     MyDriver.Kipp_tol = new_tol
 
-def MyFig(name,path='',format='pdf',layout=''):
+def MyFig(name,path='',format='svg',layout=''):
     """Save the current figure under the name given as argument.
        If not specified (path="..."), the path to the figure is the one set
           in the config file ~/.Origin_Tools.ini.
-       If not specified (format="..."), the format is .pdf.
+       If not specified (format="..."), the format is .svg.
        The figure dimension is squared (11.,11.),
           but it can be changed to a landscape (or portrait) orientation by setting
              the optional argument layout='land' (or 'port')."""
