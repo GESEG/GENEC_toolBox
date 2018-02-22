@@ -55,6 +55,7 @@ import matplotlib.colors as colors
 from matplotlib import rc
 from matplotlib import rcParams
 rc('font',**{'family':'serif','serif':['Times New Roman']})
+rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
 import ConfigParser
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
@@ -4437,41 +4438,43 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
 
-def Cepheid_strip():
+def Cepheid_strip(Zzone=''):
     """Plots the limits of the instability strip in the HRD. The limits are those given by Tammann+ 2003,
        except at Zsol where we have the borders determined consistently on our models by H. Saio.
        Included by default in the HRD_tot() plot."""
     StripDef = {'MW':[[-4.595e-2,3.940],[-5.989e-2,3.921]],'LMC':[-0.059,3.960],'SMC':[-0.059,3.953]}
     deltaStrip = 0.04
     CephL_mid = np.array([2.,5.])
-    Zzone = ''
     Zzone_star = ''
     mCeph = False
     test_multiZ = False
-    for star in MyDriver.Model_list.keys():
-        MyStar = MyDriver.Model_list[star]
-        if MyDriver.modeplot == 'evol':
-            if MyStar.Variables['Mini'][0] >= 2. and MyStar.Variables['Mini'][0] <= 18.:
+    if not Zzone:
+        for star in MyDriver.SelectedModels:
+            MyStar = MyDriver.Model_list[star]
+            if MyDriver.modeplot == 'evol':
+                if MyStar.Variables['Mini'][0] >= 2. and MyStar.Variables['Mini'][0] <= 18.:
+                    mCeph = True
+            elif MyDriver.modeplot == 'cluster':
                 mCeph = True
-        elif MyDriver.modeplot == 'cluster':
-            mCeph = True
-        if MyDriver.modeplot == 'evol':
-            if MyStar.Variables['Zsurf'][0][0] <= 0.004:
-                Zzone_star = 'SMC'
-            elif MyStar.Variables['Zsurf'][0][0] <= 0.010:
-                Zzone_star = 'LMC'
-            else:
-                Zzone_star = 'MW'
-        elif MyDriver.modeplot == 'cluster':
-            if MyStar.Variables['Zini'][0][0] <= 0.004:
-                Zzone_star = 'SMC'
-            elif MyStar.Variables['Zini'][0][0] <= 0.010:
-                Zzone_star = 'LMC'
-            else:
-                Zzone_star = 'MW'
-        if Zzone != '' and Zzone_star != Zzone:
-            test_multiZ = True
-        Zzone = Zzone_star
+            if MyDriver.modeplot == 'evol':
+                if MyStar.Variables['Zsurf'][0][0] <= 0.004:
+                    Zzone_star = 'SMC'
+                elif MyStar.Variables['Zsurf'][0][0] <= 0.010:
+                    Zzone_star = 'LMC'
+                else:
+                    Zzone_star = 'MW'
+            elif MyDriver.modeplot == 'cluster':
+                if MyStar.Variables['Zini'][0][0] <= 0.004:
+                    Zzone_star = 'SMC'
+                elif MyStar.Variables['Zini'][0][0] <= 0.010:
+                    Zzone_star = 'LMC'
+                else:
+                    Zzone_star = 'MW'
+            if Zzone != '' and Zzone_star != Zzone:
+                test_multiZ = True
+            Zzone = Zzone_star
+    else:
+        mCeph = True
     if mCeph and not test_multiZ:
         if Zzone == 'MW':
             CephT_blue = StripDef[Zzone][0][0]*CephL_mid + StripDef[Zzone][0][1]
@@ -4482,6 +4485,11 @@ def Cepheid_strip():
         CephT = np.concatenate((CephT_blue,CephT_red))
         CephL = np.concatenate((CephL_mid,CephL_mid[::-1]))
         shade(CephT,CephL)
+    else:
+        if not mCeph:
+            print 'Cepheid strip not drawn, masses out of range.'
+        if test_multiZ:
+            print 'Cepheid strip not drawn, more than one metallicity detected.'
 
 def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
     """Marks the beginning and end of a given burning phase in the current plot.
