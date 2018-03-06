@@ -55,6 +55,7 @@ import matplotlib.colors as colors
 from matplotlib import rc
 from matplotlib import rcParams
 rc('font',**{'family':'serif','serif':['Times New Roman']})
+rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
 import ConfigParser
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
@@ -67,7 +68,7 @@ rcParams['xtick.direction'] = 'in'
 rcParams['ytick.direction'] = 'in'
 
 class GtB_version():
-    GtB_version = '8.0'
+    GtB_version = '8.0.1'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox"""
@@ -107,9 +108,9 @@ class Rendering():
        List of variables for which the axis needs to be inverted by default:
           'ageadv', 'H1c', 'He4c', 'M_V', 'Teff', 'Teffcorr'."""
     Colours_list = {}
-    Colours_list['contrast'] = [[(0,0,0),(1,0,0),(0,0.8,0),(0,0,1),(0,0.8,1),(1,0,1),(1,0.4,0),(0.2,0.4,0),(1,0.6,0.6),(0.4,0.2,0.2),(0.6,0.6,0.6)], \
+    Colours_list['contrast'] = [[(0.,0.,0.),(1.,0.,0.),(0.,0.8,0.),(0.,0.,1.),(0.,0.8,1.),(1.,0.,1.),(1.,0.4,0.),(0.2,0.4,0.),(1.,0.6,0.6),(0.4,0.2,0.2),(0.6,0.6,0.6)], \
                                ['black','red','green','blue','cyan','magenta','orange','olive','pink','brown','grey']]
-    Colours_list['iris'] = [[(0,0,0),(0,0,1),(0,0.8,1),(0,0.8,0),(1,0.8,0),(1,0.4,0),(1,0,0),(1,0,1),(0.6,0,0.8),(0.6,0.6,0.6)], \
+    Colours_list['iris'] = [[(0.,0.,0.),(0.,0.,1.),(0.,0.8,1.),(0.,0.8,0.),(1.,0.8,0.),(1.,0.4,0.),(1.,0.,0.),(1.,0.,1.),(0.6,0.,0.8),(0.6,0.6,0.6)], \
                            ['black','blue','cyan','green','yellow','orange','red','magenta','purple','grey']]
     Line_list = ['-', (0,(8,1)), '--', ':',(0,(1,1,3,1)),(0,(1,1,8,1))]
     Point_list = ['o','^','*','s','p','v','d','>','<']
@@ -1459,9 +1460,14 @@ class Model(Outputs):
                 epsH = 0.
                 epsHe = 0.
                 epsC = 0.
-                return lineB,ageB,massB,epsH,epsHe,epsC
+                epsNe = 0.
+                epsO = 0.
+                epsSi = 0.
+                return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
 
         BurnFile = open(MyBurnFile,'r')
+        lastline = os.popen('tail -1 '+MyBurnFile).readline().replace('\n','')
+        adv_burn = len(lastline.split()) > 12
         BigArray = np.genfromtxt(MyBurnFile,comments=None)
         lineB = BigArray[:,0]
         ageB = BigArray[:,1]
@@ -1469,7 +1475,15 @@ class Model(Outputs):
         epsH = np.array((BigArray[:,4],BigArray[:,3],BigArray[:,5]))
         epsHe = np.array((BigArray[:,7],BigArray[:,6],BigArray[:,8]))
         epsC = np.array((BigArray[:,10],BigArray[:,9],BigArray[:,11]))
-        return lineB,ageB,massB,epsH,epsHe,epsC
+        if adv_burn:
+            epsNe = np.array((BigArray[:,13],BigArray[:,12],BigArray[:,14]))
+            epsO = np.array((BigArray[:,16],BigArray[:,15],BigArray[:,17]))
+            epsSi = np.array((BigArray[:,19],BigArray[:,18],BigArray[:,20]))
+        else:
+            epsNe = np.zeros((3,len(lineB)))
+            epsO = np.zeros((3,len(lineB)))
+            epsSi = np.zeros((3,len(lineB)))
+        return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
 
 class Struc(Outputs):
     """Contains all the utilities to read and process the structure files.
@@ -1777,17 +1791,18 @@ class Struc(Outputs):
             nfoot = fileLength-self.n_shell-num_deb-header
         elif format in ['full','full_old']:
             self.num_model=MyFile.readline().split()[3]
-            print 'Model number: ',self.num_model
             self.age=MyFile.readline().split()[3]
-            print 'Time: ',self.age
             self.mass=MyFile.readline().split()[3]
-            print 'Mass: ',self.mass
             self.radius=MyFile.readline().split()[3]
-            print 'R: ',self.radius
             self.Ltot=MyFile.readline().split()[2]
-            print 'L: ',self.Ltot
             self.Teff=MyFile.readline().split()[2]
-            print 'Teff: ',self.Teff
+            if not quiet:
+                print 'Model number: ',self.num_model
+                print 'Time: ',self.age
+                print 'Mass: ',self.mass
+                print 'R: ',self.radius
+                print 'L: ',self.Ltot
+                print 'Teff: ',self.Teff
             nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
 
         MyFile.seek(0)
@@ -1819,7 +1834,6 @@ class Struc(Outputs):
 
         StarName = os.path.splitext(FileName)[0][FileName.rfind('/')+1:]
         if format in ['full','full_old']:
-            self.num_model = int(StarName[StarName.rfind('_')+1:])
             StarName = StarName[:StarName.find('_')]
         self.Variables['FileName'] = [FileName,StarName,'model']
         self.Variables['format'] = [format,format,'model']
@@ -1914,15 +1928,17 @@ class Cluster(Outputs):
 
         return switcher.get(fmt,'Unknown format')
 
-    def read(self,FileName,num_deb,format,quiet,random):
+    def read(self,FileName,num_deb,num_fin,format,quiet,random):
         if not os.path.isfile(FileName):
             raise IOError(1,'File does not exist, check name and path',FileName)
             return
         if not quiet:
             print 'Loading file ',FileName,'...'
         lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
+        fileLength = file_len(FileName)+1
         file_cols = len(lastline.split())
-        print 'number of columns:',file_cols
+        if not quiet:
+            print 'number of columns:',file_cols
         if format == '':
             if 'WARNING' in os.popen('head -1 '+FileName).readline():
                 for fmt in readList.Cluster_fmt[0:2]:
@@ -1936,17 +1952,19 @@ class Cluster(Outputs):
                         break
         if not quiet:
             print 'format identified=',format
+        if num_fin == -1:
+            num_fin = fileLength
 
         Cluster_varList = readList.Cluster_formats[format]['varList'] + MyDriver.added_columns['varList']
         Cluster_unitsList = readList.Cluster_formats[format]['unitsList'] + MyDriver.added_columns['unitsList']
         Cluster_catList = readList.Cluster_formats[format]['catList'] + MyDriver.added_columns['catList']
         header = readList.Cluster_formats[format]['header']
-        num_deb = num_deb + readList.Cluster_formats[format]['header']
+        num_deb = num_deb + header
 
         for MyVar,MyUnit,MyType in zip([varList[0] for varList in Cluster_varList],Cluster_unitsList,Cluster_catList):
            self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
 
-        BigArray = np.loadtxt(FileName,skiprows=num_deb)
+        BigArray = np.genfromtxt(FileName,skip_header=num_deb,max_rows=num_fin-num_deb-1)
 
         if random != 0:
             ind = np.random.randint(0,BigArray.shape[0]-1,random)
@@ -2374,11 +2392,15 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 num_star += 1
             except IOError as IOerr:
                 print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+            except np.linalg.LinAlgError:
+                print 'problem computing MLT, aborting.'
+                os.system(CommandZip)
+                raise
     if toZip:
         os.system(CommandZip)
     return len(ToReadModels)
 
-def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False,random=0):
+def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=False,random=0):
     """Loads a new cluster/isochrone file in the database.
        Usage: loadC(Filename,num_star[,num_deb,format='fmt',forced=True])
        Optional argument is:
@@ -2386,24 +2408,62 @@ def loadC(FileName,num_star=1,num_deb=0,format='',forced=False,quiet=False,rando
           format ('cluster', 'cluster_old', 'isochr', 'isochr_old'. By default: auto-detection)
           forced (False by default, True to avoid the checking of the star number)
           quiet (False by default, True to avoid all the babbling)."""
-    MyModel = Cluster()
     Checked = False
+    multi_iso = False
     if MyDriver.modeplot != 'cluster':
         if not quiet:
             print 'Switch to cluster mode.'
         switch('cluster')
-    if not forced:
-        Checked, num_star = Driver.checknumber(MyDriver,num_star)
-    if Checked or forced:
-        try:
-            MyModel.read(FileName,num_deb,format=format,quiet=quiet, random=random)
-            MyDriver.store_model(MyModel,num_star)
-            if not num_star in MyDriver.SelectedModels:
-                MyDriver.SelectedModels.append(num_star)
-            if not num_star in MyDriver.SelectedModels_cluster:
-                MyDriver.SelectedModels_cluster.append(num_star)
-        except IOError as IOerr:
-            print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+    if num_fin == -1:
+        MyFile = open(FileName)
+        search_line = 'Isochrone for log(time) = '
+        iso_time_dic = {}
+        i=0
+        for i,MyLine in enumerate(MyFile):
+            if MyLine[0:len(search_line)] == search_line:
+                iso_time_dic[float(MyLine.split('=')[1])] = i-1
+        if iso_time_dic:
+            multi_iso = True
+        iso_times = sorted(iso_time_dic.keys())
+        if not quiet:
+            print 'isochrone file with ages:',iso_times
+        iso_beg = [iso_time_dic[t] for t in sorted(iso_time_dic.keys())]
+        iso_end = [iso_beg[i]+1 for i in range(1,len(iso_beg))]
+        iso_end.append(-1)
+        print 'iso_beg,iso_end:',iso_beg,iso_end
+    if not multi_iso:
+        MyModel = Cluster()
+        if not forced:
+            Checked, num_star = Driver.checknumber(MyDriver,num_star)
+            if Checked or forced:
+                try:
+                    MyModel.read(FileName,num_deb,num_fin,format=format,quiet=quiet, random=random)
+                    MyDriver.store_model(MyModel,num_star)
+                    if not num_star in MyDriver.SelectedModels:
+                        MyDriver.SelectedModels.append(num_star)
+                        if not num_star in MyDriver.SelectedModels_cluster:
+                            MyDriver.SelectedModels_cluster.append(num_star)
+                except IOError as IOerr:
+                    print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+    else:
+        for (i,beg),end,time in zip(enumerate(iso_beg),iso_end,iso_times):
+            MyModel = Cluster()
+            if not forced:
+                Checked, mynum_star = Driver.checknumber(MyDriver,num_star+i)
+            else:
+                mynum_star = num_star+i
+            if Checked or forced:
+                try:
+                    if not quiet:
+                        print '***** loading isochrone at age ',time,' *****'
+                    MyModel.read(FileName,beg,end,format=format,quiet=quiet, random=random)
+                    MyDriver.store_model(MyModel,mynum_star)
+                    if not mynum_star in MyDriver.SelectedModels:
+                        MyDriver.SelectedModels.append(mynum_star)
+                        if not mynum_star in MyDriver.SelectedModels_cluster:
+                            MyDriver.SelectedModels_cluster.append(mynum_star)
+                except IOError as IOerr:
+                    print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
 
 def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False):
     """ Loads a list of models from a file.
@@ -2572,7 +2632,8 @@ def loadCFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         print 'No files matching your request.'
         return
     for file in [i for i in Selected_files if (os.path.splitext(i)[1] == '.dat' and os.path.splitext(i)[0][i.rfind('/')+1:i.rfind('/')+4] in ['Clu','Iso'])]:
-        print 'loading',file
+        if not quiet:
+            print 'loading',file
         try:
             loadC(file,index,num_deb,format=format,forced=forced,quiet=quiet)
             if not quiet:
@@ -3879,7 +3940,8 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
             Evol_file = MyDriver.Model_list[num_star].Variables['FileName'][0]
             i_ext = Evol_file.rfind('.')
             rootName = Evol_file[:i_ext]
-            lineB,ageB,massB,epsH,epsHe,epsC = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
+            lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
+            marine = (0,0,0.4)
             if not isinstance(lineB,float):
                 if MyDriver.Xvar == 't6':
                     ageBplot = ageB/1.e6
@@ -3890,15 +3952,28 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
                     mask = ageadvB<=0.
                     ageadvB[mask] = 1.e-2
                     ageBplot = np.log10(ageadvB)
-                plt.plot(ageBplot,epsH[0],'b-')
-                plt.plot(ageBplot,epsH[1],'b--')
-                plt.plot(ageBplot,epsH[2],'b--')
+                plt.plot(ageBplot,epsH[0],c=marine,ls='-')
+                plt.plot(ageBplot,epsH[1],ls='--',c=marine)
+                plt.plot(ageBplot,epsH[2],ls='--',c=marine)
                 plt.plot(ageBplot,epsHe[0],'g-')
                 plt.plot(ageBplot,epsHe[1],'g--')
                 plt.plot(ageBplot,epsHe[2],'g--')
-                plt.plot(ageBplot,epsC[0],'r-')
-                plt.plot(ageBplot,epsC[1],'r--')
-                plt.plot(ageBplot,epsC[2],'r--')
+                if not all(epsC[1]==0.):
+                    plt.plot(ageBplot,epsC[0],'r-')
+                    plt.plot(ageBplot,epsC[1],'r--')
+                    plt.plot(ageBplot,epsC[2],'r--')
+                if not all(epsNe[1]==0.):
+                    plt.plot(ageBplot,epsNe[0],'c-')
+                    plt.plot(ageBplot,epsNe[1],'c--')
+                    plt.plot(ageBplot,epsNe[2],'c--')
+                if not all(epsO[1]==0.):
+                    plt.plot(ageBplot,epsO[0],'b-')
+                    plt.plot(ageBplot,epsO[1],'b--')
+                    plt.plot(ageBplot,epsO[2],'b--')
+                if not all(epsSi[1]==0.):
+                    plt.plot(ageBplot,epsSi[0],c='orange',ls='-')
+                    plt.plot(ageBplot,epsSi[1],c='orange',ls='--')
+                    plt.plot(ageBplot,epsSi[2],c='orange',ls='--')
 
         KippenSub.tick_params(axis='x', labelsize = MyDriver.fontSize)
         KippenSub.tick_params(axis='y', labelsize = MyDriver.fontSize)
@@ -4367,41 +4442,43 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
 
-def Cepheid_strip():
+def Cepheid_strip(Zzone=''):
     """Plots the limits of the instability strip in the HRD. The limits are those given by Tammann+ 2003,
        except at Zsol where we have the borders determined consistently on our models by H. Saio.
        Included by default in the HRD_tot() plot."""
     StripDef = {'MW':[[-4.595e-2,3.940],[-5.989e-2,3.921]],'LMC':[-0.059,3.960],'SMC':[-0.059,3.953]}
     deltaStrip = 0.04
     CephL_mid = np.array([2.,5.])
-    Zzone = ''
     Zzone_star = ''
     mCeph = False
     test_multiZ = False
-    for star in MyDriver.Model_list.keys():
-        MyStar = MyDriver.Model_list[star]
-        if MyDriver.modeplot == 'evol':
-            if MyStar.Variables['Mini'][0] >= 2. and MyStar.Variables['Mini'][0] <= 18.:
+    if not Zzone:
+        for star in MyDriver.SelectedModels:
+            MyStar = MyDriver.Model_list[star]
+            if MyDriver.modeplot == 'evol':
+                if MyStar.Variables['Mini'][0] >= 2. and MyStar.Variables['Mini'][0] <= 18.:
+                    mCeph = True
+            elif MyDriver.modeplot == 'cluster':
                 mCeph = True
-        elif MyDriver.modeplot == 'cluster':
-            mCeph = True
-        if MyDriver.modeplot == 'evol':
-            if MyStar.Variables['Zsurf'][0][0] <= 0.004:
-                Zzone_star = 'SMC'
-            elif MyStar.Variables['Zsurf'][0][0] <= 0.010:
-                Zzone_star = 'LMC'
-            else:
-                Zzone_star = 'MW'
-        elif MyDriver.modeplot == 'cluster':
-            if MyStar.Variables['Zini'][0][0] <= 0.004:
-                Zzone_star = 'SMC'
-            elif MyStar.Variables['Zini'][0][0] <= 0.010:
-                Zzone_star = 'LMC'
-            else:
-                Zzone_star = 'MW'
-        if Zzone != '' and Zzone_star != Zzone:
-            test_multiZ = True
-        Zzone = Zzone_star
+            if MyDriver.modeplot == 'evol':
+                if MyStar.Variables['Zsurf'][0][0] <= 0.004:
+                    Zzone_star = 'SMC'
+                elif MyStar.Variables['Zsurf'][0][0] <= 0.010:
+                    Zzone_star = 'LMC'
+                else:
+                    Zzone_star = 'MW'
+            elif MyDriver.modeplot == 'cluster':
+                if MyStar.Variables['Zini'][0][0] <= 0.004:
+                    Zzone_star = 'SMC'
+                elif MyStar.Variables['Zini'][0][0] <= 0.010:
+                    Zzone_star = 'LMC'
+                else:
+                    Zzone_star = 'MW'
+            if Zzone != '' and Zzone_star != Zzone:
+                test_multiZ = True
+            Zzone = Zzone_star
+    else:
+        mCeph = True
     if mCeph and not test_multiZ:
         if Zzone == 'MW':
             CephT_blue = StripDef[Zzone][0][0]*CephL_mid + StripDef[Zzone][0][1]
@@ -4412,6 +4489,11 @@ def Cepheid_strip():
         CephT = np.concatenate((CephT_blue,CephT_red))
         CephL = np.concatenate((CephL_mid,CephL_mid[::-1]))
         shade(CephT,CephL)
+    else:
+        if not mCeph:
+            print 'Cepheid strip not drawn, masses out of range.'
+        if test_multiZ:
+            print 'Cepheid strip not drawn, more than one metallicity detected.'
 
 def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
     """Marks the beginning and end of a given burning phase in the current plot.
@@ -5354,11 +5436,11 @@ def ChangeKippenTolerence(new_tol):
        Typical value is 0.005."""
     MyDriver.Kipp_tol = new_tol
 
-def MyFig(name,path='',format='pdf',layout=''):
+def MyFig(name,path='',format='svg',layout=''):
     """Save the current figure under the name given as argument.
        If not specified (path="..."), the path to the figure is the one set
           in the config file ~/.Origin_Tools.ini.
-       If not specified (format="..."), the format is .pdf.
+       If not specified (format="..."), the format is .svg.
        The figure dimension is squared (11.,11.),
           but it can be changed to a landscape (or portrait) orientation by setting
              the optional argument layout='land' (or 'port')."""
