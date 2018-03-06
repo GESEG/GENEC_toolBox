@@ -2370,6 +2370,10 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 num_star += 1
             except IOError as IOerr:
                 print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+            except np.linalg.LinAlgError:
+                print 'problem computing MLT, aborting.'
+                os.system(CommandZip)
+                raise
     if toZip:
         os.system(CommandZip)
     return len(ToReadModels)
