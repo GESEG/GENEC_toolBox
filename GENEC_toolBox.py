@@ -1750,6 +1750,10 @@ class Struc(Outputs):
         return switcher.get(fmt,'Unknown format')
 
     def read(self,FileName,num_deb,line_to_read,format,quiet):
+        print 'In read: num_deb,line_to_read:',num_deb,line_to_read
+        if format == '':
+            raise FormatError(2,'column number does not match any known format',FileName)
+            return
         if not quiet:
             print 'Loading file ',FileName,'...'
         i_ext = FileName.rfind('.')
@@ -1784,11 +1788,13 @@ class Struc(Outputs):
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
+            print 'Reading model',self.num_model
             self.age = float(self.age)
             self.mass = float(self.mass)
             self.n_shell = int(self.n_shell)
             self.time_step = float(self.time_step)
-            nfoot = fileLength-self.n_shell-num_deb-header
+            #nfoot = fileLength-self.n_shell-num_deb-header
+            line_to_read = line_to_read - header
         elif format in ['full','full_old']:
             self.num_model=MyFile.readline().split()[3]
             self.age=MyFile.readline().split()[3]
@@ -1803,11 +1809,12 @@ class Struc(Outputs):
                 print 'R: ',self.radius
                 print 'L: ',self.Ltot
                 print 'Teff: ',self.Teff
-            nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
+            #nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
+            line_to_read = line_to_read - header
 
         MyFile.seek(0)
 
-        BigArray = np.genfromtxt(FileName,skip_header=num_deb+header,skip_footer=nfoot,comments=None)
+        BigArray = np.genfromtxt(FileName,skip_header=num_deb+header,max_rows=line_to_read,comments=None)
 
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
@@ -2356,10 +2363,14 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
+        if format == '':
+            raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
+            return
         if not quiet:
             print 'format identified=',format
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
+    print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
 
     if toread == []:
         toread = Time_Step_Dic.keys()
@@ -2396,6 +2407,9 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 print 'problem computing MLT, aborting.'
                 os.system(CommandZip)
                 raise
+            except FormatError:
+                raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
+
     if toZip:
         os.system(CommandZip)
     return len(ToReadModels)
