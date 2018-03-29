@@ -1616,8 +1616,10 @@ class Struc(Outputs):
                                                  r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
                                                  2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
         self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
-        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
-                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
+        self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
+        ntmask = self.Variables['NT2'][0]!=0.
+        self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
+                        /(self.Variables['NT2'][0][ntmask]*self.Variables['r'][0][ntmask])**2.)**(1./4.)
 
         return
 
@@ -1705,11 +1707,10 @@ class Struc(Outputs):
                                                  r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
                                                  2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
         self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
-        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
-                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
-
-        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
-                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
+        self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
+        ntmask = self.Variables['NT2'][0]!=0.
+        self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
+                        /(self.Variables['NT2'][0][ntmask]*self.Variables['r'][0][ntmask])**2.)**(1./4.)
 
         return
 
@@ -1750,6 +1751,10 @@ class Struc(Outputs):
         return switcher.get(fmt,'Unknown format')
 
     def read(self,FileName,num_deb,line_to_read,format,quiet):
+        print 'In read: num_deb,line_to_read:',num_deb,line_to_read
+        if format == '':
+            raise FormatError(2,'column number does not match any known format',FileName)
+            return
         if not quiet:
             print 'Loading file ',FileName,'...'
         i_ext = FileName.rfind('.')
@@ -1784,11 +1789,13 @@ class Struc(Outputs):
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
+            print 'Reading model',self.num_model
             self.age = float(self.age)
             self.mass = float(self.mass)
             self.n_shell = int(self.n_shell)
             self.time_step = float(self.time_step)
-            nfoot = fileLength-self.n_shell-num_deb-header
+            #nfoot = fileLength-self.n_shell-num_deb-header
+            line_to_read = line_to_read - header
         elif format in ['full','full_old']:
             self.num_model=MyFile.readline().split()[3]
             self.age=MyFile.readline().split()[3]
@@ -1803,11 +1810,12 @@ class Struc(Outputs):
                 print 'R: ',self.radius
                 print 'L: ',self.Ltot
                 print 'Teff: ',self.Teff
-            nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
+            #nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
+            line_to_read = line_to_read - header
 
         MyFile.seek(0)
 
-        BigArray = np.genfromtxt(FileName,skip_header=num_deb+header,skip_footer=nfoot,comments=None)
+        BigArray = np.genfromtxt(FileName,skip_header=num_deb+header,max_rows=line_to_read,comments=None)
 
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
@@ -2356,10 +2364,14 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
+        if format == '':
+            raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
+            return
         if not quiet:
             print 'format identified=',format
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
+    print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
 
     if toread == []:
         toread = Time_Step_Dic.keys()
@@ -2396,6 +2408,9 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 print 'problem computing MLT, aborting.'
                 os.system(CommandZip)
                 raise
+            except FormatError:
+                raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
+
     if toZip:
         os.system(CommandZip)
     return len(ToReadModels)
@@ -5558,6 +5573,44 @@ def dist():
         print 'dy/dx = ',ydist/xdist
     else:
         print 'dy/dx = infinity'
+
+def closest_line(Xvar='',Yvar='',printline=False):
+    """Finds the closest line from a cursor selection.
+       The optional parameter printline=True prints the whole line from the file,
+       otherwise only the number is returned (default behaviour)."""
+    if not Xvar:
+        Xvar = MyDriver.lastXvar
+    if not Yvar:
+        Yvar = MyDriver.lastYvar
+    xclic,yclic = cursor()
+    distance_all = 9999999.
+    best_i = 0
+    line_i = {}
+    for i in MyDriver.SelectedModels:
+        myX = Get_Var(Xvar,i)
+        myY = Get_Var(Yvar,i)
+        myline = Get_Var('line',i)
+        norm_x = (myX-min(myX))/(max(myX)-min(myX))
+        norm_y = (myY-min(myY))/(max(myY)-min(myY))
+        dist_x = (xclic-min(myX))/(max(myX)-min(myX))
+        dist_y = (yclic-min(myY))/(max(myY)-min(myY))
+        distance = (norm_x - dist_x)**2. + (norm_y - dist_y)**2.
+        closest = np.argmin(distance)
+        if np.min(distance) < distance_all:
+            distance_all = np.min(distance)
+            best_i = i
+        line_i[i] = myline[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
+        print 'Beware: the line will not be as accurate as if you used the complete .wg file.\n'
+    if not printline:
+        return line_i[best_i]
+    else:
+        with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+            for file_line in myfile:
+                current_model = int(file_line.split()[0])
+                if current_model == line_i[best_i]:
+                    print file_line
+                    return line_i[best_i]
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
