@@ -1616,8 +1616,10 @@ class Struc(Outputs):
                                                  r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
                                                  2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
         self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
-        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
-                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
+        self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
+        ntmask = self.Variables['NT2'][0]!=0.
+        self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
+                        /(self.Variables['NT2'][0][ntmask]*self.Variables['r'][0][ntmask])**2.)**(1./4.)
 
         return
 
@@ -1705,11 +1707,10 @@ class Struc(Outputs):
                                                  r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
                                                  2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
         self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
-        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
-                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
-
-        self.Variables['Br'] = [self.Variables['Bphi'][0]*(2.*self.Variables['Omega'][0]*self.Variables['Kther'][0] \
-                        /(self.Variables['NT2'][0]*self.Variables['r'][0])**2.)**(1./4.),'$B_r\ [G]$','magnetism']
+        self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
+        ntmask = self.Variables['NT2'][0]!=0.
+        self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
+                        /(self.Variables['NT2'][0][ntmask]*self.Variables['r'][0][ntmask])**2.)**(1./4.)
 
         return
 
@@ -5572,6 +5573,44 @@ def dist():
         print 'dy/dx = ',ydist/xdist
     else:
         print 'dy/dx = infinity'
+
+def closest_line(Xvar='',Yvar='',printline=False):
+    """Finds the closest line from a cursor selection.
+       The optional parameter printline=True prints the whole line from the file,
+       otherwise only the number is returned (default behaviour)."""
+    if not Xvar:
+        Xvar = MyDriver.lastXvar
+    if not Yvar:
+        Yvar = MyDriver.lastYvar
+    xclic,yclic = cursor()
+    distance_all = 9999999.
+    best_i = 0
+    line_i = {}
+    for i in MyDriver.SelectedModels:
+        myX = Get_Var(Xvar,i)
+        myY = Get_Var(Yvar,i)
+        myline = Get_Var('line',i)
+        norm_x = (myX-min(myX))/(max(myX)-min(myX))
+        norm_y = (myY-min(myY))/(max(myY)-min(myY))
+        dist_x = (xclic-min(myX))/(max(myX)-min(myX))
+        dist_y = (yclic-min(myY))/(max(myY)-min(myY))
+        distance = (norm_x - dist_x)**2. + (norm_y - dist_y)**2.
+        closest = np.argmin(distance)
+        if np.min(distance) < distance_all:
+            distance_all = np.min(distance)
+            best_i = i
+        line_i[i] = myline[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
+        print 'Beware: the line will not be as accurate as if you used the complete .wg file.\n'
+    if not printline:
+        return line_i[best_i]
+    else:
+        with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+            for file_line in myfile:
+                current_model = int(file_line.split()[0])
+                if current_model == line_i[best_i]:
+                    print file_line
+                    return line_i[best_i]
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
