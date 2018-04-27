@@ -1258,6 +1258,13 @@ class Model(Outputs):
         if not quiet:
             print 'File read, '+str(self.imax)+' lines.'
 
+        if wa:
+            WAfile = FileName.replace('.wg','.wa')
+            if WAfile != FileName:
+                self.read_wa(WAfile,num_deb-header,num_fin)
+            else:
+                print 'The wa option is valid only when charging a complete wg file.'
+
         ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi = 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
         self.Variables['phase'] = [np.array(['' for x in range(self.imax)],dtype=object),'combustion phase','energetics']
         if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0]:
@@ -1284,8 +1291,10 @@ class Model(Outputs):
                     ind_endSi = ind_begSi + np.where(self.Variables['Si28c'][0][ind_begSi:]<1.e-3)[0][0]
         except:
             pass
+        self.Variables['ind_burning_phases'] = [[ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO, \
+                                                ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
         if not quiet:
-            print 'limits of burning phases:',ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi
+            print 'limits of burning phases:',self.Variables['ind_burning_phases']
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
@@ -1391,13 +1400,6 @@ class Model(Outputs):
                 current_time = current_time+MyDriver.deltat
             if current_time >= self.Variables['t'][0][i]:
                 i+=1
-
-        if wa:
-            WAfile = FileName.replace('.wg','.wa')
-            if WAfile != FileName:
-                self.read_wa(WAfile,num_deb-header,num_fin)
-            else:
-                print 'The wa option is valid only when charging a complete wg file.'
 
         if not quiet:
             print 'File successfully loaded.'
