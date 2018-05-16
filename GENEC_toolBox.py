@@ -283,6 +283,80 @@ class readList():
                     'energetics','energetics','energetics','energetics','binary','binary','binary','binary','binary','binary','binary'],\
                     'header':0,'column_number':117}
     Evol_formats['preMS'] = {'header':0,'column_number':116}
+    Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['tbce',5],['tHe',6],\
+                     ['numax',7],['Dpg',8]],\
+                     'unitsList':['model num','To be cheked','To be cheked','To be cheked','To be cheked','To be cheked','To be cheked',\
+                     'To be cheked','To be cheked'],
+                     'catList':['model','astero','astero','astero','astero','astero','astero','astero','astero'],\
+                     'header':7,'column_number':9}
+    Evol_formats['starevol_hr'] = {'varList':[['line',0],['phaseSE',1],['L',2],['Reff',3],['R',4],['Teff',5],['rhoeff',6],\
+                     ['gsurf',7],['Mdot',8],['M',9],['deltat',10],['t',11],['iter',12],['crash',13],['shells',14],\
+                     ['cputime',15]],
+                     'unitsList':['model num','phase number','$\log(L/L_\odot)$','$R_\\mathrm{eff} \ [R_\odot]$','$R \ [R_\odot]$',\
+                     '$\log(T_\mathrm{eff}\ [\mathrm{K}])$',r'$\log(\rho_\mathrm{eff}\ [\mathrm{g\,cm}^{-3}])$',\
+                     '$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
+                     '$M\ [M_\odot]$','$\\Delta t \ [\\mathrm{yr}]$','t [yr]','number of iterations','number of crashes',\
+                     'number of shells','t [s]'],\
+                     'catList':['model','model','surface','surface','surface','surface','surface','surface','surface',\
+                     'surface','model','model','model','model','model','model'],\
+                     'header':7,'column_number':16}
+    Evol_formats['starevol_c1'] = {'varList':[['line',0],['nc',1],['H1c',2],['H2c',3],['He3c',4],['He4c',5],\
+                     ['Li6c',6],['Li7c',7],['Be7c',8],['Be9c',9],['B10c',10],['B11c',11]],\
+                     'unitsList':['model num','neutrons [centr. mass frac.]','$^{1}$H [centr. mass frac.]',\
+                     '$^{2}$H [centr. mass frac.]','$^{3}$He [centr. mass frac.]','$^{4}$He [centr. mass frac.]',\
+                     '$^{6}$Li [centr. mass frac.]','$^{7}$Li [centr. mass frac.]','$^{7}$Be [centr. mass frac.]',\
+                     '$^{9}$Be [centr. mass frac.]','$^{10}$B [centr. mass frac.]','$^{11}$B [centr. mass frac.]'],\
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],\
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_c2'] = {'varList':[['line',0],['C12c',1],['C13c',2],['C14c',3],['N14c',4],['N15c',5],\
+                     ['O15c',6],['O16c',7],['O17c',8],['O18c',9],['F19c',10],['Ne20c',11]],\
+                     'unitsList':['model num','$^{12}$C [centr. mass frac.]','$^{13}$C [centr. mass frac.]',\
+                     '$^{14}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]','$^{15}$N [centr. mass frac.]',\
+                     '$^{15}$O [centr. mass frac.]','$^{16}$O [centr. mass frac.]','$^{17}$O [centr. mass frac.]',\
+                     '$^{18}$O [centr. mass frac.]','$^{19}$F [centr. mass frac.]','$^{20}$N2 [centr. mass frac.]'],
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_s1'] = {'varList':[['line',0],['nc',1],['H1s',2],['H2s',3],['He3s',4],['He4s',5],\
+                     ['Li6s',6],['Li7s',7],['Be7s',8],['Be9s',9],['B10s',10],['B11s',11]],\
+                     'unitsList':['model num','neutrons [centr. mass frac.]','$^{1}$H [centr. mass frac.]',\
+                     '$^{2}$H [surf. mass frac.]','$^{3}$He [surf. mass frac.]','$^{4}$He [surf. mass frac.]',\
+                     '$^{6}$Li [surf. mass frac.]','$^{7}$Li [surf. mass frac.]','$^{7}$Be [surf. mass frac.]',\
+                     '$^{9}$Be [surf. mass frac.]','$^{10}$B [surf. mass frac.]','$^{11}$B [surf. mass frac.]'],\
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],\
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_s2'] = {'varList':[['line',0],['C12s',1],['C13s',2],['C14s',3],['N14s',4],['N15s',5],\
+                     ['O15s',6],['O16s',7],['O17s',8],['O18s',9],['F19s',10],['Ne20s',11]],\
+                     'unitsList':['model num','$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]',\
+                     '$^{14}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]','$^{15}$N [surf. mass frac.]',\
+                     '$^{15}$O [surf. mass frac.]','$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]',\
+                     '$^{18}$O [surf. mass frac.]','$^{19}$F [surf. mass frac.]','$^{20}$N2 [surf. mass frac.]'],
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_v3'] = {'varList':[['line',0],['conv1_Mb',1],['conv1_Rb',2],['conv1_Tb',3],['conv1_rob',4],\
+                     ['conv1_Mt',5],['conv1_Rt',6],['conv1_Tt',7],['conv1_rot',8],['env_Mb',9],['env_Rb',10],\
+                     ['env_Tb',11],['env_rob',12]],\
+                     'unitsList':['model num','$M_\\mathrm{CZ1,bottom}\ [M_\odot]$','$R_\\mathrm{CZ1,bottom}/R_\\star$',\
+                     '$\\log(T_\\mathrm{CZ1,bottom}\ [\mathrm{K}]])$',r'$\log(\rho_\mathrm{CZ1,bottom}\ [\mathrm{g\,cm}^{-3}])$',\
+                     '$M_\\mathrm{CZ1,top}\ [M_\odot]$','$R_\\mathrm{CZ1,top}/R_\\star$',\
+                     '$\\log(T_\\mathrm{CZ1,top}\ [\mathrm{K}]])$',r'$\log(\rho_\mathrm{CZ1,top}\ [\mathrm{g\,cm}^{-3}])$',\
+                     '$M_\\mathrm{env,bottom}\ [M_\odot]$','$R_\\mathrm{env,bottom}/R_\\star$',\
+                     '$\\log(T_\\mathrm{env,bottom}\ [\mathrm{K}]])$',r'$\log(\rho_\mathrm{env,bottom}\ [\mathrm{g\,cm}^{-3}])$'],\
+                     'catList':['model','convection','convection','convection','convection','convection','convection',\
+                     'convection','convection','convection','convection','convection','convection'],\
+                     'header':7,'column_number':13}
+    Evol_formats['starevol_v11'] = {'varList':[['line',0],['mdot_acc',1],['Racc',2],['Macc',3],['Lacc',4],['k2conv',5],\
+                     ['k2rad',6],['Rossby',7],['Omega_surf',8],['Vsurf',9],['xmoment',10],['Fenerg',11],['dmoment',12]],
+                     'unitsList':['model num','$(\log(\dot{M})_\mathrm{accr.}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
+                     '$R_\\mathrm{acc}/R_\star$','$M_\\mathrm{acc}/M_\star$','$\log(L_\\mathrm{acc}/L_\odot)$',\
+                     '$K_\\mathrm{2,conv}$','$K_\\mathrm{2,rad}$','Rossby number','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$',\
+                     '$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$','Xmoment','Fenerg','Dmoment'],
+                     'catList':['model','surface','surface','surface','surface','surface','surface','rotation', \
+                     'rotation','rotation','rotation','rotation','rotation'],
+                     'header':7,'column_number':13}
 
     Struc_fmt = ['o2013','o2010','full','full_old']
     Struc_formats = {}
@@ -1156,6 +1230,34 @@ class Model(Outputs):
             self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
         return
 
+    def Spec_var_starevol(self):
+        if self.Variables['format'][0][0] != 'starevol':
+            return
+        self.Variables['Mcc'] = [np.zeros((len(self.Variables['line'][0]))),'$M_\mathrm{cc}\ [M_\odot]$','centre']
+        index = np.where(np.logical_or(self.Variables['phaseSE'][0] == 2,np.logical_or(self.Variables['phaseSE'][0] == 4,self.Variables['phaseSE'][0] > 5)))
+        self.Variables['Mcc'][0][index] = self.Variables['conv1_Mb'][0][index]
+        self.Variables['Mccrel'] = [np.array(()),'$M_\mathrm{cc}/M_\mathrm{tot}$','centre']
+        self.Variables['Mccrel'][0] = self.Variables['Mcc'][0]*self.Variables['M'][0]
+        self.Variables['OOc'] = [np.zeros((len(self.Variables['line'][0]))),'$\Omega/min(\Omega_\mathrm{crit,1},\Omega_\mathrm{crit,2})$','rotation']
+
+        # Convert stuff to log
+        self.Variables['L'][0] = np.log10(self.Variables['L'][0])
+        self.Variables['Teff'][0] = np.log10(self.Variables['Teff'][0])
+        self.Variables['Teffcorr'] = [self.Variables['Teff'][0],self.Variables['Teff'][1],self.Variables['Teff'][2]]
+        self.Variables['Rpol'] = [self.Variables['R'][0],self.Variables['R'][1],self.Variables['R'][2]]
+        self.Variables['gsurf'][0] = np.log10(self.Variables['gsurf'][0])
+        mask = self.Variables['Mdot'][0]<=0.
+        self.Variables['Mdot'][0][mask] = 0.
+        self.Variables['Mdot'][0][np.logical_not(mask)] = np.log10(self.Variables['Mdot'][0][np.logical_not(mask)])
+        mask = self.Variables['mdot_acc'][0]<=0.
+        self.Variables['mdot_acc'][0][mask] = 0.
+        self.Variables['mdot_acc'][0][np.logical_not(mask)] = np.log10(self.Variables['mdot_acc'][0][np.logical_not(mask)])
+        mask = self.Variables['Lacc'][0]<=0.
+        self.Variables['Lacc'][0][mask] = 0.
+        self.Variables['Lacc'][0][np.logical_not(mask)] = np.log10(self.Variables['Lacc'][0][np.logical_not(mask)])
+
+        return
+
     def SpecificVariables(self,fmt):
         self.Polar_Radius_f = ShapeInterpolation()
         self.Polar_Radius_f.Read_Data()
@@ -1168,16 +1270,22 @@ class Model(Outputs):
             'nami': self.Spec_var_nami(),
             'bin': self.Spec_var_bin(),
             'preMS': self.Spec_var_preMS(),
+            'starevol': self.Spec_var_starevol(),
         }
 
         return switcher.get(fmt,'Unknown format')
 
     def read(self,FileName,num_deb,num_fin,format,colour,wa,quiet):
-        if not os.path.isfile(FileName):
-            raise IOError(1,'File does not exist, check name and path',FileName)
-            return
-        lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
-        file_cols = len(lastline.split())
+        if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
+            format = "starevol"
+            file_cols = 0
+        
+        if format != "starevol":
+            if not os.path.isfile(FileName):
+                raise IOError(1,'File does not exist, check name and path',FileName)
+                return
+            lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
+            file_cols = len(lastline.split())
         if format == '':
             for fmt in readList.Evol_fmt:
                 if file_cols == readList.Evol_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
@@ -1191,60 +1299,20 @@ class Model(Outputs):
                 num_deb=num_deb+15
             colour = True
         if not quiet:
-            print 'Number of columns: '+str(file_cols)+' --> format identified= '+format
-            print 'Loading file ',FileName,'...'
+            if format != "starevol":
+                print 'Number of columns: '+str(file_cols)+' --> format identified= '+format
+                print 'Loading file ',FileName,'...'
+            else:
+                print 'No extension detected, trying with starevol format.'
 
-        if format == 'preMS':
-            add_column(['H2c',110],'$^2$H [centr. mass frac.]','abundances',False)
-            add_column(['Li6c',111],'$^6$Li [centr. mass frac.]','abundances',False)
-            add_column(['Li7c',112],'$^7$Li [centr. mass frac.]','abundances',False)
-            add_column(['H2s',113],'$^2$H [surf. mass frac.]','abundances',False)
-            add_column(['Li6s',114],'$^6$Li [surf. mass frac.]','abundances',False)
-            add_column(['Li7s',115],'$^7$Li [surf. mass frac.]','abundances',False)
-            Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
-            Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
-            Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
-            col_num = readList.Evol_formats[format]['column_number']
+        if format == "starevol":
+            extensions_list = [".as",".hr",".c1",".c2",".s1",".s2",".v3",".v11"]
+            FilesToRead = [FileName + ext for ext in extensions_list]
         else:
-            Evol_varList = readList.Evol_formats[format]['varList'] + MyDriver.added_columns['varList']
-            Evol_unitsList = readList.Evol_formats[format]['unitsList'] + MyDriver.added_columns['unitsList']
-            Evol_catList = readList.Evol_formats[format]['catList'] + MyDriver.added_columns['catList']
-            col_num = readList.Evol_formats[format]['column_number'] + len(MyDriver.added_columns['varList'])
-        header = readList.Evol_formats[format]['header']
-        num_deb = num_deb + header
-
-        for MyVar,colNum,MyUnit,MyType in zip([varList[0] for varList in Evol_varList],[varList[1] for varList in Evol_varList],Evol_unitsList,Evol_catList):
-            self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
-
-        converters = {}
-        for i in range(file_cols):
-            converters[i] = lambda s: self.TestFloat(s)
-
-        try:
-            BigArray = np.loadtxt(FileName,skiprows=num_deb,converters=converters)
-        except ValueError:
-            print "converters couldn't help, probable format error"
-            raise ValueError
-            return
-
-        if BigArray.shape[1] != col_num:
-            raise FormatError(1,'column number does not match, make sure you entered the correct format for file',FileName)
-            return
-        if num_fin == -1:
-            num_fin = BigArray.shape[0]
-
-        for i,myVar in zip([varList[1] for varList in Evol_varList],[varList[0] for varList in Evol_varList]):
-            self.Variables[myVar][0] = BigArray[:num_fin,i]
-        if format not in ['tgrids','tools','nami']:
-            j = sorted([varList[1] for varList in Evol_varList])[-(2+len(MyDriver.added_columns['varList']))]+1
-            self.CZ_array = np.array([[BigArray[:num_fin,j],BigArray[:num_fin,j+2],BigArray[:num_fin,j+4],BigArray[:num_fin,j+6],BigArray[:num_fin,j+8],BigArray[:num_fin,j+10], \
-                                BigArray[:num_fin,j+12],BigArray[:num_fin,j+14],BigArray[:num_fin,j+16],BigArray[:num_fin,j+18],BigArray[:num_fin,j+20],BigArray[:num_fin,j+22], \
-                                BigArray[:num_fin,j+24],BigArray[:num_fin,j+26],BigArray[:num_fin,j+28],BigArray[:num_fin,j+30],BigArray[:num_fin,j+32],BigArray[:num_fin,j+34], \
-                                BigArray[:num_fin,j+36],BigArray[:num_fin,j+38]],[BigArray[:num_fin,j+1],BigArray[:num_fin,j+3],BigArray[:num_fin,j+5],BigArray[:num_fin,j+7], \
-                                BigArray[:num_fin,j+9],BigArray[:num_fin,j+11],BigArray[:num_fin,j+13],BigArray[:num_fin,j+15],BigArray[:num_fin,j+17],BigArray[:num_fin,j+19], \
-                                BigArray[:num_fin,j+21],BigArray[:num_fin,j+23],BigArray[:num_fin,j+25],BigArray[:num_fin,j+27],BigArray[:num_fin,j+29],BigArray[:num_fin,j+31], \
-                                BigArray[:num_fin,j+33],BigArray[:num_fin,j+35],BigArray[:num_fin,j+37],BigArray[:num_fin,j+39]]])
-            standard_columns()
+            FilesToRead = [FileName]
+        
+        for Current_FileName in FilesToRead:
+            header = self.ReadBlock(format,Current_FileName,file_cols,num_deb,num_fin,quiet)
 
         StarName = os.path.splitext(FileName)[0][FileName.rfind('/')+1:]
         self.Variables['FileName'] = [FileName,StarName,'model']
@@ -1323,8 +1391,9 @@ class Model(Outputs):
         self.Variables['t6'] = [self.Variables['t'][0]/1.e6,'t [Myr]','model']
         self.Variables['t9'] = [self.Variables['t'][0]/1.e9,'t [Gyr]','model']
         self.Variables['ageadv'] = [self.Variables['t'][0][-1] - self.Variables['t'][0],'log(time before collapse [yr])','model']
-        self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
-        if format not in ['tgrids','tools','nami']:
+        if format != 'starevol':
+            self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
+        if format not in ['tgrids','tools','nami','starevol']:
             self.Variables['ZCext'] = [np.zeros((self.imax)),'$M_\mathrm{ZC,ext}$','surface']
             for i in range(self.imax):
                 if self.CZ_array[1,-1,i] != 1.:
@@ -1345,7 +1414,7 @@ class Model(Outputs):
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
         self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
         self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
-        if format not in ['nami']:
+        if format not in ['nami','starevol']:
             if not all(v==0. for v in self.Variables['Vsurf'][0]):
                 Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
                 self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\mathrm{crit}$','rotation']
@@ -1360,6 +1429,9 @@ class Model(Outputs):
             self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
             self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
+        if format in "starevol":
+            self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
+
         self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/Cst.Hsol),'Fe/H','abundances']
         self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
@@ -1486,6 +1558,90 @@ class Model(Outputs):
             epsO = np.zeros((3,len(lineB)))
             epsSi = np.zeros((3,len(lineB)))
         return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
+
+    def ReadBlock(self,format,FileName,file_cols,num_deb,num_fin,quiet):
+        if format == 'preMS':
+            add_column(['H2c',110],'$^2$H [centr. mass frac.]','abundances',False)
+            add_column(['Li6c',111],'$^6$Li [centr. mass frac.]','abundances',False)
+            add_column(['Li7c',112],'$^7$Li [centr. mass frac.]','abundances',False)
+            add_column(['H2s',113],'$^2$H [surf. mass frac.]','abundances',False)
+            add_column(['Li6s',114],'$^6$Li [surf. mass frac.]','abundances',False)
+            add_column(['Li7s',115],'$^7$Li [surf. mass frac.]','abundances',False)
+            Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
+            Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
+            Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
+            col_num = readList.Evol_formats[format]['column_number']
+        else:
+            if format == "starevol":
+                current_ext = FileName[FileName.rfind(".")+1:]
+                format_ext = format+"_"+current_ext
+                if not os.path.isfile(FileName):
+                    FileName_old = FileName
+                    FileName = FileName + ".gz"
+                    if not os.path.isfile(FileName):
+                        print "No such fileS " + FileName_old + " or " + FileName + "."
+                        raise
+                        return
+            else:
+                format_ext = format
+            Evol_varList = readList.Evol_formats[format_ext]['varList'] + MyDriver.added_columns['varList']
+            Evol_unitsList = readList.Evol_formats[format_ext]['unitsList'] + MyDriver.added_columns['unitsList']
+            Evol_catList = readList.Evol_formats[format_ext]['catList'] + MyDriver.added_columns['catList']
+            col_num = readList.Evol_formats[format_ext]['column_number'] + len(MyDriver.added_columns['varList'])
+            if format == "starevol":
+                file_cols = col_num
+        header = readList.Evol_formats[format_ext]['header']
+        num_deb = num_deb + header
+        
+        for MyVar,colNum,MyUnit,MyType in zip([varList[0] for varList in Evol_varList],[varList[1] for varList in Evol_varList],Evol_unitsList,Evol_catList):
+            self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
+
+        converters = {}
+        for i in range(file_cols):
+            converters[i] = lambda s: self.TestFloat(s)
+
+        try:
+            toZip = False
+            if format == "starevol" and os.path.splitext(FileName)[1] == '.gz':
+                toZip = True
+                rootName = os.path.splitext(FileName)[0]
+                if not quiet:
+                    print('unzipped file: '+rootName)
+                CommandUnzip = 'gunzip '+FileName
+                CommandZip = 'gzip '+rootName
+                os.system(CommandUnzip)
+                MyFile = rootName
+            else:
+                MyFile = FileName
+            BigArray = np.loadtxt(MyFile,skiprows=num_deb,converters=converters,usecols=range(file_cols))
+            if toZip:
+                os.system(CommandZip)
+        except ValueError:
+            os.system(CommandZip)
+            print "converters couldn't help, probable format error"
+            raise ValueError
+            return
+
+        if BigArray.shape[1] != col_num:
+            raise FormatError(1,'column number does not match, make sure you entered the correct format for file',FileName)
+            return
+        if num_fin == -1:
+            num_fin = BigArray.shape[0]
+
+        for i,myVar in zip([varList[1] for varList in Evol_varList],[varList[0] for varList in Evol_varList]):
+            self.Variables[myVar][0] = BigArray[:num_fin,i]
+        if format not in ['tgrids','tools','nami','starevol']:
+            j = sorted([varList[1] for varList in Evol_varList])[-(2+len(MyDriver.added_columns['varList']))]+1
+            self.CZ_array = np.array([[BigArray[:num_fin,j],BigArray[:num_fin,j+2],BigArray[:num_fin,j+4],BigArray[:num_fin,j+6],BigArray[:num_fin,j+8],BigArray[:num_fin,j+10], \
+                                BigArray[:num_fin,j+12],BigArray[:num_fin,j+14],BigArray[:num_fin,j+16],BigArray[:num_fin,j+18],BigArray[:num_fin,j+20],BigArray[:num_fin,j+22], \
+                                BigArray[:num_fin,j+24],BigArray[:num_fin,j+26],BigArray[:num_fin,j+28],BigArray[:num_fin,j+30],BigArray[:num_fin,j+32],BigArray[:num_fin,j+34], \
+                                BigArray[:num_fin,j+36],BigArray[:num_fin,j+38]],[BigArray[:num_fin,j+1],BigArray[:num_fin,j+3],BigArray[:num_fin,j+5],BigArray[:num_fin,j+7], \
+                                BigArray[:num_fin,j+9],BigArray[:num_fin,j+11],BigArray[:num_fin,j+13],BigArray[:num_fin,j+15],BigArray[:num_fin,j+17],BigArray[:num_fin,j+19], \
+                                BigArray[:num_fin,j+21],BigArray[:num_fin,j+23],BigArray[:num_fin,j+25],BigArray[:num_fin,j+27],BigArray[:num_fin,j+29],BigArray[:num_fin,j+31], \
+                                BigArray[:num_fin,j+33],BigArray[:num_fin,j+35],BigArray[:num_fin,j+37],BigArray[:num_fin,j+39]]])
+            standard_columns()
+
+        return header
 
 class Struc(Outputs):
     """Contains all the utilities to read and process the structure files.
@@ -2270,15 +2426,19 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
        Optional arguments are:
           num_deb (first line by default)
           num_fin (last line by default)
-          format (o2013, tgrids, tools, bin, preMS). if empty: auto-detection
+          format (o2013, tgrids, tools, bin, preMS,starevol). if empty: auto-detection
           colour (False by default, colours computation if True)
           forced (False by default, True to avoid the checking of the star number)
           wa (False by default, True to read the abundances in the wa file)
           quiet (False by default, True to avoid all the babbling)."""
     MyModel = Model()
-    if not os.path.isfile(FileName):
-        print('File '+FileName+' does not exist, check name and path.')
-        return
+    if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
+        format = "starevol"
+
+    if format != "starevol":
+        if not os.path.isfile(FileName):
+            print('File '+FileName+' does not exist, check name and path.')
+            return
     toZip = False
     if os.path.splitext(FileName)[1] == '.gz':
         toZip = True
