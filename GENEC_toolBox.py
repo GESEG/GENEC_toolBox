@@ -90,6 +90,8 @@ class Cst():
     C13sol = 2.770743611425104e-5
     Nsol = 6.587580293386503e-4
     Osol = 5.718475172229120e-3
+    Hsol_starevol = 0.717638811
+    Zsol_starevol = 0.013452590
 
 class FormatError(EnvironmentError):
     pass
@@ -314,7 +316,25 @@ class readList():
                      'unitsList':['model num','$^{12}$C [centr. mass frac.]','$^{13}$C [centr. mass frac.]',\
                      '$^{14}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]','$^{15}$N [centr. mass frac.]',\
                      '$^{15}$O [centr. mass frac.]','$^{16}$O [centr. mass frac.]','$^{17}$O [centr. mass frac.]',\
-                     '$^{18}$O [centr. mass frac.]','$^{19}$F [centr. mass frac.]','$^{20}$N2 [centr. mass frac.]'],
+                     '$^{18}$O [centr. mass frac.]','$^{19}$F [centr. mass frac.]','$^{20}$Ne [centr. mass frac.]'],
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_c3'] = {'varList':[['line',0],['Ne21c',1],['Ne22c',2],['Na23c',3],['Mg24c',4],['Mg25c',5],\
+                     ['Mg26c',6],['Al26c',7],['Al26gc',8],['Al27c',9],['Si28c',10],['Si29c',11]],\
+                     'unitsList':['model num','$^{21}$Ne [centr. mass frac.]','$^{22}$Ne [centr. mass frac.]',\
+                     '$^{23}$Na [centr. mass frac.]','$^{24}$Mg [centr. mass frac.]','$^{25}$Mg [centr. mass frac.]',\
+                     '$^{26}$Mg [centr. mass frac.]','$^{26}$Al [centr. mass frac.]','$^{26}$Al$_\\mathrm{g}$ [centr. mass frac.]',\
+                     '$^{27}$Al [centr. mass frac.]','$^{28}$Si [centr. mass frac.]','$^{29}$Si [centr. mass frac.]'],
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_c4'] = {'varList':[['line',0],['Si30c',1],['P31c',2],['S32c',3],['S33c',4],['S34c',5],\
+                     ['S35c',6],['Cl35c',7],['S36c',8],['Cl36c',9],['Cl37c',10],['Heavyc',11]],\
+                     'unitsList':['model num','$^{30}$Si [centr. mass frac.]','$^{31}$P [centr. mass frac.]',\
+                     '$^{32}$S [centr. mass frac.]','$^{33}$S [centr. mass frac.]','$^{34}$S [centr. mass frac.]',\
+                     '$^{35}$S [centr. mass frac.]','$^{35}$Cl [centr. mass frac.]','$^{36}$S [centr. mass frac.]',\
+                     '$^{36}$Cl [centr. mass frac.]','$^{37}$Cl [centr. mass frac.]','Heavy el. [centr. mass frac.]'],
                      'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
                      'abundances','abundances','abundances','abundances','abundances'],
                      'header':7,'column_number':12}
@@ -336,6 +356,37 @@ class readList():
                      'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
                      'abundances','abundances','abundances','abundances','abundances'],
                      'header':7,'column_number':12}
+    Evol_formats['starevol_s3'] = {'varList':[['line',0],['Ne21s',1],['Ne22s',2],['Na23s',3],['Mg24s',4],['Mg25s',5],\
+                     ['Mg26s',6],['Al26s',7],['Al26gs',8],['Al27s',9],['Si28s',10],['Si29s',11]],\
+                     'unitsList':['model num','$^{21}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]',\
+                     '$^{23}$Na [surf. mass frac.]','$^{24}$Mg [surf. mass frac.]','$^{25}$Mg [surf. mass frac.]',\
+                     '$^{26}$Mg [surf. mass frac.]','$^{26}$Al [surf. mass frac.]','$^{26}$Al$_\\mathrm{g}$ [surf. mass frac.]',\
+                     '$^{27}$Al [surf. mass frac.]','$^{28}$Si [surf. mass frac.]','$^{29}$Si [surf. mass frac.]'],
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_s4'] = {'varList':[['line',0],['Si30s',1],['P31s',2],['S32s',3],['S33s',4],['S34s',5],\
+                     ['S35s',6],['Cl35s',7],['S36s',8],['Cl36s',9],['Cl37s',10],['Heavys',11]],\
+                     'unitsList':['model num','$^{30}$Si [surf. mass frac.]','$^{31}$P [surf. mass frac.]',\
+                     '$^{32}$S [surf. mass frac.]','$^{33}$S [surf. mass frac.]','$^{34}$S [surf. mass frac.]',\
+                     '$^{35}$S [surf. mass frac.]','$^{35}$Cl [surf. mass frac.]','$^{36}$S [surf. mass frac.]',\
+                     '$^{36}$Cl [surf. mass frac.]','$^{37}$Cl [surf. mass frac.]','Heavy el. [surf. mass frac.]'],
+                     'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
+                     'abundances','abundances','abundances','abundances','abundances'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_v1'] = {'varList':[['line',0],['Tc',1],['Tmax',2],['MrTmax',3],['rhoc',4],['rhoTmax',5],\
+                     ['Pc',6],['betac',7],['etac',8],['degpec',9],['epsnu',10],['eps_nuc',11],['epsgrav',12]],\
+                     'unitsList':['model num','$\log(T_\mathrm{c}\ [K])$','$\log(T_\mathrm{max}\ [K])$',\
+                     '$M_r(T_\\mathrm{max})\ [M_\odot]$',r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$',\
+                     r'$\log(\rho(T_\mathrm{max})\ [\mathrm{g\,cm}^{-3}])$',\
+                     '$\log(P_\mathrm{c}\ [\mathrm{erg}\,\mathrm{cm}^{-3}])$',\
+                     r'$\beta_\mathrm{c}$','$\eta_\mathrm{c}$','central degree of degeneracy',\
+                     r'$\epsilon_{\nu,\mathrm{c}}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                     r'$\epsilon_\mathrm{grav,c}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                     r'$\epsilon_\mathrm{nucl,c}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$'], \
+                     'catList':['model','centre','model','model','centre','model','centre','centre','centre','centre',\
+                     'centre','centre','centre'],
+                     'header':7,'column_number':13}
     Evol_formats['starevol_v3'] = {'varList':[['line',0],['conv1_Mb',1],['conv1_Rb',2],['conv1_Tb',3],['conv1_rob',4],\
                      ['conv1_Mt',5],['conv1_Rt',6],['conv1_Tt',7],['conv1_rot',8],['env_Mb',9],['env_Rb',10],\
                      ['env_Tb',11],['env_rob',12]],\
@@ -663,6 +714,10 @@ class ShapeInterpolation():
         oblat_reverse = self.Vector_Oblat[::-1]
         ooc_reverse = self.Vector_Omega_Omega_crit[::-1]
         self.interpolation = interpolate.interp1d(oblat_reverse,ooc_reverse)
+        return
+
+    def Define_Interp_OOcOblat(self):
+        self.interpolation = interpolate.interp1d(self.Vector_Omega_Omega_crit,self.Vector_Oblat)
         return
 
 class ColourInterpolation():
@@ -1233,28 +1288,67 @@ class Model(Outputs):
     def Spec_var_starevol(self):
         if self.Variables['format'][0][0] != 'starevol':
             return
+        
+        Actual_Surface = self.Variables['L'][0]*Cst.Lsol /(Cst.sigma*self.Variables['Teff'][0]**4.)
+        Critical_polar_radius = np.sqrt(Actual_Surface/self.Polar_Radius_f.Vector_Surface[-1])
+        O_crit = np.sqrt(8.*Cst.G*Cst.Msol*self.Variables['M'][0]/(27.*Critical_polar_radius**3.))
+        OOc = self.Variables['Omega_surf'][0]/O_crit
+        OOc[np.where(OOc>1.)] = 1.
         self.Variables['Mcc'] = [np.zeros((len(self.Variables['line'][0]))),'$M_\mathrm{cc}\ [M_\odot]$','centre']
         index = np.where(np.logical_or(self.Variables['phaseSE'][0] == 2,np.logical_or(self.Variables['phaseSE'][0] == 4,self.Variables['phaseSE'][0] > 5)))
-        self.Variables['Mcc'][0][index] = self.Variables['conv1_Mb'][0][index]
+        self.Variables['Mcc'][0][index] = self.Variables['conv1_Mt'][0][index]
         self.Variables['Mccrel'] = [np.array(()),'$M_\mathrm{cc}/M_\mathrm{tot}$','centre']
         self.Variables['Mccrel'][0] = self.Variables['Mcc'][0]*self.Variables['M'][0]
-        self.Variables['OOc'] = [np.zeros((len(self.Variables['line'][0]))),'$\Omega/min(\Omega_\mathrm{crit,1},\Omega_\mathrm{crit,2})$','rotation']
+        self.Variables['OOc'] = [OOc,'$\Omega/min(\Omega_\mathrm{crit,1},\Omega_\mathrm{crit,2})$','rotation']
 
         # Convert stuff to log
         self.Variables['L'][0] = np.log10(self.Variables['L'][0])
         self.Variables['Teff'][0] = np.log10(self.Variables['Teff'][0])
         self.Variables['Teffcorr'] = [self.Variables['Teff'][0],self.Variables['Teff'][1],self.Variables['Teff'][2]]
-        self.Variables['Rpol'] = [self.Variables['R'][0],self.Variables['R'][1],self.Variables['R'][2]]
-        self.Variables['gsurf'][0] = np.log10(self.Variables['gsurf'][0])
+        
+        Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0])
+        r_pol = np.sqrt(Actual_Surface/Norm_Surface)
+        g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0]/r_pol**2.)
+        
+        self.Polar_Radius_f.Define_Interp_OOcOblat()
+        oblat = self.Polar_Radius_f.interpolation(OOc)
+        self.Variables['oblat'] = [oblat,'$R_\mathrm{pol}/R_\mathrm{eq}$','surface']
+        Vsurf = self.Variables['Omega_surf'][0]*r_pol/oblat/1.e5
+        self.Variables['Vsurf'] = [Vsurf,'$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$','rotation']
+        Vcrit1 = 3.*Critical_polar_radius*OOc/2.e5
+        self.Variables['Vcrit1'] = [Vcrit1,'$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','rotation']
+        # No ways of computing Vcrit2 with starevol formats.
+        self.Variables['Vcrit2'] = [Vcrit1,'$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','rotation']
+
+        
+        # This is to come back with the normal interpolation
+        self.Polar_Radius_f.Define_Interp_OOcShape()
+        
+        self.Variables['Rpol'] = [r_pol/Cst.Rsol,'$R_\mathrm{pol}\ [R_\odot]$','surface']
+        self.Variables['gpol'] = [g_pol,'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
         mask = self.Variables['Mdot'][0]<=0.
         self.Variables['Mdot'][0][mask] = 0.
         self.Variables['Mdot'][0][np.logical_not(mask)] = np.log10(self.Variables['Mdot'][0][np.logical_not(mask)])
+        self.Variables['Mdot_mech'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$','surface']
         mask = self.Variables['mdot_acc'][0]<=0.
         self.Variables['mdot_acc'][0][mask] = 0.
         self.Variables['mdot_acc'][0][np.logical_not(mask)] = np.log10(self.Variables['mdot_acc'][0][np.logical_not(mask)])
         mask = self.Variables['Lacc'][0]<=0.
         self.Variables['Lacc'][0][mask] = 0.
         self.Variables['Lacc'][0][np.logical_not(mask)] = np.log10(self.Variables['Lacc'][0][np.logical_not(mask)])
+        
+        self.Variables['Tc'][0] = np.log10(self.Variables['Tc'][0])
+        self.Variables['Tmax'][0] = np.log10(self.Variables['Tmax'][0])
+        self.Variables['rhoc'][0] = np.log10(self.Variables['rhoc'][0])
+        self.Variables['rhoTmax'][0] = np.log10(self.Variables['rhoTmax'][0])
+        self.Variables['Pc'][0] = np.log10(self.Variables['Pc'][0])
+        
+        self.Variables['GammaEdd'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Gamma_\mathrm{Edd}$','surface']
+        self.Variables['Ltot'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','rotation']
+        # no centre angular velocity in starevol, set to 0.
+        self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','rotation']
+        # no mass-loss correction for rotation in starevol, set to 1.
+        self.Variables['rot_corr'] = [np.zeros(np.size(self.Variables['Mdot'][0]))+1.,'$F_\Omega$','rotation']
 
         return
 
@@ -1306,7 +1400,7 @@ class Model(Outputs):
                 print 'No extension detected, trying with starevol format.'
 
         if format == "starevol":
-            extensions_list = [".as",".hr",".c1",".c2",".s1",".s2",".v3",".v11"]
+            extensions_list = [".as",".hr",".c1",".c2",".c3",".c4",".s1",".s2",".s3",".s4",".v1",".v3",".v11"]
             FilesToRead = [FileName + ext for ext in extensions_list]
         else:
             FilesToRead = [FileName]
@@ -1407,9 +1501,15 @@ class Model(Outputs):
             self.Variables['Teffcorr'] = self.Variables['Teff']
             self.Variables['rhom'][0] = 10.**self.Variables['rhom'][0]
             self.Variables['OOc'] = [np.zeros((len(self.Variables['line'])))]
-        self.Variables['Mbol'] = [-2.5*self.Variables['L'][0]+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
+        if format != 'starevol':
+            self.Variables['Mbol'] = [-2.5*self.Variables['L'][0]+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
+        else:
+            self.Variables['Mbol'] = [-2.5*np.log10(self.Variables['L'][0])+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
         if format != 'nami':
-            self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff'][0])*Cst.Rsol),'$R\ [R_\odot]$','surface']
+            if format != 'starevol':
+                self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff'][0])*Cst.Rsol),'$R\ [R_\odot]$','surface']
+            else:
+                self.Variables['R'] = [np.sqrt(self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(self.Variables['Teff'][0]**2.*Cst.Rsol),'$R\ [R_\odot]$','surface']
             self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
         self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
@@ -1430,9 +1530,12 @@ class Model(Outputs):
             self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
-            self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
+            self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
 
-        self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/Cst.Hsol),'Fe/H','abundances']
+        if format != "starevol":
+            self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/Cst.Hsol),'Fe/H','abundances']
+        else:
+            self.Variables['FeH'] = [self.Variables['Zsurf'][0]*0.-0.3,'Fe/H','abundances']
         self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
         mask = self.Variables['H1s'][0]<=0.
@@ -2607,7 +2710,6 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
         iso_beg = [iso_time_dic[t] for t in sorted(iso_time_dic.keys())]
         iso_end = [iso_beg[i]+1 for i in range(1,len(iso_beg))]
         iso_end.append(-1)
-        print 'iso_beg,iso_end:',iso_beg,iso_end
     if not multi_iso:
         MyModel = Cluster()
         if not forced:
@@ -2642,7 +2744,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                 except IOError as IOerr:
                     print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
 
-def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False):
+def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False,colour=False):
     """ Loads a list of models from a file.
         The file shall contain on each line the path to the wanted model.
         By default, the models are loaded with index 1 for the first one up to n,
@@ -2655,16 +2757,16 @@ def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
     for Path in ListFile:
         MyPath = str(Path.split()[0])
         try:
-            loadE(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet)
+            loadE(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
             index += 1
         except FormatError as WF:
             print '[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename
             pass
         except IndexError:
-            print 'column problem in file '+file
+            print 'column problem in file '+MyPath
             pass
         except ValueError:
-            print 'value problem in file '+file
+            print 'value problem in file '+MyPath
             pass
     if not quiet:
         print ''
@@ -2701,7 +2803,7 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
     for Path in ListFile:
         MyPath = str(Path.split()[0])
         try:
-            loadC(MyPath,index,num_deb,format,forced=forced,quiet=quiet)
+            loadC(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet)
             index += 1
         except FormatError as WF:
             print '[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename
@@ -2716,7 +2818,7 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
         print ''
         Loaded('cluster')
 
-def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False,quiet=True):
+def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False,quiet=True,colour=False):
     """Loads all models (.wg, .dat, or .wg.grids) in the directory given in argument.
         By default, the models are loaded with index 1 for the first one up to n,
             but setting 'ini_index=i' modifies the numbering from i to i+n.
@@ -2737,7 +2839,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         file_short = file[file.rfind('/')+1:]
         print 'file '+file_short
         try:
-            loadE(file,index,num_deb,format=format,forced=forced,quiet=quiet)
+            loadE(file,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
             if not quiet:
                 print 'File '+file_short+' successfully loaded.'
             index += 1
