@@ -127,7 +127,7 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['o2013','tgrids','tools','nami','bin','preMS']
+    Evol_fmt = ['o2013','tgrids','tools','nami','bin','preMS','starevol']
     Evol_formats = {}
     Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],\
                     ['C12s',8],['C13s',9],['N14s',10],['O16s',11],['O17s',12],['O18s',13],['Ne20s',14],['Ne22s',15],['Al26s',42],['H1c',21],['He3c',23],['He4c',22],['Be7c',32],['B8c',33],\
@@ -412,8 +412,42 @@ class readList():
                 'thermo','EOS','EOS','EOS','EOS','EOS','energy','energy','energy','energy','energy','abundances','abundances','rotation'], \
                 'header':11,'column_number':25}
 
-    Cluster_fmt = ['cluster','cluster_old','isochr','isochr_old','isochr_veryold']
+    Cluster_fmt = ['cluster2018','cluster','cluster_old','isochr2018','isochr','isochr_old','isochr_veryold']
     Cluster_formats = {}
+    Cluster_formats['cluster2018'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5], \
+                ['M',6],['Rpol',29],['gpol',31],['gmean',32],['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13], \
+                ['L',7],['L_gd',10],['L_lgd',12],['Mbol',14],['Gammaedd',40],['Mdot',38],['dMmech',39], \
+                ['Omega_surf',33],['OOc',37],['Vsurf',34],['Vcrit1',35],['Vcrit2',36],['oblat',30],['H1s',41], \
+                ['He4s',42],['C12s',43],['C13s',44],['N14s',45],['O16s',46],['O17s',47],['O18s',48],['Ne20s',49], \
+                ['Ne22s',50],['Al26s',51],['M_V',15],['U-B',16],['B-V',17],['V-R',18],['V-I',19],['J-K',20], \
+                ['H-K',21],['V-K',22],['M_V_noise',23],['B-V_noise',24],['G-V',25],['Gbp-V',26],['Grp-V',27],['G_flag',28]], \
+                'unitsList':['$M_\mathrm{ini}\,[M_\odot]$',\
+                '$Z_\mathrm{ini}$','$\Omega/\Omega_\mathrm{crit,ini}$', \
+                '$i\ [^\mathrm{o}]$','binary','$M_1/M_2$','$M\,[M_\odot]$','$R_\mathrm{pol}\,[R_\odot]$', \
+                '$\log(g_\mathrm{pol}\,[\mathrm{cm\,s}^{-2}])$','$\log(g_\mathrm{mean}\,[\mathrm{cm\,s}^{-2}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(L/L_\odot)$','$\log(L/L_\odot)$','$\log(L/L_\odot)$', \
+                '$\mathrm{M}_\mathrm{bol}$','$\Gamma_\mathrm{Edd}$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$', \
+                '$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega/\Omega_\mathrm{crit}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$', \
+                '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$', \
+                '$R_\mathrm{pol}/R_\mathrm{eq}$','$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]', \
+                '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]', \
+                '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]', \
+                '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]', \
+                '$\mathrm{M}_\mathrm{V}$','U-B','B-V','V-R','V-I','J-K','H-K','V-K', \
+                '$\mathrm{M}_\mathrm{V}$','B-V','G-V','G$_\mathrm{BP}$-V','G$_\mathrm{RP}$-V','Gaia flag'], \
+                'catList':['initial conditions','initial conditions','initial conditions', \
+                'initial conditions','initial conditions','initial conditions','global properties', \
+                'global properties','global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','rotation','rotation','rotation','rotation','rotation','rotation', \
+                'abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','colours','colours', \
+                'colours','colours','colours','colours','colours','colours','colours','colours','colours', \
+                'colours','colours','colours','colours'],\
+                'header':3,'column_number':52}
     Cluster_formats['cluster'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5], \
                 ['M',6],['Rpol',26],['gpol',28],['gmean',29],['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13], \
                 ['L',7],['L_gd',10],['L_lgd',12],['Mbol',14],['Gammaedd',37],['Mdot',35],['dMmech',36], \
@@ -472,6 +506,35 @@ class readList():
                 'abundances','abundances','abundances','abundances','abundances','abundances', \
                 'abundances','abundances','abundances','abundances','abundances','colours','colours', \
                 'colours','colours','colours','colours'],'header':3,'column_number':39}
+
+    Cluster_formats['isochr2018'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',21],['gpol',23], \
+                ['Teffcorr',5],['Teff',6],['L',4],['Mbol',7],['Gammaedd',31],['Mdot',29], \
+                ['dMmech',30],['Omega_surf',24],['OOc',28],['Vsurf',25],['Vcrit1',26],['Vcrit2',27], \
+                ['oblat',22],['H1s',32],['He4s',33],['C12s',34],['C13s',35],['N14s',36],['O16s',37], \
+                ['O17s',38],['O18s',39],['Ne20s',40],['Ne22s',41],['Al26s',42],['M_V',8],['U-B',9], \
+                ['B-V',10],['V-K',11],['V-R',12],['V-I',13],['J-K',14],['H-K',15],['G-V',16],['Gbp-V',17], \
+                ['Grp-V',18],['G_flag',19],['BC',20]],\
+                'unitsList':['$M_\mathrm{ini}\,[M_\odot]$','$Z_\mathrm{ini}$','$\Omega/\Omega_\mathrm{crit,ini}$', \
+                '$M\,[M_\odot]$','$R_\mathrm{pol}\,[\mathrm{cm}]$','$\log(g_\mathrm{pol}\,[\mathrm{cm\,s}^{-2}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(L/L_\odot)$', \
+                '$\mathrm{M}_\mathrm{bol}$','$\Gamma_\mathrm{Edd}$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$', \
+                '$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega/\Omega_\mathrm{crit}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$', \
+                '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$', \
+                '$R_\mathrm{pol}/R_\mathrm{eq}$','$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]', \
+                '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]', \
+                '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]', \
+                '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]', \
+                '$\mathrm{M}_\mathrm{V}$','U-B','B-V','V-K','V-R','V-I','J-K','H-K','G-V','G$_\mathrm{BP}$-V', \
+                'G$_\mathrm{RP}$-V','Gaia flag','Bolometric correction'],'catList':['initial conditions',\
+                'initial conditions','initial conditions', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','rotation','rotation','rotation','rotation', \
+                'rotation','rotation','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances', \
+                'colours','colours','colours','colours','colours','colours','colours','colours','colours', \
+                'colours','colours','colours','colours'],'header':2,'column_number':43}
 
     Cluster_formats['isochr'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',17],['gpol',19], \
                 ['Teffcorr',5],['Teff',6],['L',4],['Mbol',7],['Gammaedd',27],['Mdot',25], \
@@ -1888,6 +1951,11 @@ class Cluster(Outputs):
             self.Variables['M_K'] = [-self.Variables['V-K'][0]+self.Variables['M_V'][0],'M$_\mathrm{K}$','colours']
             self.Variables['M_H'] = [self.Variables['H-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{H}$','colours']
             self.Variables['M_J'] = [self.Variables['J-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{J}$','colours']
+        if self.Variables['format'][0][0] == 'isochr2018' or self.Variables['format'][0][0] == 'cluster2018':
+            self.Variables['M_G'] = [-self.Variables['G-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G}$','colours']
+            self.Variables['M_Gbp'] = [-self.Variables['Gbp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G_\mathrm{BP}}$','colours']
+            self.Variables['M_Grp'] = [-self.Variables['Grp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G_\mathrm{RP}}$','colours']
+            self.Variables['Gbp-Grp'] = [-self.Variables['Gbp-V'][0]-self.Variables['Grp-V'][0],'G$_\mathrm{BP}$-G$_\mathrm{RP}$','colours']
         return
 
     def Spec_var_cluster(self):
@@ -3536,7 +3604,8 @@ def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=Fals
         return "You have to enter either nothing (for M_V versus B-V), or a triplet like 'BUB' or 'VBV'."
     else:
         vary = 'M_'+c[0]
-        varx = c[1]+'-'+c[2]
+        last_index = len(c)-1
+        varx = c[1:last_index]+'-'+c[last_index]
     if 'x' in noised.lower():
         varx = varx+'_noised'
     if 'y' in noised.lower():
