@@ -285,10 +285,14 @@ class readList():
                     'energetics','energetics','energetics','energetics','binary','binary','binary','binary','binary','binary','binary'],\
                     'header':0,'column_number':117}
     Evol_formats['preMS'] = {'header':0,'column_number':116}
-    Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['tbce',5],['tHe',6],\
+    Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['Tbce',5],['THe',6],\
                      ['numax',7],['Dpg',8]],\
-                     'unitsList':['model num','To be cheked','To be cheked','To be cheked','To be cheked','To be cheked','To be cheked',\
-                     'To be cheked','To be cheked'],
+                     'unitsList':['model num','$\\Delta\\nu_\\mathrm{asym.}\\ [\\mu\\mathrm{Hz}]$',\
+                     '$\\Delta\\nu_\\mathrm{scal.}\\ [\\mu\\mathrm{Hz}]$',\
+                     '$\\frac{\\Delta\\nu_\\mathrm{asym.}-\\Delta\\nu_\\mathrm{scal.}}{\\Delta\\nu_\\mathrm{asym.}}$',\
+                     'Total accoustic radius [s]','Accoustic radius$_\\mathrm{BCE}$ [s]',\
+                     'Accoustic radius$_\\mathrm{He\\ ion}$ [s]','$\\nu_\\mathrm{max}\\ [\\mu\\mathrm{Hz}]$',\
+                     '$\\Delta\\Pi_\\mathrm{g\\ modes}\\ [\\mathrm{s}]$'],
                      'catList':['model','astero','astero','astero','astero','astero','astero','astero','astero'],\
                      'header':7,'column_number':9}
     Evol_formats['starevol_hr'] = {'varList':[['line',0],['phaseSE',1],['L',2],['Reff',3],['R',4],['Teff',5],['rhoeff',6],\
@@ -400,11 +404,13 @@ class readList():
                      'convection','convection','convection','convection','convection','convection'],\
                      'header':7,'column_number':13}
     Evol_formats['starevol_v11'] = {'varList':[['line',0],['mdot_acc',1],['Racc',2],['Macc',3],['Lacc',4],['k2conv',5],\
-                     ['k2rad',6],['Rossby',7],['Omega_surf',8],['Vsurf',9],['xmoment',10],['Fenerg',11],['dmoment',12]],
-                     'unitsList':['model num','$(\log(\dot{M})_\mathrm{accr.}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
-                     '$R_\\mathrm{acc}/R_\star$','$M_\\mathrm{acc}/M_\star$','$\log(L_\\mathrm{acc}/L_\odot)$',\
-                     '$K_\\mathrm{2,conv}$','$K_\\mathrm{2,rad}$','Rossby number','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$',\
-                     '$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$','Xmoment','Fenerg','Dmoment'],
+                     ['k2rad',6],['Rossby',7],['Omega_surf',8],['Vsurf',9],['Ltot',10],['Fenerg',11],['torque',12]],
+                     'unitsList':['model num','$\log(\dot{M}_\mathrm{accr.}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
+                     '$R_\\mathrm{accr.}/R_\star$','$M_\\mathrm{accr.}/M_\star$','$\log(L_\\mathrm{accr.}\\ [L_\odot])$',\
+                     '$k_\\mathrm{2,conv}$','$k_\\mathrm{2,rad}$','Rossby number','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$',\
+                     '$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$',r'$\mathcal{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
+                     '$\\mathcal{F}_\\mathrm{E}(\\ell,\\omega)\\ [\\mathrm{erg\\ s}^{-1}]$',\
+                     '$\\mathcal{T}_\\mathrm{s}\\ [\\mathrm{g\\ cm}^2\\mathrm{s}^{-1}]$'],
                      'catList':['model','surface','surface','surface','surface','surface','surface','rotation', \
                      'rotation','rotation','rotation','rotation','rotation'],
                      'header':7,'column_number':13}
@@ -1344,11 +1350,11 @@ class Model(Outputs):
         self.Variables['Pc'][0] = np.log10(self.Variables['Pc'][0])
         
         self.Variables['GammaEdd'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Gamma_\mathrm{Edd}$','surface']
-        self.Variables['Ltot'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','rotation']
         # no centre angular velocity in starevol, set to 0.
         self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','rotation']
         # no mass-loss correction for rotation in starevol, set to 1.
         self.Variables['rot_corr'] = [np.zeros(np.size(self.Variables['Mdot'][0]))+1.,'$F_\Omega$','rotation']
+        self.Variables['Ltot'][0] = self.Variables['Ltot'][0]/1.e53
 
         return
 
