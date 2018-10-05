@@ -68,7 +68,7 @@ rcParams['xtick.direction'] = 'in'
 rcParams['ytick.direction'] = 'in'
 
 class GtB_version():
-    GtB_version = '8.0.1'
+    GtB_version = '8.1.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox"""
