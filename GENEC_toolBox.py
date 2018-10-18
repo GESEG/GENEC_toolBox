@@ -5879,14 +5879,16 @@ def closest_line(Xvar='',Yvar='',printline=False):
     if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
         print 'Beware: the line will not be as accurate as if you used the complete .wg file.\n'
     if not printline:
-        return line_i[best_i]
+      if len(MyDriver.SelectedModels) > 1:
+        print 'closest model:',best_i
+      return line_i[best_i]
     else:
-        with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
-            for file_line in myfile:
-                current_model = int(file_line.split()[0])
-                if current_model == line_i[best_i]:
-                    print file_line
-                    return line_i[best_i]
+      with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+        for file_line in myfile:
+          current_model = int(file_line.split()[0])
+          if current_model == line_i[best_i]:
+            print file_line
+            return line_i[best_i]
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
