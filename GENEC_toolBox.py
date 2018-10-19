@@ -1614,6 +1614,8 @@ class Model(Outputs):
 
         wafile = open(FileName,'r')
         BigArray = np.genfromtxt(wafile,skip_header=num_deb,comments=None)
+        if num_fin == -1:
+          num_fin = BigArray.shape[0]
         el_num = (BigArray.shape[1]-3)/2
         print el_num,' isotopes read in .wa file'
         for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
@@ -2824,7 +2826,7 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
         print ''
         Loaded('cluster')
 
-def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False,quiet=True,colour=False):
+def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,forced=False,quiet=True,colour=False):
     """Loads all models (.wg, .dat, or .wg.grids) in the directory given in argument.
         By default, the models are loaded with index 1 for the first one up to n,
             but setting 'ini_index=i' modifies the numbering from i to i+n.
@@ -2845,7 +2847,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         file_short = file[file.rfind('/')+1:]
         print 'file '+file_short
         try:
-            loadE(file,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
+            loadE(file,index,num_deb,format=format,wa=wa,forced=forced,quiet=quiet,colour=colour)
             if not quiet:
                 print 'File '+file_short+' successfully loaded.'
             index += 1
@@ -4280,11 +4282,11 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
        If an index is provided, for example PlotRatio("M","M",index=0),
           it will plot variable_1 divided by the value of variable_2[index]."""
     abort = False
-    if MyDriver.plotmode == 'evol':
+    if MyDriver.modeplot == 'evol':
       lenvar = 'line'
-    elif MyDriver.plotmode == 'struc':
+    elif MyDriver.modeplot == 'struc':
       lenvar = 'shell'
-    elif MyDriver.plotmode == 'cluster':
+    elif MyDriver.modeplot == 'cluster':
       lenvar = 'Mini'
     if index == 0:
         ilabel = '$_\mathrm{ini}$'
