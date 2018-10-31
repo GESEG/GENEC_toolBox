@@ -1517,6 +1517,7 @@ class Model(Outputs):
             else:
                 self.Variables['R'] = [np.sqrt(self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(self.Variables['Teff'][0]**2.*Cst.Rsol),'$R\ [R_\odot]$','surface']
             self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
+        self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
         self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
         self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
@@ -1537,14 +1538,14 @@ class Model(Outputs):
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-
-        if format != "starevol":
-            self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/Cst.Hsol),'Fe/H','abundances']
-        else:
-            self.Variables['FeH'] = [self.Variables['Zsurf'][0]*0.-0.3,'Fe/H','abundances']
-        self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
-        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
+        self.Variables['FeH'] = [np.zeros((self.imax)),'Fe/H','abundances']
         mask = self.Variables['H1s'][0]<=0.
+        if format != "starevol":
+            self.Variables['FeH'][0][mask] = -30.
+            self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
+        else:
+            self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
+        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
         self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
         self.Variables['NH'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)])+12.
         self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
