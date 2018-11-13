@@ -610,9 +610,39 @@ class readList():
                 'thermo','EOS','EOS','EOS','EOS','EOS','energy','energy','energy','energy','energy','abundances','abundances','rotation'], \
                 'header':11,'column_number':25}
 
-    Cluster_fmt = ['cluster','cluster_old','isochr','isochr_old','isochr_veryold']
+    Cluster_fmt = ['cluster','cluster2016','cluster_old','isochr','isochr_old','isochr_veryold']
     Cluster_formats = {}
-    Cluster_formats['cluster'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5], \
+    Cluster_formats['cluster'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5],['M',6],['Rpol',29],['gpol',31],['gmean',32],\
+                ['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13],['L',7],['L_gd',10],['L_lgd',12],['MBol',14],['Gammaedd',40],['Mdot',38],['dMmech',39],\
+                ['Omega_surf',33],['OOc',37],['Vsurf',34],['Vcrit1',35],['Vcrit2',36],['oblat',30],['H1s',41],['He4s',42],['C12s',43],['C13s',44],['N14s',45],\
+                ['O16s',46],['O17s',47],['O18s',48],['Ne20s',49],['Ne22s',50],['Al26s',51],['M_V',15],['U-B',16],['B-V',17],['V-R',18],['V-I',19],['J-K',20],\
+                ['H-K',21],['V-K',22],['M_V_noise',23],['B-V_noise',24],['G-V',25],['Gbp-V',26],['Grp-V',27],['G_flag',28]],\
+                'unitsList':['$M_\mathrm{ini}\,[M_\odot]$','$Z_\mathrm{ini}$','$\Omega/\Omega_\mathrm{crit,ini}$','$i\ [^\mathrm{o}]$','binary','$M_1/M_2$',\
+                '$M\,[M_\odot]$','$R_\mathrm{pol}\,[R_\odot]$','$\log(g_\mathrm{pol}\,[\mathrm{cm\,s}^{-2}])$','$\log(g_\mathrm{mean}\,[\mathrm{cm\,s}^{-2}])$',\
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(L/L_\odot)$','$\log(L/L_\odot)$','$\log(L/L_\odot)$', \
+                '$\mathrm{M}_\mathrm{bol}$','$\Gamma_\mathrm{Edd}$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$', \
+                '$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega/\Omega_\mathrm{crit}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$', \
+                '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$', \
+                '$R_\mathrm{pol}/R_\mathrm{eq}$','$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]', \
+                '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]', \
+                '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]', \
+                '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]', \
+                '$\mathrm{M}_\mathrm{V}$','U-B','B-V','V-R','V-I','J-K','H-K','V-K','$\mathrm{M}_\mathrm{V}$','B-V', \
+                'G-V','Gbp-V','Grp-V','G_flag'],\
+                'catList':['initial conditions','initial conditions','initial conditions', \
+                'initial conditions','initial conditions','initial conditions','global properties', \
+                'global properties','global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','rotation','rotation','rotation','rotation','rotation','rotation', \
+                'abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','colours','colours', \
+                'colours','colours','colours','colours','colours','colours','colours','colours','colours',
+                'colours','colours','colours'],\
+                'header':3,'column_number':52}
+    Cluster_formats['cluster2016'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5], \
                 ['M',6],['Rpol',26],['gpol',28],['gmean',29],['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13], \
                 ['L',7],['L_gd',10],['L_lgd',12],['Mbol',14],['Gammaedd',37],['Mdot',35],['dMmech',36], \
                 ['Omega_surf',30],['OOc',34],['Vsurf',31],['Vcrit1',32],['Vcrit2',33],['oblat',27],['H1s',38], \
