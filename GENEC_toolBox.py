@@ -293,14 +293,26 @@ class readList():
                     ['rhoc',19],['Tc',20],['H1c',21],['He4c',22],['He3c',23],['C12c',24],['C13c',25],['N14c',26],['O16c',27],['O17c',28],\
                     ['O18c',29],['Ne20c',30],['Ne22c',31],['Be7c',32],['B8c',33],['flube7',34],['flub8',35],['snube7',36],['snub8',37],\
                     ['OOc',38],['Omega_surf',39],['Omega_cen',40],['oblat',41],['Vsurf',42],['Al26s',43],['Al26c',44],['rot_corr',45],\
-                    ['l_CNOmax',46],['M_CNOmax',47],['scno',48]],\
-                    'unitsList':['line','t','M','L','Teffcorr','H1s','He4s','He3s','C12s','C13s','N14s','O16s','O17s','O18s','Ne20s','Ne22s',\
-                    'Mccrel','Teff','Mdot','rhoc','Tc','H1c','He4c','He3c','C12c','C13c','N14c','O16c','O17c','O18c','Ne20c','Ne22c','Be7c',\
-                    'B8c','flube7','flub8','snube7','snub8','OOc','Omega_surf','Omega_cen','oblat','Vsurf','Al26s','Al26c','rot_corr',\
-                    'l_CNOmax','M_CNOmax','scno'],\
-                    'catList':['toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto',\
-                    'toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto',\
-                    'toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto'],\
+                    ['l_CNOmax',46],['m_CNOmax',47],['scno',48]],\
+                    'unitsList':['model num.','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
+                    '$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]','$^3$He [surf. mass frac.]'\
+                    '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
+                    '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
+                    '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]',\
+                    '$M_\mathrm{cc}/M_\mathrm{tot}$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
+                    r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$','$\log(T_\mathrm{c}\ [K])$','$^1$H [centr. mass frac.]',\
+                    '$^4$He [centr. mass frac.]','$^3$He [centr. mass frac.]''$^7$Be [centr. mass frac.]','$^8$B [centr. mass frac.]',\
+                    '$^{12}$C [centr. mass frac.]','$^{13}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]','$^{16}$O [centr. mass frac.]',\
+                    '$^{17}$O [centr. mass frac.]','$^{18}$O [centr. mass frac.]','$^{20}$Ne [centr. mass frac.]',\
+                    '$^{22}$Ne [centr. mass frac.]','$^4$Be [centr. mass frac.]','$^8$B [centr. mass frac.]','flube7','flub8','snube7','snub8',\
+                    '$\Omega/\Omega_\mathrm{crit}$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$','$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$',\
+                    '$R_\mathrm{pol}/R_\mathrm{eq}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$','$^{26}$Al [surf. mass frac.]',\
+                    '$^{26}$Al [centr. mass frac.]','$F_\Omega$','layer$_\mathrm{CNO,max}$','$m_\mathrm{CNO,max}$','scno'],\
+                    'catList':['model','model','model','surface','surface','abundances','abundances','abundances','abundances','abundances',\
+                    'abundances','abundances','abundances','abundances','abundances','abundances','centre','surface','winds','centre','centre',\
+                    'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
+                    'abundances','abundances','abundances','energetics','energetics','energetics','energetics','rotation','rotation','rotation',\
+                    'rotation','rotation','abundances','abundances','rotation','energetics','energetics','energetics'],\
                     'header':0,'column_number':89}
     Evol_formats['preMS'] = {'header':0,'column_number':116}
     Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['Tbce',5],['THe',6],\
@@ -447,7 +459,7 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
                 '$r_\mathr{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
-                '$H_P\ [\mathrm{cm}]$','$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
                 r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
                 '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
                 r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
@@ -493,9 +505,10 @@ class readList():
                 ['Ti44',84],['Cr48',85],['Fe52',86],['Ni56',87],['neutrons',77],['protons',78],['Omega',43],['Omegacons',58], \
                 ['Omegaprev',60],['Omfit',89],['dlodlr',50],['Lang',88],['Ur',52],['Vr',53],['Richardson',45], \
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
-                ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
+                ['Bphi',65],['alfven',66],['qmin',67]],\
+                'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
                 '$r_\mathr{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
-                '$H_P\ [\mathrm{cm}]$','$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
                 r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
                 '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
                 r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
@@ -532,7 +545,7 @@ class readList():
                 'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
                 'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':92}
     Struc_formats['old_Hirschi'] = {'varList':[['shell',0],['Mfrac',1],['P',2],['T',3],['r',4],['L',5],['H1',6],['He4',7],['C12',8],\
-                ['O16',9],['epsH',10],['epsHe',11],['epsC',12],['Nabrad',13],['rho',14],['zensi',15],['epsnu',16],['dkdP',17],\
+                ['O16',9],['epsH',10],['epsHe',11],['epsC',12],['Nabrad',13],['rho',14],['epsnu',16],['dkdP',17],\
                 ['dkdT',18],['dEdP',19],['dEdT',20],['drhodP',21],['delta',22],['psi',23],['eps3a',24],['epsCagO',25],['epsOagNe',26],\
                 ['epsgrav',27],['Nabad',28],['kappa',29],['beta',30],['He3',31],['C13',32],['N14',33],['N15',34],['O17',35],['O18',36],\
                 ['Ne20',37],['Ne22',38],['Mg24',39],['Mg25',40],['Mg26',41],['mu',42],['Omega',43],['Nabmu',44],['gamxxx',45],\
@@ -540,17 +553,33 @@ class readList():
                 ['xnprim',54],['Kther',55],['Ur',56],['asheay',57],['bsheay',58],['csheay',59],['Hp',60],['g',61],\
                 ['wpenvy',62],['ameriy',63],['dsesy',64],['Omegacons',65],['rprev',66],['Omegaprev',67],['muprev',68],['Si28',69],['S32',70],['Ar36',71],\
                 ['Ca40',72],['Ti44',73],['Cr48',74],['Fe52',75],['Ni56',76],['mue',77]],\
-                'unitsList':['j','vm','x2','x3','x4','vl','x','y','xc','xo','eps','epsy','epsc','radm','x6','zensi','epsn','x10','x11','x12',\
-                'x13','x14','x15','psi','epsyy','epsyc','epsyo','eg','adim','x8','beta','y3','xc13','xn14','xn15','xo17','xo18','x20','x22',\
-                'x24','x25','x26','vmyhelio','omegi','xdmudp','gamxxx','xricha','xnabyy','difcon','difsem','difsch','difdef','vmasse','dlodlr',\
-                'xnprim','xkther','xumeri','asheay','bsheay','csheay','echpry','gravy','wpenvy','ameriy','dsesy','omegp','vr','vomegi','x7',\
-                '$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]','$^{40}$Ca [mass frac.]','$^{44}$Ti [mass frac.]',\
-                '$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]','$^{56}$Ni [mass frac.]','vmye'],\
-                'catList':['toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto',\
-                'toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto',\
-                'toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto',\
-                'toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto','toto',\
-                'toto','toto','toto','toto','toto','toto','toto','toto'],'header':1,'column_number':78}
+                'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$','$T\ [K]$','$r\ [R_\odot]$',\
+                '$L_r/L_\mathrm{tot}$','$^1$H [mass frac.]','$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{16}$O [mass frac.]',\
+                '$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',\
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$\nabla_\mathrm{rad}$',r'$\rho\ [\mathrm{g\,cm}^3]$',\
+                r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$',\
+                '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$',r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',\
+                r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\psi$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',\
+                r'$\nabla_\mathrm{ad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$^3$He [mass frac.]',\
+                '$^{13}$C [mass frac.]','$^{14}$N [mass frac.]','$^{15}$N [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]',\
+                '$^{20}$Ne [mass frac.]','$^{22}$Ne [mass frac.]','$^{24}$Mg [mass frac.]','$^{25}$Mg [mass frac.]','$^{26}$Mg [mass frac.]',\
+                '$\mu$','$\Omega\ [\mathrm{s}^{-1}]$',r'$\nabla_\mu$','gamxxx','$\mathrm{Ri}=N^2/(\mathrm{d}V/\mathrm{d}z)^2$','xnabyy',\
+                '$D_\mathrm{conv}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{semi}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',\
+                '$D_\mathrm{shear}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{eff}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$M_r\ [M_\odot]$',\
+                '$\mathrm{d}\ln\Omega/\mathrm{d}\ln r$','xnprim','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$U_r\ [\mathrm{cm\,s}^{-1}]$',\
+                'asheay','bsheay','csheay','$H_P\ [\mathrm{cm}]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','wpenvy','ameriy','dsesy',\
+                '$\Omega_{\mathscr{L}\mathrm{,cons.}}\ [\mathrm{s}^{-1}]$','$r_\mathr{prev}\ [R_\odot]$','$\Omega_\mathrm{prev}\ [\mathrm{s}^{-1}]$',\
+                '$\mu_\mathrm{prev}$','$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]','$^{40}$Ca [mass frac.]',\
+                '$^{44}$Ti [mass frac.]','$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]','$^{56}$Ni [mass frac.]','$\mu_e$'],\
+                'catList':['structure','structure','thermo','thermo','structure','thermo','abundances','abundances','abundances',\
+                'abundances','energy','energy','energy','thermo','EOS','energy','thermo','thermo','thermo','thermo','EOS','thermo',\
+                'EOS','energy','energy','energy','energy','thermo','thermo','thermo','abundances','abundances','abundances','abundances',\
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','EOS','rotation','EOS','old',\
+                'rotation','old','rotation','rotation','rotation','rotation','structure','rotation','old','thermo','rotation','old','old',\
+                'old','thermo','structure','old','old','old','rotation','structure','rotation','EOS','abundances','abundances','abundances',\
+                'abundances','abundances','abundances','abundances','abundances','EOS'],'header':1,'column_number':78}
     Struc_formats['full'] = {'varList':[['shell',0],['Mr',2],['r',1],['P',5],['Pturb',24],['T',3],['Nabad',10],['Nabe',9],['kappa',13], \
                 ['dkdrho',14],['dkdT',15],['Cv',6],['rho',4],['dPdrho',7],['dPdT',8],['mu',21],['mu0',22],['L',12],['Lrad',11], \
                 ['epsilon',16],['dEdrho',17],['dEdT',18],['H1',19],['He4',20],['HII',27],['HeII',28],['HeIII',29],['Omega',23], \
