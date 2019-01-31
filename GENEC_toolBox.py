@@ -1461,7 +1461,7 @@ class Model(Outputs):
     def Spec_var_starevol(self):
         if self.Variables['format'][0][0] != 'starevol':
             return
-        
+
         Actual_Surface = self.Variables['L'][0]*Cst.Lsol /(Cst.sigma*self.Variables['Teff'][0]**4.)
         Critical_polar_radius = np.sqrt(Actual_Surface/self.Polar_Radius_f.Vector_Surface[-1])
         O_crit = np.sqrt(8.*Cst.G*Cst.Msol*self.Variables['M'][0]/(27.*Critical_polar_radius**3.))
@@ -1478,11 +1478,11 @@ class Model(Outputs):
         self.Variables['L'][0] = np.log10(self.Variables['L'][0])
         self.Variables['Teff'][0] = np.log10(self.Variables['Teff'][0])
         self.Variables['Teffcorr'] = [self.Variables['Teff'][0],self.Variables['Teff'][1],self.Variables['Teff'][2]]
-        
+
         Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0])
         r_pol = np.sqrt(Actual_Surface/Norm_Surface)
         g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0]/r_pol**2.)
-        
+
         self.Polar_Radius_f.Define_Interp_OOcOblat()
         oblat = self.Polar_Radius_f.interpolation(OOc)
         self.Variables['oblat'] = [oblat,'$R_\mathrm{pol}/R_\mathrm{eq}$','surface']
@@ -1493,10 +1493,10 @@ class Model(Outputs):
         # No ways of computing Vcrit2 with starevol formats.
         self.Variables['Vcrit2'] = [Vcrit1,'$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','rotation']
 
-        
+
         # This is to come back with the normal interpolation
         self.Polar_Radius_f.Define_Interp_OOcShape()
-        
+
         self.Variables['Rpol'] = [r_pol/Cst.Rsol,'$R_\mathrm{pol}\ [R_\odot]$','surface']
         self.Variables['gpol'] = [g_pol,'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
         mask = self.Variables['Mdot'][0]<=0.
@@ -1509,13 +1509,13 @@ class Model(Outputs):
         mask = self.Variables['Lacc'][0]<=0.
         self.Variables['Lacc'][0][mask] = 0.
         self.Variables['Lacc'][0][np.logical_not(mask)] = np.log10(self.Variables['Lacc'][0][np.logical_not(mask)])
-        
+
         self.Variables['Tc'][0] = np.log10(self.Variables['Tc'][0])
         self.Variables['Tmax'][0] = np.log10(self.Variables['Tmax'][0])
         self.Variables['rhoc'][0] = np.log10(self.Variables['rhoc'][0])
         self.Variables['rhoTmax'][0] = np.log10(self.Variables['rhoTmax'][0])
         self.Variables['Pc'][0] = np.log10(self.Variables['Pc'][0])
-        
+
         self.Variables['GammaEdd'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Gamma_\mathrm{Edd}$','surface']
         # no centre angular velocity in starevol, set to 0.
         self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$','rotation']
@@ -1576,7 +1576,7 @@ class Model(Outputs):
         if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
             format = "starevol"
             file_cols = 0
-        
+
         if format != "starevol":
             if not os.path.isfile(FileName):
                 raise IOError(1,'File does not exist, check name and path',FileName)
@@ -1608,7 +1608,7 @@ class Model(Outputs):
             FilesToRead = [FileName + ext for ext in extensions_list]
         else:
             FilesToRead = [FileName]
-        
+
         for Current_FileName in FilesToRead:
             header = self.ReadBlock(format,Current_FileName,file_cols,num_deb,num_fin,quiet)
 
@@ -1899,7 +1899,7 @@ class Model(Outputs):
                 file_cols = col_num
         header = readList.Evol_formats[format_ext]['header']
         num_deb = num_deb + header
-        
+
         for MyVar,colNum,MyUnit,MyType in zip([varList[0] for varList in Evol_varList],[varList[1] for varList in Evol_varList],Evol_unitsList,Evol_catList):
             self.Variables[MyVar] = [np.array(()),MyUnit,MyType]
 
@@ -4478,6 +4478,12 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
        If an index is provided, for example PlotRatio("M","M",index=0),
           it will plot variable_1 divided by the value of variable_2[index]."""
     abort = False
+    if MyDriver.plotmode == 'evol':
+      lenvar = 'line'
+    elif MyDriver.plotmode == 'struc':
+      lenvar = 'shell'
+    elif MyDriver.plotmode == 'cluster':
+      lenvar = 'Mini'
     if index == 0:
         ilabel = '$_\mathrm{ini}$'
     elif index == -1:
@@ -4486,7 +4492,7 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
         ilabel = ''
     for star in MyDriver.Model_list.keys():
         MyStar = MyDriver.Model_list[star]
-        MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables['line'][0])),var1+'/'+var2+ilabel,'']
+        MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),var1+'/'+var2+ilabel,'']
         if index == -9999:
             mask = MyStar.Variables[var2][0] == 0.
             MyStar.Variables['ratio'][0][np.logical_not(mask)] = MyStar.Variables[var1][0][np.logical_not(mask)]/MyStar.Variables[var2][0][np.logical_not(mask)]
