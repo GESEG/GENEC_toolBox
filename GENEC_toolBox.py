@@ -1310,6 +1310,13 @@ class Model(Outputs):
         self.Variables['H-K'] = [np.zeros((imax)),'H-K','colours']
         self.Variables['V-K'] = [np.zeros((imax)),'V-K','colours']
         self.Variables['BC'] =  [np.zeros((imax)),'BC','colours']
+        self.Variables['G-V'] = [np.zeros((imax)),'G-V','colours']
+        self.Variables['Gbp-V'] = [np.zeros((imax)),'Gbp-V','colours']
+        self.Variables['Grp-V'] = [np.zeros((imax)),'Grp-V','colours']
+        self.Variables['GFlag'] = [np.zeros((imax)),'GFlag','colours']
+        self.Variables['M_G'] = [np.zeros((imax)),'M$_\mathrm{G}','colours']
+        self.Variables['M_Gbp'] = [np.zeros((imax)),'M$_\mathrm{Gbp}','colours']
+        self.Variables['M_Grp'] = [np.zeros((imax)),'M$_\mathrm{Grp}','colours']
 
         for i in range(self.imax):
             self.Colours.Colours_Conversion(self.Variables['FeH'][0][i],self.Variables['gpol'][0][i],10.**self.Variables['Teff'][0][i])
@@ -1329,6 +1336,21 @@ class Model(Outputs):
         self.Variables['M_K'][0] = -self.Variables['V-K'][0]+self.Variables['M_V'][0]
         self.Variables['M_H'][0] = self.Variables['H-K'][0]+self.Variables['M_K'][0]
         self.Variables['M_J'][0] = self.Variables['J-K'][0]+self.Variables['M_K'][0]
+
+        #Computation of the Gaia colours according to the DR2 (Evans et al. 2018, arXiv 1804.09368). In case
+        #the data are off the recommended values for V-I, we set the flag to 1:
+        self.Variables['G-V'][0]  = -0.01746 + 0.008092*self.Variables['V-I'][0] \
+                                    - 0.281000*self.Variables['V-I'][0]**2. \
+                                    + 0.036550*self.Variables['V-I'][0]**3.
+        self.Variables['Gbp-V'][0] = -0.05204 + 0.483000*self.Variables['V-I'][0] \
+                                     - 0.200100*self.Variables['V-I'][0]**2.
+        self.Variables['Grp-V'][0] = 0.00024280 - 0.867500*self.Variables['V-I'][0] \
+                                     - 0.028660*self.Variables['V-I'][0]**2.
+        self.Variables['GFlag'][0][np.where(np.logical_and(self.Variables['V-I'][0]<-0.3,self.Variables['V-I'][0]>2.7))] = 1
+        self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
+        self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
+        self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
+        
         return
 
     def Spec_var_o2013(self):
@@ -2341,6 +2363,9 @@ class Cluster(Outputs):
             self.Variables['M_K'] = [-self.Variables['V-K'][0]+self.Variables['M_V'][0],'M$_\mathrm{K}$','colours']
             self.Variables['M_H'] = [self.Variables['H-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{H}$','colours']
             self.Variables['M_J'] = [self.Variables['J-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{J}$','colours']
+            self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
+            self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
+            self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
         return
 
     def Spec_var_cluster(self):
