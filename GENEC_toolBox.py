@@ -610,7 +610,7 @@ class readList():
                 'thermo','EOS','EOS','EOS','EOS','EOS','energy','energy','energy','energy','energy','abundances','abundances','rotation'], \
                 'header':11,'column_number':25}
 
-    Cluster_fmt = ['cluster','cluster2016','cluster_old','isochr','isochr_old','isochr_veryold']
+    Cluster_fmt = ['cluster','cluster2016','cluster_old','isochr','isochr2016','isochr_old','isochr_veryold']
     Cluster_formats = {}
     Cluster_formats['cluster'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5],['M',6],['Rpol',29],['gpol',31],['gmean',32],\
                 ['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13],['L',7],['L_gd',10],['L_lgd',12],['MBol',14],['Gammaedd',40],['Mdot',38],['dMmech',39],\
@@ -1615,7 +1615,7 @@ class Model(Outputs):
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO, \
                                                 ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
         if not quiet:
-            print 'limits of burning phases:',self.Variables['ind_burning_phases']
+            print 'limits of burning phases:',self.Variables['ind_burning_phases'][0]
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
@@ -2026,10 +2026,11 @@ class Struc(Outputs):
                         + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
             else:
                 self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
-        self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
-                    -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
-                    '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
-
+        self.Variables['V_MLT'] = [np.zeros(len(self.Variables['delta'][0])),'$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
+        vmlt = g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
+                    -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])
+        vmlt[vmlt<0.] = 0.
+        self.Variables['V_MLT'][0] = np.sqrt(vmlt)
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
         self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\epsilon_\mathrm{nucl}+\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\mathrm{eq}\ [\mathrm{km\,s}^{-1}]$','rotation']
@@ -2285,7 +2286,8 @@ class Struc(Outputs):
         return switcher.get(fmt,'Unknown format')
 
     def read(self,FileName,num_deb,line_to_read,format,quiet):
-        print 'In read: num_deb,line_to_read:',num_deb,line_to_read
+        if not quiet:
+          print 'In read: num_deb,line_to_read:',num_deb,line_to_read
         if format == '':
             raise FormatError(2,'column number does not match any known format',FileName)
             return
@@ -2323,7 +2325,8 @@ class Struc(Outputs):
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
-            print 'Reading model',self.num_model
+            if not quiet:
+              print 'Reading model',self.num_model
             self.age = float(self.age)
             self.mass = float(self.mass)
             self.n_shell = int(self.n_shell)
@@ -2416,10 +2419,27 @@ class Cluster(Outputs):
             self.Variables['M_K'] = [-self.Variables['V-K'][0]+self.Variables['M_V'][0],'M$_\mathrm{K}$','colours']
             self.Variables['M_H'] = [self.Variables['H-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{H}$','colours']
             self.Variables['M_J'] = [self.Variables['J-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{J}$','colours']
+            if self.Variables['format'][0][0] in ['cluster','isochr']:
+              self.Variables['M_G'] = [self.Variables['G-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G}$','colours']
+              self.Variables['M_Gbp'] = [self.Variables['Gbp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Gbp}$','colours']
+              self.Variables['M_Grp'] = [self.Variables['Grp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Grp}$','colours']
         return
 
     def Spec_var_cluster(self):
         if self.Variables['format'][0][0] != 'cluster':
+            return
+        self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\,\sin\,i\ [\mathrm{km\,s}^{-1}]$','rotation']
+        self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\ [R_\odot]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','global properties']
+        self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','global properties']
+        self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['fwg'] = [self.Variables['gmean'][0]-self.Variables['Teff_lgd'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
+        self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
+        return
+
+    def Spec_var_cluster2016(self):
+        if self.Variables['format'][0][0] != 'cluster2016':
             return
         self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\,\sin\,i\ [\mathrm{km\,s}^{-1}]$','rotation']
         self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\ [R_\odot]$','global properties']
@@ -2451,6 +2471,13 @@ class Cluster(Outputs):
         self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
         return
 
+    def Spec_var_isochr2016(self):
+        if self.Variables['format'][0][0] != 'isochr2016':
+            return
+        self.Variables['fwg'] = [self.Variables['gpol'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
+        self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
+        return
+
     def Spec_var_isochrold(self):
         if self.Variables['format'][0][0] != 'isochr_old':
             return
@@ -2468,8 +2495,10 @@ class Cluster(Outputs):
 
         switcher = {
             'cluster': self.Spec_var_cluster(),
+            'cluster2016': self.Spec_var_cluster2016(),
             'cluster_old': self.Spec_var_clusterold(),
             'isochr': self.Spec_var_isochr(),
+            'isochr2016': self.Spec_var_isochr2016(),
             'isochr_old': self.Spec_var_isochrold(),
             'isochr_veryold': self.Spec_var_isochrveryold(),
         }
@@ -2559,12 +2588,12 @@ class Cluster(Outputs):
             print 'File ',ModelName, 'successfully loaded.'
         return
 
-    def Colour_correction(self,excess,dist_mod):
-        """Correction of the M_V and B-V for a distance modulus and a colour excess, with
+    def Colour_correction(self,excess,dist_mod,mag,col):
+        """Correction of the magnitude and colour for a distance modulus and a colour excess, with
            the average interstellar extinction curve R_V = A_V/E(B-V) = 3.1.
-           Called by the direct command colour_corr(excess,dist_mod,num_star)."""
-        self.Variables['M_V_corr']=[self.Variables['M_V'][0]+dist_mod+3.1*excess,'$\mathrm{m}_\mathrm{V}$','colours']
-        self.Variables['B-V_corr'] = [self.Variables['B-V'][0]+excess,'$\mathrm{B-V}$','colours']
+           Called by the direct command colour_corr(excess,dist_mod,num_star,mag,col)."""
+        self.Variables[mag+'_corr']=[self.Variables[mag][0]+dist_mod+3.1*excess,self.Variables[mag][1],'colours']
+        self.Variables[col+'_corr'] = [self.Variables[col][0]+excess,self.Variables[col][1],'colours']
 
 class Analysis():
     """In construction. Will provide several tools to analyse the evolution or structure files."""
@@ -2915,7 +2944,8 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
             print 'format identified=',format
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
-    print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
+    if not quiet:
+      print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
 
     if toread == []:
         toread = Time_Step_Dic.keys()
@@ -2927,7 +2957,8 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     for Current_Model in sorted(ToReadModels):
         MyModel = Struc()
-        print Current_Model
+        if not quiet:
+          print Current_Model
         Checked = False
         if MyDriver.modeplot != 'struc':
             if not quiet:
@@ -5187,16 +5218,16 @@ def colours_calc(num_star=0):
         else:
             print 'colours already exist for model',i
 
-def colour_corr(excess,dist_mod,num_star=0):
-    """Corrects the M_V and B-V for a distance modulus and a colour excess.
-       Usage: colour_corr(excess,dist_mod,num_star)
+def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
+    """Corrects the magnitude and colour for a distance modulus and a colour excess.
+       Usage: colour_corr(excess,dist_mod,mag,col,num_star)
               Note that num_star might be a list of models."""
     if MyDriver.modeplot != 'cluster':
         print 'This command is valid only in cluster mode'
         return
     if num_star == 0:
         num_star = MyDriver.Model_list_cluster.keys()
-    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
+    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
     if len([i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]) !=0:
         print 'Model(s) ',[i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()],' do(es) not exist in cluster list.'
 
@@ -6256,7 +6287,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     if newFig:
         if MyDriver.closeFig:
             plt.close()
-        MyDriver.AddFigure((11,11))
+        MyDriver.AddFigure((8,8))
         MyDriver.current_Fig.subplots_adjust(wspace=MyDriver.subplotSep)
         New_Axes = MyDriver.current_Fig.add_subplot(111)
     else:
@@ -6302,7 +6333,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
 
     if MyDriver.iPoints:
         if myStyle != '':
-            New_Axes.scatter(myX,myY,myStyle,s=MyDriver.pointSize)
+            New_Axes.plot(myX,myY,myStyle)
         else:
             if zcolour:
                 cmap=cm.get_cmap(MyDriver.colourMap)
