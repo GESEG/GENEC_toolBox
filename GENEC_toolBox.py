@@ -129,7 +129,7 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['o2013','tgrids','tools','nami','bin','old_Hirschi','preMS']
+    Evol_fmt = ['o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS']
     Evol_formats = {}
     Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],\
                     ['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],['C12s',8],['C13s',9],['N14s',10],\
@@ -228,6 +228,37 @@ class readList():
                     'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation',\
                     'winds','winds','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours'],\
                     'header':3,'column_number':55}
+    Evol_formats['toolsGaia'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',40],['Rpol',44],['gpol',43],\
+                    ['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He4s',6],['C12s',7],['C13s',8],['N14s',9],['O16s',10],['O17s',11],\
+                    ['O18s',12],['Ne20s',13],['Ne22s',14],['Al26s',15],['H1c',21],['He4c',22],['C12c',23],['C13c',24],['N14c',25],['O16c',26],\
+                    ['O17c',27],['O18c',28],['Ne20c',29],['Ne22c',30],['Al26c',31],['Vsurf',38],['Vcrit1',36],['Vcrit2',37],['OOc',39],\
+                    ['Omega_surf',32],['Omega_cen',33],['oblat',34],['rot_corr',35],['Ltot',42],['Mdot',18],['Mdot_mech',41],['M_bol',45],\
+                    ['M_V',46],['UB',47],['BV',48],['VR',49],['VI',50],['JK',51],['HK',52],['VK',53],['GV',54],['GbpV',55],['GrpV',56],['Gflag',57],['BC',58]],\
+                    'unitsList':['model num','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
+                    '$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\Gamma_\mathrm{Edd}$','$R_\mathrm{pol}\ [R_\odot]$',\
+                    '$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','$M_\mathrm{cc}/M_\mathrm{tot}$',\
+                    r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$','$\log(T_\mathrm{c}\ [K])$',\
+                    '$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]',\
+                    '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
+                    '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
+                    '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]',\
+                    '$^1$H [centr. mass frac.]','$^4$He [centr. mass frac.]','$^{12}$C [centr. mass frac.]',\
+                    '$^{13}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]','$^{16}$O [centr. mass frac.]',\
+                    '$^{17}$O [centr. mass frac.]','$^{18}$O [centr. mass frac.]','$^{20}$Ne [centr. mass frac.]',\
+                    '$^{22}$Ne [centr. mass frac.]','$^{26}$Al [centr. mass frac.]','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$',\
+                    '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$',\
+                    '$\Omega/\Omega_\mathrm{crit}$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$',\
+                    '$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$','$R_\mathrm{pol}/R_\mathrm{eq}$','$F_\Omega$',\
+                    '$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
+                    '$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$','$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$',\
+                    'M$_\mathrm{bol}$','M$_\mathrm{V}$','U-B','B-V','V-R','V-I','J-K','H-K','V-K','G-V','G$_\\mathrm{bp}$-V','G$_\\mathrm{rp}$-V','Gflag','BC'],'catList':['model',\
+                    'model','model','surface','surface','surface','surface','surface','surface',\
+                    'centre','centre','centre','abundances','abundances','abundances','abundances','abundances','abundances',\
+                    'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
+                    'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
+                    'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation',\
+                    'winds','winds','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours'],\
+                    'header':3,'column_number':59}
     Evol_formats['nami'] = {'varList':[['line',0],['t',2],['M',3],['rhom',37],['L',4],['Teff',5],['R',36],['rhoc',6],['Tc',7],['Mccrel',8],['H1c',9],['He3c',10],\
                     ['He4c',11],['C12c',12],['C13c',13],['N14c',14],['O16c',15],['O17c',16],['O18c',17],['Ne20c',18],['Ne22c',19],\
                     ['H1s',20],['He3s',21],['He4s',22],['C12s',23],['C13s',24],['N14s',25],['O16s',26],['O17s',27],['O18s',28],['Ne20s',29],\
@@ -408,6 +439,24 @@ class readList():
                      'catList':['model','abundances','abundances','abundances','abundances','abundances','abundances',\
                      'abundances','abundances','abundances','abundances','abundances'],
                      'header':7,'column_number':12}
+    Evol_formats['starevol_tc1'] = {'varList':[['line',0],['tc',1],['rc',2],['tc_hp',3],['rc_hp',4],['tc_r',5],['rc_r',6],\
+                     ['tc_m',7],['rc_m',8],['tc_max',9],['rc_max',10],['tg',11]],\
+                     'unitsList':['model num','$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$',\
+                     '$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$',\
+                     '$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$',\
+                     '$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$'],
+                     'catList':['model','model','model','model','model','model','model','model','model','model','model','model'],
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_tc2'] = {'varList':[['line',0],['tc_cc',1],['rc_cc',2],['tc_hp_cc',3],['rc_hp_cc',4],['tc_r_cc',5],\
+                     ['rc_r_cc',6],['tc_m_cc',7],['rc_m_cc',8],['tc_max_cc',9],['rc_max_cc',10],['tg_cc',11],['omegac',12]],\
+                     'unitsList':['model num','$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$',\
+                     '$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$',\
+                     '$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$',\
+                     '$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$',\
+                     '$\\bar{\Omega}_\mathrm{cen.\ reg.}\ [\mathrm{s}^{-1}]$'],
+                     'catList':['model','model','model','model','model','model','model','model','model','model','model',\
+                     'model','rotation'],
+                     'header':7,'column_number':13}
     Evol_formats['starevol_v1'] = {'varList':[['line',0],['Tc',1],['Tmax',2],['MrTmax',3],['rhoc',4],['rhoTmax',5],\
                      ['Pc',6],['betac',7],['etac',8],['degpec',9],['epsnu',10],['eps_nuc',11],['epsgrav',12]],\
                      'unitsList':['model num','$\log(T_\mathrm{c}\ [K])$','$\log(T_\mathrm{max}\ [K])$',\
@@ -421,6 +470,15 @@ class readList():
                      'catList':['model','centre','model','model','centre','model','centre','centre','centre','centre',\
                      'centre','centre','centre'],
                      'header':7,'column_number':13}
+    Evol_formats['starevol_v2'] = {'varList':[['line',0],['LH',1],['LHe',2],['LC',3],['LNe',4],['LO',5],\
+                     ['LSi',6],['Lnu',7],['Lnucl',8],['Lgrav',9],['Iradmax',10]],\
+                     'unitsList':['model num','$\log(L_\mathrm{H}\ [L_\odot])$','$\log(L_\mathrm{He}\ [L_\odot])$',\
+                     '$\log(L_\mathrm{C}\ [L_\odot])$','$\log(L_\mathrm{Ne}\ [L_\odot])$','$\log(L_\mathrm{O}\ [L_\odot])$',\
+                     '$\log(L_\mathrm{Si}\ [L_\odot])$','$\log(L_\\nu\ [L_\odot])$',\
+                     '$\log(L_\mathrm{nucl.}\ [L_\odot])$','$\log(L_\mathrm{grav.}\ [L_\odot])$','Max neutron irradiation'], \
+                     'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
+                     'energetics','energetics','energetics','energetics'],
+                     'header':7,'column_number':11}
     Evol_formats['starevol_v3'] = {'varList':[['line',0],['conv1_Mb',1],['conv1_Rb',2],['conv1_Tb',3],['conv1_rob',4],\
                      ['conv1_Mt',5],['conv1_Rt',6],['conv1_Tt',7],['conv1_rot',8],['env_Mb',9],['env_Rb',10],\
                      ['env_Tb',11],['env_rob',12]],\
@@ -433,6 +491,69 @@ class readList():
                      'catList':['model','convection','convection','convection','convection','convection','convection',\
                      'convection','convection','convection','convection','convection','convection'],\
                      'header':7,'column_number':13}
+    Evol_formats['starevol_v4'] = {'varList':[['line',0],['conv2_Mb',1],['conv2_Mt',2],['conv3_Mb',3],['conv3_Mt',4],\
+                     ['conv4_Mb',5],['conv4_Mt',6],['conv5_Mb',7],['conv5_Mt',8],['conv6_Mb',9],['conv6_Mt',10],\
+                     ['nconvt',11]],\
+                     'unitsList':['model num','$M_\\mathrm{CZ2,bottom}\ [M_\odot]$','$M_\\mathrm{CZ2,top}\ [M_\odot]$',\
+                     '$M_\\mathrm{CZ3,bottom}\ [M_\odot]$','$M_\\mathrm{CZ3,top}\ [M_\odot]$',\
+                     '$M_\\mathrm{CZ4,bottom}\ [M_\odot]$','$M_\\mathrm{CZ4,top}\ [M_\odot]$',\
+                     '$M_\\mathrm{CZ5,bottom}\ [M_\odot]$','$M_\\mathrm{CZ5,top}\ [M_\odot]$',\
+                     '$M_\\mathrm{CZ6,bottom}\ [M_\odot]$','$M_\\mathrm{CZ6,top}\ [M_\odot]$',\
+                     '$\\mathrm{n}_\\mathrm{CZ}$'],\
+                     'catList':['model','convection','convection','convection','convection','convection','convection',\
+                     'convection','convection','convection','convection','convection'],\
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_v5'] = {'varList':[['line',0],['Hburn_Mb',1],['Hburn_Rb',2],['Hburn_Tb',3],['Hburn_rob',4],\
+                     ['Hburn_Mt',5],['Hburn_Rt',6],['Hburn_Tt',7],['Hburn_rot',8],['Hburn_Mm',9],['Hburn_em',10],\
+                     ['Lpp',11]],\
+                     'unitsList':['model num','$M_\\mathrm{H-b,bottom}\ [M_\odot]$','$R_\\mathrm{H-b,bottom}/R_\\star$',\
+                     '$T_\\mathrm{H-b,bottom}\ [\\mathrm{K}]$','$\\rho_\\mathrm{H-b,bottom}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{H-b,top}\ [M_\odot]$','$R_\\mathrm{H-b,top}/R_\\star$',\
+                     '$T_\\mathrm{H-b,top}\ [\\mathrm{K}]$','$\\rho_\\mathrm{H-b,top}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{H-b,max}\ [M_\odot]$','$\\epsilon_\\mathrm{H,max}\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\mathrm{pp}/\\epsilon_\\mathrm{H}$'],\
+                     'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
+                     'energetics','energetics','energetics','energetics','energetics'],\
+                     'header':7,'column_number':12}
+    Evol_formats['starevol_v6'] = {'varList':[['line',0],['Heburn_Mb',1],['Heburn_Rb',2],['Heburn_Tb',3],['Heburn_rob',4],\
+                     ['Heburn_Mt',5],['Heburn_Rt',6],['Heburn_Tt',7],['Heburn_rot',8],['Heburn_Mm',9],['Heburn_em',10],\
+                     ['Heburn_enum',11],['Heburn_etam',12]],\
+                     'unitsList':['model num','$M_\\mathrm{He-b,bottom}\ [M_\odot]$','$R_\\mathrm{He-b,bottom}/R_\\star$',\
+                     '$T_\\mathrm{He-b,bottom}\ [\\mathrm{K}]$','$\\rho_\\mathrm{He-b,bottom}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{He-b,top}\ [M_\odot]$','$R_\\mathrm{He-b,top}/R_\\star$',\
+                     '$T_\\mathrm{He-b,top}\ [\\mathrm{K}]$','$\\rho_\\mathrm{He-b,top}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{He-b,max}\ [M_\odot]$','$\\epsilon_\\mathrm{He,max}\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\nu(\\mathrm{He-b}\,\\mathrm{max})\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\phi(\\mathrm{He-b}\,\\mathrm{max})$'],\
+                     'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
+                     'energetics','energetics','energetics','energetics','energetics','energetics'],\
+                     'header':7,'column_number':13}
+    Evol_formats['starevol_v7'] = {'varList':[['line',0],['Cburn_Mb',1],['Cburn_Rb',2],['Cburn_Tb',3],['Cburn_rob',4],\
+                     ['Cburn_Mt',5],['Cburn_Rt',6],['Cburn_Tt',7],['Cburn_rot',8],['Cburn_Mm',9],['Cburn_em',10],\
+                     ['Cburn_enum',11],['Cburn_etam',12]],\
+                     'unitsList':['model num','$M_\\mathrm{C-b,bottom}\ [M_\odot]$','$R_\\mathrm{C-b,bottom}/R_\\star$',\
+                     '$T_\\mathrm{C-b,bottom}\ [\\mathrm{K}]$','$\\rho_\\mathrm{C-b,bottom}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{C-b,top}\ [M_\odot]$','$R_\\mathrm{C-b,top}/R_\\star$',\
+                     '$T_\\mathrm{C-b,top}\ [\\mathrm{K}]$','$\\rho_\\mathrm{C-b,top}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{C-b,max}\ [M_\odot]$','$\\epsilon_\\mathrm{C,max}\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\nu(\\mathrm{C-b}\,\\mathrm{max})\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\phi(\\mathrm{C-b}\,\\mathrm{max})$'],\
+                     'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
+                     'energetics','energetics','energetics','energetics','energetics','energetics'],\
+                     'header':7,'column_number':13}
+    Evol_formats['starevol_v8'] = {'varList':[['line',0],['Neburn_Mb',1],['Neburn_Rb',2],['Neburn_Tb',3],['Neburn_rob',4],\
+                     ['Neburn_Mt',5],['Neburn_Rt',6],['Neburn_Tt',7],['Neburn_rot',8],['Neburn_Mm',9],['Neburn_em',10],\
+                     ['Neburn_enum',11],['Neburn_etam',12]],\
+                     'unitsList':['model num','$M_\\mathrm{Ne-b,bottom}\ [M_\odot]$','$R_\\mathrm{Ne-b,bottom}/R_\\star$',\
+                     '$T_\\mathrm{Ne-b,bottom}\ [\\mathrm{K}]$','$\\rho_\\mathrm{Ne-b,bottom}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{Ne-b,top}\ [M_\odot]$','$R_\\mathrm{Ne-b,top}/R_\\star$',\
+                     '$T_\\mathrm{Ne-b,top}\ [\\mathrm{K}]$','$\\rho_\\mathrm{Ne-b,top}\ [\\mathrm{g}\ \\mathrm{cm}^{-3}]$',\
+                     '$M_\\mathrm{Ne-b,max}\ [M_\odot]$','$\\epsilon_\\mathrm{Ne,max}\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\nu(\\mathrm{Ne-b}\,\\mathrm{max})\ [\\mathrm{erg}\ \\mathrm{g}^{-1}\ \\mathrm{s}^{-1}]$',\
+                     '$\\phi(\\mathrm{Ne-b}\,\\mathrm{max})$'],\
+                     'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
+                     'energetics','energetics','energetics','energetics','energetics','energetics'],\
+                     'header':7,'column_number':13}
     Evol_formats['starevol_v11'] = {'varList':[['line',0],['mdot_acc',1],['Racc',2],['Macc',3],['Lacc',4],['k2conv',5],\
                      ['k2rad',6],['Rossby',7],['Omega_surf',8],['Vsurf',9],['Ltot',10],['Fenerg',11],['torque',12]],
                      'unitsList':['model num','$\log(\dot{M}_\mathrm{accr.}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
@@ -444,6 +565,25 @@ class readList():
                      'catList':['model','surface','surface','surface','surface','surface','surface','rotation', \
                      'rotation','rotation','rotation','rotation','rotation'],
                      'header':7,'column_number':13}
+    Evol_formats['starevol_v12'] = {'varList':[['line',0],['conv2_Rb',1],['conv2_Rt',2],['conv3_Rb',3],['conv3_Rt',4],\
+                     ['conv4_Rb',5],['conv4_Rt',6],['conv5_Rb',7],['conv5_Rt',8],['conv6_Rb',9],['conv6_Rt',10]],\
+                     'unitsList':['model num','$R_\\mathrm{CZ2,bottom}\ [R_\odot]$','$R_\\mathrm{CZ2,top}\ [R_\odot]$',\
+                     '$R_\\mathrm{CZ3,bottom}\ [R_\odot]$','$R_\\mathrm{CZ3,top}\ [R_\odot]$',\
+                     '$R_\\mathrm{CZ4,bottom}\ [R_\odot]$','$R_\\mathrm{CZ4,top}\ [R_\odot]$',\
+                     '$R_\\mathrm{CZ5,bottom}\ [R_\odot]$','$R_\\mathrm{CZ5,top}\ [R_\odot]$',\
+                     '$R_\\mathrm{CZ6,bottom}\ [R_\odot]$','$R_\\mathrm{CZ6,top}\ [R_\odot]$'],\
+                     'catList':['model','convection','convection','convection','convection','convection','convection',\
+                     'convection','convection','convection','convection'],\
+                     'header':7,'column_number':11}
+    Evol_formats['starevol_v13'] = {'varList':[['line',0],['omegacore',1],['Jtrue',2],['Jobs',3],['Jrad',4],\
+                     ['Bequi',5],['omegamax',6],['Nmax',7]],\
+                     'unitsList':['model num','$\\bar{\\Omega}_\\mathrm{core}\ [\\mathrm{s}^{-1}]$',\
+                     '$j_\\mathrm{true}\ [\\mathrm{cm}^2\,\\mathrm{s}^{-1}]$',\
+                     '$j_\\mathrm{env}\ [\\mathrm{cm}^2\,\\mathrm{s}^{-1}]$','$j_\\mathrm{rad}\ [\\mathrm{cm}^2\,\\mathrm{s}^{-1}]$',\
+                     '$B_\\mathrm{equi}\ [\\mathrm{G}]$','$\\Omega_\\mathrm{max}\ [\\mathrm{s}^{-1}]$',\
+                     '$N_\\mathrm{max}\ [\\mathrm{Hz}]$'],\
+                     'catList':['model','rotation','rotation','rotation','rotation','surface','rotation','structure'],\
+                     'header':7,'column_number':8}
 
     Struc_fmt = ['o2013','o2010','old_Hirschi','full','full_old']
     Struc_formats = {}
@@ -700,6 +840,33 @@ class readList():
                 'abundances','abundances','abundances','abundances','abundances','abundances', \
                 'abundances','abundances','abundances','abundances','abundances','colours','colours', \
                 'colours','colours','colours','colours'],'header':3,'column_number':39}
+    Cluster_formats['isochrGaia'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',21],['gpol',23], \
+                ['Teffcorr',5],['Teff',6],['L',4],['Mbol',7],['Gammaedd',31],['Mdot',29], \
+                ['dMmech',30],['Omega_surf',24],['OOc',28],['Vsurf',25],['Vcrit1',26],['Vcrit2',27], \
+                ['oblat',22],['H1s',32],['He4s',33],['C12s',34],['C13s',35],['N14s',36],['O16s',37], \
+                ['O17s',38],['O18s',39],['Ne20s',40],['Ne22s',41],['Al26s',42],['M_V',8],['U-B',9], \
+                ['B-V',10],['V-K',11],['V-R',12],['V-I',13],['J-K',14],['H-K',15],['GV',16],['GbpV',17],['GrpV',18],['Gflag',19],['BC',20]],\
+                'unitsList':['$M_\mathrm{ini}\,[M_\odot]$','$Z_\mathrm{ini}$','$\Omega/\Omega_\mathrm{crit,ini}$', \
+                '$M\,[M_\odot]$','$R_\mathrm{pol}\,[\mathrm{cm}]$','$\log(g_\mathrm{pol}\,[\mathrm{cm\,s}^{-2}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(L/L_\odot)$', \
+                '$\mathrm{M}_\mathrm{bol}$','$\Gamma_\mathrm{Edd}$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$', \
+                '$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega/\Omega_\mathrm{crit}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$', \
+                '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$', \
+                '$R_\mathrm{pol}/R_\mathrm{eq}$','$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]', \
+                '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]', \
+                '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]', \
+                '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]', \
+                '$\mathrm{M}_\mathrm{V}$','U-B','B-V','V-K', \
+                'V-R','V-I','J-K','H-K','G-V','G$_\\mathrm{bp}$-V','G$_\\mathrm{rp}$-V','Gflag','Bolometric correction'],'catList':['initial conditions',\
+                'initial conditions','initial conditions', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','rotation','rotation','rotation','rotation', \
+                'rotation','rotation','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances', \
+                'colours','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours', \
+                'colours','colours'],'header':2,'column_number':43}
 
     Cluster_formats['isochr'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',21],['gpol',23], \
                 ['Teffcorr',5],['Teff',6],['L',4],['Mbol',7],['Gammaedd',31],['Mdot',29], \
@@ -1269,6 +1436,13 @@ class Model(Outputs):
         self.Variables['H-K'] = [np.zeros((imax)),'H-K','colours']
         self.Variables['V-K'] = [np.zeros((imax)),'V-K','colours']
         self.Variables['BC'] =  [np.zeros((imax)),'BC','colours']
+        self.Variables['G-V'] = [np.zeros((imax)),'G-V','colours']
+        self.Variables['Gbp-V'] = [np.zeros((imax)),'Gbp-V','colours']
+        self.Variables['Grp-V'] = [np.zeros((imax)),'Grp-V','colours']
+        self.Variables['GFlag'] = [np.zeros((imax)),'GFlag','colours']
+        self.Variables['M_G'] = [np.zeros((imax)),'M$_\mathrm{G}','colours']
+        self.Variables['M_Gbp'] = [np.zeros((imax)),'M$_\mathrm{Gbp}','colours']
+        self.Variables['M_Grp'] = [np.zeros((imax)),'M$_\mathrm{Grp}','colours']
 
         for i in range(self.imax):
             self.Colours.Colours_Conversion(self.Variables['FeH'][0][i],self.Variables['gpol'][0][i],10.**self.Variables['Teff'][0][i])
@@ -1288,6 +1462,21 @@ class Model(Outputs):
         self.Variables['M_K'][0] = -self.Variables['V-K'][0]+self.Variables['M_V'][0]
         self.Variables['M_H'][0] = self.Variables['H-K'][0]+self.Variables['M_K'][0]
         self.Variables['M_J'][0] = self.Variables['J-K'][0]+self.Variables['M_K'][0]
+
+        #Computation of the Gaia colours according to the DR2 (Evans et al. 2018, arXiv 1804.09368). In case
+        #the data are off the recommended values for V-I, we set the flag to 1:
+        self.Variables['G-V'][0]  = -0.01746 + 0.008092*self.Variables['V-I'][0] \
+                                    - 0.281000*self.Variables['V-I'][0]**2. \
+                                    + 0.036550*self.Variables['V-I'][0]**3.
+        self.Variables['Gbp-V'][0] = -0.05204 + 0.483000*self.Variables['V-I'][0] \
+                                     - 0.200100*self.Variables['V-I'][0]**2.
+        self.Variables['Grp-V'][0] = 0.00024280 - 0.867500*self.Variables['V-I'][0] \
+                                     - 0.028660*self.Variables['V-I'][0]**2.
+        self.Variables['GFlag'][0][np.where(np.logical_and(self.Variables['V-I'][0]<-0.3,self.Variables['V-I'][0]>2.7))] = 1
+        self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
+        self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
+        self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
+        
         return
 
     def Spec_var_o2013(self):
@@ -1503,11 +1692,41 @@ class Model(Outputs):
 
         self.Variables['GammaEdd'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Gamma_\mathrm{Edd}$','surface']
         # no centre angular velocity in starevol, set to 0.
-        self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','rotation']
+        self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$','rotation']
         # no mass-loss correction for rotation in starevol, set to 1.
         self.Variables['rot_corr'] = [np.zeros(np.size(self.Variables['Mdot'][0]))+1.,'$F_\Omega$','rotation']
         self.Variables['Ltot'][0] = self.Variables['Ltot'][0]/1.e53
 
+        mask = self.Variables['LH'][0]<=0.
+        self.Variables['LH'][0][mask] = 0.
+        self.Variables['LH'][0][np.logical_not(mask)] = np.log10(self.Variables['LH'][0][np.logical_not(mask)])
+        mask = self.Variables['LHe'][0]<=0.
+        self.Variables['LHe'][0][mask] = 0.
+        self.Variables['LHe'][0][np.logical_not(mask)] = np.log10(self.Variables['LHe'][0][np.logical_not(mask)])
+        mask = self.Variables['LC'][0]<=0.
+        self.Variables['LC'][0][mask] = 0.
+        self.Variables['LC'][0][np.logical_not(mask)] = np.log10(self.Variables['LC'][0][np.logical_not(mask)])
+        mask = self.Variables['LNe'][0]<=0.
+        self.Variables['LNe'][0][mask] = 0.
+        self.Variables['LNe'][0][np.logical_not(mask)] = np.log10(self.Variables['LNe'][0][np.logical_not(mask)])
+        mask = self.Variables['LO'][0]<=0.
+        self.Variables['LO'][0][mask] = 0.
+        self.Variables['LO'][0][np.logical_not(mask)] = np.log10(self.Variables['LO'][0][np.logical_not(mask)])
+        mask = self.Variables['LSi'][0]<=0.
+        self.Variables['LSi'][0][mask] = 0.
+        self.Variables['LSi'][0][np.logical_not(mask)] = np.log10(self.Variables['LSi'][0][np.logical_not(mask)])
+        mask = self.Variables['Lnu'][0]<=0.
+        self.Variables['Lnu'][0][mask] = 0.
+        self.Variables['Lnu'][0][np.logical_not(mask)] = np.log10(self.Variables['Lnu'][0][np.logical_not(mask)])
+        mask = self.Variables['Lnucl'][0]<=0.
+        self.Variables['Lnucl'][0][mask] = 0.
+        self.Variables['Lnucl'][0][np.logical_not(mask)] = np.log10(self.Variables['Lnucl'][0][np.logical_not(mask)])
+        mask = self.Variables['Lgrav'][0]<=0.
+        self.Variables['Lgrav'][0][mask] = 0.
+        self.Variables['Lgrav'][0][np.logical_not(mask)] = np.log10(self.Variables['Lgrav'][0][np.logical_not(mask)])
+        mask = self.Variables['Iradmax'][0]<=0.
+        self.Variables['Iradmax'][0][mask] = 0.
+        self.Variables['Iradmax'][0][np.logical_not(mask)] = np.log10(self.Variables['Iradmax'][0][np.logical_not(mask)])
         return
 
     def SpecificVariables(self,fmt):
@@ -1559,7 +1778,8 @@ class Model(Outputs):
                 print 'No extension detected, trying with starevol format.'
 
         if format == "starevol":
-            extensions_list = [".as",".hr",".c1",".c2",".c3",".c4",".s1",".s2",".s3",".s4",".v1",".v3",".v11"]
+            extensions_list = [".as",".hr",".c1",".c2",".c3",".c4",".s1",".s2",".s3",".s4",".tc1",".tc2",".v1"] +\
+                              [".v2",".v3",".v4",".v5",".v6",".v7",".v8",".v11",".v12",".v13"]
             FilesToRead = [FileName + ext for ext in extensions_list]
         else:
             FilesToRead = [FileName]
@@ -1646,7 +1866,7 @@ class Model(Outputs):
         self.Variables['ageadv'] = [self.Variables['t'][0][-1] - self.Variables['t'][0],'log(time before collapse [yr])','model']
         if format != 'starevol':
             self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
-        if format not in ['tgrids','tools','nami','starevol']:
+        if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
             self.Variables['ZCext'] = [np.zeros((self.imax)),'$M_\mathrm{ZC,ext}$','surface']
             for i in range(self.imax):
                 if self.CZ_array[1,-1,i] != 1.:
@@ -1895,7 +2115,7 @@ class Model(Outputs):
 
         for i,myVar in zip([varList[1] for varList in Evol_varList],[varList[0] for varList in Evol_varList]):
             self.Variables[myVar][0] = BigArray[:num_fin,i]
-        if format not in ['tgrids','tools','nami','starevol']:
+        if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
           if format not in ['old_Hirschi']:
             j = sorted([varList[1] for varList in Evol_varList])[-(2+len(MyDriver.added_columns['varList']))]+1
           else:
@@ -2419,10 +2639,9 @@ class Cluster(Outputs):
             self.Variables['M_K'] = [-self.Variables['V-K'][0]+self.Variables['M_V'][0],'M$_\mathrm{K}$','colours']
             self.Variables['M_H'] = [self.Variables['H-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{H}$','colours']
             self.Variables['M_J'] = [self.Variables['J-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{J}$','colours']
-            if self.Variables['format'][0][0] in ['cluster','isochr']:
-              self.Variables['M_G'] = [self.Variables['G-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G}$','colours']
-              self.Variables['M_Gbp'] = [self.Variables['Gbp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Gbp}$','colours']
-              self.Variables['M_Grp'] = [self.Variables['Grp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Grp}$','colours']
+            self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
+            self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
+            self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
         return
 
     def Spec_var_cluster(self):
