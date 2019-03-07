@@ -68,7 +68,7 @@ rcParams['xtick.direction'] = 'in'
 rcParams['ytick.direction'] = 'in'
 
 class GtB_version():
-    GtB_version = '8.0.1'
+    GtB_version = '8.1.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox"""
@@ -129,14 +129,17 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['o2013','tgrids','tools','toolsGaia','nami','bin','preMS']
+    Evol_fmt = ['o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS']
     Evol_formats = {}
-    Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],\
-                    ['C12s',8],['C13s',9],['N14s',10],['O16s',11],['O17s',12],['O18s',13],['Ne20s',14],['Ne22s',15],['Al26s',42],['H1c',21],['He3c',23],['He4c',22],['Be7c',32],['B8c',33],\
-                    ['C12c',24],['C13c',25],['N14c',26],['O16c',27],['O17c',28],['O18c',29],['Ne20c',30],['Ne22c',31],['Al26c',43],\
-                    ['Vsurf',57],['Vcrit1',55],['Vcrit2',56],['OOc',38],['Omega_surf',39],['Omega_cen',40],['oblat',41],['rot_corr',44],['jspe3',48],\
-                    ['jspe5',49],['GammaOmega',58],['Ltotint',64],['Ltot',109],['mominert',63],['Mdot',18],['dMmech',60],['Mdot_mech',61],['dlelex',62],\
-                    ['Erot',65],['Epot',66],['Egaz',67],['Erad',68]],'unitsList':['model num','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
+    Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],\
+                    ['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],['C12s',8],['C13s',9],['N14s',10],\
+                    ['O16s',11],['O17s',12],['O18s',13],['Ne20s',14],['Ne22s',15],['Al26s',42],['H1c',21],['He3c',23],\
+                    ['He4c',22],['Be7c',32],['B8c',33],['C12c',24],['C13c',25],['N14c',26],['O16c',27],['O17c',28],['O18c',29],\
+                    ['Ne20c',30],['Ne22c',31],['Al26c',43],['Vsurf',57],['Vcrit1',55],['Vcrit2',56],['OOc',38],['Omega_surf',39],\
+                    ['Omega_cen',40],['oblat',41],['rot_corr',44],['jspe3',48],['jspe5',49],['GammaOmega',58],['Ltotint',64],\
+                    ['Ltot',109],['mominert',63],['Mdot',18],['dMmech',60],['Mdot_mech',61],['dlelex',62],['Erot',65],\
+                    ['Epot',66],['Egaz',67],['Erad',68]],\
+                    'unitsList':['model num','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
                     '$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\Gamma_\mathrm{Edd}$','$M_\mathrm{cc}/M_\mathrm{tot}$',\
                     r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$','$\log(T_\mathrm{c}\ [K])$',\
                     '$^1$H [surf. mass frac.]','$^3$He [surf. mass frac.]','$^4$He [surf. mass frac.]',\
@@ -161,7 +164,8 @@ class readList():
                     '$(\log(\dot{M})_\mathrm{mech}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
                     '$\Delta\,\mathscr{L}_\mathrm{rad+aniso+mech}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
                     '$E_\mathrm{rot}\ [E_{51}]$','$E_\mathrm{pot}\ [E_{51}]$','$E_\mathrm{th,gaz}\ [E_{51}]$',\
-                    '$E_\mathrm{rad}\ [E_{51}]$'],'catList':['model','model','model','surface','surface','surface','surface','centre','centre','centre',
+                    '$E_\mathrm{rad}\ [E_{51}]$'],\
+                    'catList':['model','model','model','surface','surface','surface','surface','centre','centre','centre',
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
@@ -186,7 +190,7 @@ class readList():
                     '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$',\
                     '$\Omega/\Omega_\mathrm{crit}$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$',\
                     '$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$','$R_\mathrm{pol}/R_\mathrm{eq}$','$F_\Omega$',
-                    '$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
+                    '$\mathcal{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
                     '$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$','$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$'],\
                     'catList':['model','model','model','surface','surface','surface','surface','centre','centre','centre',
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
@@ -315,6 +319,32 @@ class readList():
                     'rotation','rotation','rotation','rotation','rotation','rotation','rotation','winds','winds','winds','winds',\
                     'energetics','energetics','energetics','energetics','binary','binary','binary','binary','binary','binary','binary'],\
                     'header':0,'column_number':117}
+    Evol_formats['old_Hirschi'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['H1s',5],['He4s',6],['He3s',7],['C12s',8],\
+                    ['C13s',9],['N14s',10],['O16s',11],['O17s',12],['O18s',13],['Ne20s',14],['Ne22s',15],['Mccrel',16],['Teff',17],['Mdot',18],\
+                    ['rhoc',19],['Tc',20],['H1c',21],['He4c',22],['He3c',23],['C12c',24],['C13c',25],['N14c',26],['O16c',27],['O17c',28],\
+                    ['O18c',29],['Ne20c',30],['Ne22c',31],['Be7c',32],['B8c',33],['flube7',34],['flub8',35],['snube7',36],['snub8',37],\
+                    ['OOc',38],['Omega_surf',39],['Omega_cen',40],['oblat',41],['Vsurf',42],['Al26s',43],['Al26c',44],['rot_corr',45],\
+                    ['l_CNOmax',46],['m_CNOmax',47],['scno',48]],\
+                    'unitsList':['model num.','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
+                    '$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]','$^3$He [surf. mass frac.]'\
+                    '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
+                    '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
+                    '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]',\
+                    '$M_\mathrm{cc}/M_\mathrm{tot}$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
+                    r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$','$\log(T_\mathrm{c}\ [K])$','$^1$H [centr. mass frac.]',\
+                    '$^4$He [centr. mass frac.]','$^3$He [centr. mass frac.]''$^7$Be [centr. mass frac.]','$^8$B [centr. mass frac.]',\
+                    '$^{12}$C [centr. mass frac.]','$^{13}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]','$^{16}$O [centr. mass frac.]',\
+                    '$^{17}$O [centr. mass frac.]','$^{18}$O [centr. mass frac.]','$^{20}$Ne [centr. mass frac.]',\
+                    '$^{22}$Ne [centr. mass frac.]','$^4$Be [centr. mass frac.]','$^8$B [centr. mass frac.]','flube7','flub8','snube7','snub8',\
+                    '$\Omega/\Omega_\mathrm{crit}$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$','$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$',\
+                    '$R_\mathrm{pol}/R_\mathrm{eq}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$','$^{26}$Al [surf. mass frac.]',\
+                    '$^{26}$Al [centr. mass frac.]','$F_\Omega$','layer$_\mathrm{CNO,max}$','$m_\mathrm{CNO,max}$','scno'],\
+                    'catList':['model','model','model','surface','surface','abundances','abundances','abundances','abundances','abundances',\
+                    'abundances','abundances','abundances','abundances','abundances','abundances','centre','surface','winds','centre','centre',\
+                    'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
+                    'abundances','abundances','abundances','energetics','energetics','energetics','energetics','rotation','rotation','rotation',\
+                    'rotation','rotation','abundances','abundances','rotation','energetics','energetics','energetics'],\
+                    'header':0,'column_number':89}
     Evol_formats['preMS'] = {'header':0,'column_number':116}
     Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['Tbce',5],['THe',6],\
                      ['numax',7],['Dpg',8]],\
@@ -555,7 +585,7 @@ class readList():
                      'catList':['model','rotation','rotation','rotation','rotation','surface','rotation','structure'],\
                      'header':7,'column_number':8}
 
-    Struc_fmt = ['o2013','o2010','full','full_old']
+    Struc_fmt = ['o2013','o2010','old_Hirschi','full','full_old']
     Struc_formats = {}
     Struc_formats['o2013'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
@@ -569,7 +599,7 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
                 '$r_\mathr{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
-                '$H_P\ [\mathrm{cm}]$','$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
                 r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
                 '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
                 r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
@@ -615,9 +645,10 @@ class readList():
                 ['Ti44',84],['Cr48',85],['Fe52',86],['Ni56',87],['neutrons',77],['protons',78],['Omega',43],['Omegacons',58], \
                 ['Omegaprev',60],['Omfit',89],['dlodlr',50],['Lang',88],['Ur',52],['Vr',53],['Richardson',45], \
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
-                ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
+                ['Bphi',65],['alfven',66],['qmin',67]],\
+                'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
                 '$r_\mathr{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
-                '$H_P\ [\mathrm{cm}]$','$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
                 r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
                 '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
                 r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
@@ -653,6 +684,42 @@ class readList():
                 'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation', \
                 'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
                 'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':92}
+    Struc_formats['old_Hirschi'] = {'varList':[['shell',0],['Mfrac',1],['P',2],['T',3],['r',4],['L',5],['H1',6],['He4',7],['C12',8],\
+                ['O16',9],['epsH',10],['epsHe',11],['epsC',12],['Nabrad',13],['rho',14],['epsnu',16],['dkdP',17],\
+                ['dkdT',18],['dEdP',19],['dEdT',20],['drhodP',21],['delta',22],['psi',23],['eps3a',24],['epsCagO',25],['epsOagNe',26],\
+                ['epsgrav',27],['Nabad',28],['kappa',29],['beta',30],['He3',31],['C13',32],['N14',33],['N15',34],['O17',35],['O18',36],\
+                ['Ne20',37],['Ne22',38],['Mg24',39],['Mg25',40],['Mg26',41],['mu',42],['Omega',43],['Nabmu',44],['gamxxx',45],\
+                ['Richardson',46],['xnabyy',47],['Dconv',48],['Dsem',49],['Dshear',50],['Deff',51],['Mr',52],['dlodlr',53],\
+                ['xnprim',54],['Kther',55],['Ur',56],['asheay',57],['bsheay',58],['csheay',59],['Hp',60],['g',61],\
+                ['wpenvy',62],['ameriy',63],['dsesy',64],['Omegacons',65],['rprev',66],['Omegaprev',67],['muprev',68],['Si28',69],['S32',70],['Ar36',71],\
+                ['Ca40',72],['Ti44',73],['Cr48',74],['Fe52',75],['Ni56',76],['mue',77]],\
+                'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$','$T\ [K]$','$r\ [R_\odot]$',\
+                '$L_r/L_\mathrm{tot}$','$^1$H [mass frac.]','$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{16}$O [mass frac.]',\
+                '$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',\
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$\nabla_\mathrm{rad}$',r'$\rho\ [\mathrm{g\,cm}^3]$',\
+                r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$',\
+                '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$',r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',\
+                r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\psi$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',\
+                r'$\nabla_\mathrm{ad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$^3$He [mass frac.]',\
+                '$^{13}$C [mass frac.]','$^{14}$N [mass frac.]','$^{15}$N [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]',\
+                '$^{20}$Ne [mass frac.]','$^{22}$Ne [mass frac.]','$^{24}$Mg [mass frac.]','$^{25}$Mg [mass frac.]','$^{26}$Mg [mass frac.]',\
+                '$\mu$','$\Omega\ [\mathrm{s}^{-1}]$',r'$\nabla_\mu$','gamxxx','$\mathrm{Ri}=N^2/(\mathrm{d}V/\mathrm{d}z)^2$','xnabyy',\
+                '$D_\mathrm{conv}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{semi}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',\
+                '$D_\mathrm{shear}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{eff}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$M_r\ [M_\odot]$',\
+                '$\mathrm{d}\ln\Omega/\mathrm{d}\ln r$','xnprim','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$U_r\ [\mathrm{cm\,s}^{-1}]$',\
+                'asheay','bsheay','csheay','$H_P\ [\mathrm{cm}]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','wpenvy','ameriy','dsesy',\
+                '$\Omega_{\mathscr{L}\mathrm{,cons.}}\ [\mathrm{s}^{-1}]$','$r_\mathr{prev}\ [R_\odot]$','$\Omega_\mathrm{prev}\ [\mathrm{s}^{-1}]$',\
+                '$\mu_\mathrm{prev}$','$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]','$^{40}$Ca [mass frac.]',\
+                '$^{44}$Ti [mass frac.]','$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]','$^{56}$Ni [mass frac.]','$\mu_e$'],\
+                'catList':['structure','structure','thermo','thermo','structure','thermo','abundances','abundances','abundances',\
+                'abundances','energy','energy','energy','thermo','EOS','energy','thermo','thermo','thermo','thermo','EOS','thermo',\
+                'EOS','energy','energy','energy','energy','thermo','thermo','thermo','abundances','abundances','abundances','abundances',\
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','EOS','rotation','EOS','old',\
+                'rotation','old','rotation','rotation','rotation','rotation','structure','rotation','old','thermo','rotation','old','old',\
+                'old','thermo','structure','old','old','old','rotation','structure','rotation','EOS','abundances','abundances','abundances',\
+                'abundances','abundances','abundances','abundances','abundances','EOS'],'header':1,'column_number':78}
     Struc_formats['full'] = {'varList':[['shell',0],['Mr',2],['r',1],['P',5],['Pturb',24],['T',3],['Nabad',10],['Nabe',9],['kappa',13], \
                 ['dkdrho',14],['dkdT',15],['Cv',6],['rho',4],['dPdrho',7],['dPdT',8],['mu',21],['mu0',22],['L',12],['Lrad',11], \
                 ['epsilon',16],['dEdrho',17],['dEdT',18],['H1',19],['He4',20],['HII',27],['HeII',28],['HeIII',29],['Omega',23], \
@@ -683,9 +750,39 @@ class readList():
                 'thermo','EOS','EOS','EOS','EOS','EOS','energy','energy','energy','energy','energy','abundances','abundances','rotation'], \
                 'header':11,'column_number':25}
 
-    Cluster_fmt = ['cluster','cluster_old','isochr','isochr_old','isochr_veryold']
+    Cluster_fmt = ['cluster','cluster2016','cluster_old','isochr','isochr2016','isochr_old','isochr_veryold']
     Cluster_formats = {}
-    Cluster_formats['cluster'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5], \
+    Cluster_formats['cluster'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5],['M',6],['Rpol',29],['gpol',31],['gmean',32],\
+                ['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13],['L',7],['L_gd',10],['L_lgd',12],['MBol',14],['Gammaedd',40],['Mdot',38],['dMmech',39],\
+                ['Omega_surf',33],['OOc',37],['Vsurf',34],['Vcrit1',35],['Vcrit2',36],['oblat',30],['H1s',41],['He4s',42],['C12s',43],['C13s',44],['N14s',45],\
+                ['O16s',46],['O17s',47],['O18s',48],['Ne20s',49],['Ne22s',50],['Al26s',51],['M_V',15],['U-B',16],['B-V',17],['V-R',18],['V-I',19],['J-K',20],\
+                ['H-K',21],['V-K',22],['M_V_noise',23],['B-V_noise',24],['G-V',25],['Gbp-V',26],['Grp-V',27],['G_flag',28]],\
+                'unitsList':['$M_\mathrm{ini}\,[M_\odot]$','$Z_\mathrm{ini}$','$\Omega/\Omega_\mathrm{crit,ini}$','$i\ [^\mathrm{o}]$','binary','$M_1/M_2$',\
+                '$M\,[M_\odot]$','$R_\mathrm{pol}\,[R_\odot]$','$\log(g_\mathrm{pol}\,[\mathrm{cm\,s}^{-2}])$','$\log(g_\mathrm{mean}\,[\mathrm{cm\,s}^{-2}])$',\
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(L/L_\odot)$','$\log(L/L_\odot)$','$\log(L/L_\odot)$', \
+                '$\mathrm{M}_\mathrm{bol}$','$\Gamma_\mathrm{Edd}$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$', \
+                '$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega/\Omega_\mathrm{crit}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$', \
+                '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$', \
+                '$R_\mathrm{pol}/R_\mathrm{eq}$','$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]', \
+                '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]', \
+                '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]', \
+                '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]', \
+                '$\mathrm{M}_\mathrm{V}$','U-B','B-V','V-R','V-I','J-K','H-K','V-K','$\mathrm{M}_\mathrm{V}$','B-V', \
+                'G-V','Gbp-V','Grp-V','G_flag'],\
+                'catList':['initial conditions','initial conditions','initial conditions', \
+                'initial conditions','initial conditions','initial conditions','global properties', \
+                'global properties','global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','rotation','rotation','rotation','rotation','rotation','rotation', \
+                'abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','colours','colours', \
+                'colours','colours','colours','colours','colours','colours','colours','colours','colours',
+                'colours','colours','colours'],\
+                'header':3,'column_number':52}
+    Cluster_formats['cluster2016'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['Angle',3],['Bin',4],['M1M2',5], \
                 ['M',6],['Rpol',26],['gpol',28],['gmean',29],['Teffcorr',8],['Teff',9],['Teff_gd',11],['Teff_lgd',13], \
                 ['L',7],['L_gd',10],['L_lgd',12],['Mbol',14],['Gammaedd',37],['Mdot',35],['dMmech',36], \
                 ['Omega_surf',30],['OOc',34],['Vsurf',31],['Vcrit1',32],['Vcrit2',33],['oblat',27],['H1s',38], \
@@ -771,7 +868,36 @@ class readList():
                 'colours','colours','colours','colours','colours','colours','colours','colours','colours','colours','colours', \
                 'colours','colours'],'header':2,'column_number':43}
 
-    Cluster_formats['isochr'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',17],['gpol',19], \
+    Cluster_formats['isochr'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',21],['gpol',23], \
+                ['Teffcorr',5],['Teff',6],['L',4],['Mbol',7],['Gammaedd',31],['Mdot',29], \
+                ['dMmech',30],['Omega_surf',24],['OOc',28],['Vsurf',25],['Vcrit1',26],['Vcrit2',27], \
+                ['oblat',22],['H1s',32],['He4s',33],['C12s',34],['C13s',35],['N14s',36],['O16s',37], \
+                ['O17s',38],['O18s',39],['Ne20s',40],['Ne22s',41],['Al26s',42],['M_V',8],['U-B',9], \
+                ['B-V',10],['V-K',11],['V-R',12],['V-I',13],['J-K',14],['H-K',15],['G-V',16],['Gbp-V',17],\
+                ['Grp-V',18],['G_flag',19],['BC',20]],\
+                'unitsList':['$M_\mathrm{ini}\,[M_\odot]$','$Z_\mathrm{ini}$','$\Omega/\Omega_\mathrm{crit,ini}$', \
+                '$M\,[M_\odot]$','$R_\mathrm{pol}\,[\mathrm{cm}]$','$\log(g_\mathrm{pol}\,[\mathrm{cm\,s}^{-2}])$', \
+                '$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(T_\mathrm{eff}\,[\mathrm{K}])$','$\log(L/L_\odot)$', \
+                '$\mathrm{M}_\mathrm{bol}$','$\Gamma_\mathrm{Edd}$','$\log(\dot{M}\ [M_\odot\,\mathrm{yr}^{-1}])$', \
+                '$\mathrm{d}M_\mathrm{mech}\ [M_\odot]$','$\Omega_\mathrm{surf}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega/\Omega_\mathrm{crit}$','$V_\mathrm{surf}\ [\mathrm{km\,s}^{-1}]$', \
+                '$V_\mathrm{crit,1}\ [\mathrm{km\,s}^{-1}]$','$V_\mathrm{crit,2}\ [\mathrm{km\,s}^{-1}]$', \
+                '$R_\mathrm{pol}/R_\mathrm{eq}$','$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]', \
+                '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]', \
+                '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]', \
+                '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]','$^{26}$Al [surf. mass frac.]', \
+                '$\mathrm{M}_\mathrm{V}$','U-B','B-V','V-K', \
+                'V-R','V-I','J-K','H-K','G-V','Gbp-V','Grp-V','G_flag','Bolometric correction'],\
+                'catList':['initial conditions','initial conditions','initial conditions', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','global properties','global properties', \
+                'global properties','global properties','rotation','rotation','rotation','rotation', \
+                'rotation','rotation','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances', \
+                'colours','colours','colours','colours','colours','colours','colours','colours', \
+                'colours','colours','colours','colours','colours'],'header':2,'column_number':43}
+
+    Cluster_formats['isochr2016'] = {'varList':[['Mini',0],['Zini',1],['Oini',2],['M',3],['Rpol',17],['gpol',19], \
                 ['Teffcorr',5],['Teff',6],['L',4],['Mbol',7],['Gammaedd',27],['Mdot',25], \
                 ['dMmech',26],['Omega_surf',20],['OOc',24],['Vsurf',21],['Vcrit1',22],['Vcrit2',23], \
                 ['oblat',18],['H1s',28],['He4s',29],['C12s',30],['C13s',31],['N14s',32],['O16s',33], \
@@ -1451,6 +1577,32 @@ class Model(Outputs):
             self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
         return
 
+    def Spec_var_oldHirschi(self):
+        if self.Variables['format'][0][0] != 'old_Hirschi':
+            return
+        line_skip = False
+        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
+        self.Variables['Zsurf'][0] = self.Variables['Zsurf'][0]-self.Variables['He3s'][0]
+        self.Variables['Rpol'] = [np.zeros((self.imax)),'$R_\mathrm{pol}\ [R_\odot]$','surface']
+        self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
+
+        for i in range(self.imax):
+            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
+            try:
+                Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
+                r_pol = math.sqrt(Actual_Surface/Norm_Surface)
+                g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
+                self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
+                self.Variables['gpol'][0][i] = g_pol
+            except ValueError:
+                print 'problem at line ',i+1
+                line_skip = True
+        if line_skip:
+            print 'You need to check this file'
+            raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
+            return
+        return
+
     def Spec_var_preMS(self):
         if self.Variables['format'][0][0] != 'preMS':
             return
@@ -1610,6 +1762,7 @@ class Model(Outputs):
             'tools': self.Spec_var_tools(),
             'nami': self.Spec_var_nami(),
             'bin': self.Spec_var_bin(),
+            'old_Hirschi': self.Spec_var_oldHirschi(),
             'preMS': self.Spec_var_preMS(),
             'starevol': self.Spec_var_starevol(),
         }
@@ -1704,7 +1857,7 @@ class Model(Outputs):
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO, \
                                                 ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
         if not quiet:
-            print 'limits of burning phases:',self.Variables['ind_burning_phases']
+            print 'limits of burning phases:',self.Variables['ind_burning_phases'][0]
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
@@ -1759,10 +1912,11 @@ class Model(Outputs):
             else:
                 self.Variables['R'] = [np.sqrt(self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(self.Variables['Teff'][0]**2.*Cst.Rsol),'$R\ [R_\odot]$','surface']
             self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
+        self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
         self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
         self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
-        if format not in ['nami','starevol']:
+        if format not in ['nami','old_Hirschi','starevol']:
             if not all(v==0. for v in self.Variables['Vsurf'][0]):
                 Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
                 self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\mathrm{crit}$','rotation']
@@ -1776,17 +1930,17 @@ class Model(Outputs):
             self.Variables['Mdot'][0][self.Variables['Mdot'][0] == 0.] = -30.
             self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
             self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
-            self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
+        self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-
-        if format != "starevol":
-            self.Variables['FeH'] = [np.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.log10(self.Variables['H1s'][0]/Cst.Hsol),'Fe/H','abundances']
-        else:
-            self.Variables['FeH'] = [self.Variables['Zsurf'][0]*0.-0.3,'Fe/H','abundances']
-        self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
-        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
+        self.Variables['FeH'] = [np.zeros((self.imax)),'Fe/H','abundances']
         mask = self.Variables['H1s'][0]<=0.
+        if format != "starevol":
+            self.Variables['FeH'][0][mask] = -30.
+            self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
+        else:
+            self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
+        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
         self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
         self.Variables['NH'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)])+12.
         self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
@@ -1856,6 +2010,8 @@ class Model(Outputs):
 
         wafile = open(FileName,'r')
         BigArray = np.genfromtxt(wafile,skip_header=num_deb,comments=None)
+        if num_fin == -1:
+          num_fin = BigArray.shape[0]
         el_num = (BigArray.shape[1]-3)/2
         print el_num,' isotopes read in .wa file'
         for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
@@ -1982,15 +2138,18 @@ class Model(Outputs):
         for i,myVar in zip([varList[1] for varList in Evol_varList],[varList[0] for varList in Evol_varList]):
             self.Variables[myVar][0] = BigArray[:num_fin,i]
         if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
+          if format not in ['old_Hirschi']:
             j = sorted([varList[1] for varList in Evol_varList])[-(2+len(MyDriver.added_columns['varList']))]+1
-            self.CZ_array = np.array([[BigArray[:num_fin,j],BigArray[:num_fin,j+2],BigArray[:num_fin,j+4],BigArray[:num_fin,j+6],BigArray[:num_fin,j+8],BigArray[:num_fin,j+10], \
+          else:
+            j = sorted([varList[1] for varList in Evol_varList])[-(2+len(MyDriver.added_columns['varList']))]
+          self.CZ_array = np.array([[BigArray[:num_fin,j],BigArray[:num_fin,j+2],BigArray[:num_fin,j+4],BigArray[:num_fin,j+6],BigArray[:num_fin,j+8],BigArray[:num_fin,j+10], \
                                 BigArray[:num_fin,j+12],BigArray[:num_fin,j+14],BigArray[:num_fin,j+16],BigArray[:num_fin,j+18],BigArray[:num_fin,j+20],BigArray[:num_fin,j+22], \
                                 BigArray[:num_fin,j+24],BigArray[:num_fin,j+26],BigArray[:num_fin,j+28],BigArray[:num_fin,j+30],BigArray[:num_fin,j+32],BigArray[:num_fin,j+34], \
                                 BigArray[:num_fin,j+36],BigArray[:num_fin,j+38]],[BigArray[:num_fin,j+1],BigArray[:num_fin,j+3],BigArray[:num_fin,j+5],BigArray[:num_fin,j+7], \
                                 BigArray[:num_fin,j+9],BigArray[:num_fin,j+11],BigArray[:num_fin,j+13],BigArray[:num_fin,j+15],BigArray[:num_fin,j+17],BigArray[:num_fin,j+19], \
                                 BigArray[:num_fin,j+21],BigArray[:num_fin,j+23],BigArray[:num_fin,j+25],BigArray[:num_fin,j+27],BigArray[:num_fin,j+29],BigArray[:num_fin,j+31], \
                                 BigArray[:num_fin,j+33],BigArray[:num_fin,j+35],BigArray[:num_fin,j+37],BigArray[:num_fin,j+39]]])
-            standard_columns()
+        standard_columns()
 
         return header
 
@@ -2005,33 +2164,47 @@ class Struc(Outputs):
         if format in ['o2013','o2010']:
             Struc_begin = "# modnb"
             Test_Length = 7
+        elif format in ['old_Hirschi']:
+            Struc_begin = ''
+            Test_Length = 0
         elif format in ['full','full_old']:
             Struc_begin = "Model num"
             Test_Length = 9
 
         Time_Step_Dic = {}
-        Next_Line = False
-        i = 1
-        for MyLine in MyFile:
-            if Next_Line and (format in ['o2013','o2010']):
-                Next_Line = False
-                Current_Model = int(MyLine.split()[0])
-                Time_Step_Dic[Current_Model] = [i-1,i-1]
-            if MyLine[0:Test_Length] == Struc_begin:
-                if format in ['full','full_old']:
-                    if i != 1:
-                        End_Line = i-1
-                        Time_Step_Dic[Current_Model][1] = End_Line
-                    Current_Model = int(MyLine.split()[-1])
-                    Time_Step_Dic[Current_Model] = [i,i]
-                elif format in ['o2013','o2010']:
-                    if i != 1:
-                        End_Line = i-1
-                        Time_Step_Dic[Current_Model][1] = End_Line
-                    Next_Line = True
+        if format not in ['old_Hirschi']:
+          Next_Line = False
+          i = 1
+          for MyLine in MyFile:
+              if Next_Line and (format in ['o2013','o2010']):
+                  Next_Line = False
+                  Current_Model = int(MyLine.split()[0])
+                  Time_Step_Dic[Current_Model] = [i-1,i-1]
+              if MyLine[0:Test_Length] == Struc_begin:
+                  if format in ['full','full_old']:
+                      if i != 1:
+                          End_Line = i-1
+                          Time_Step_Dic[Current_Model][1] = End_Line
+                      Current_Model = int(MyLine.split()[-1])
+                      Time_Step_Dic[Current_Model] = [i,i]
+                  elif format in ['o2013','o2010']:
+                      if i != 1:
+                          End_Line = i-1
+                          Time_Step_Dic[Current_Model][1] = End_Line
+                      Next_Line = True
+              i += 1
+          End_Line = i-1
+          Time_Step_Dic[Current_Model][1] = End_Line
+        else:
+          Current_Model = int(FileName[FileName.rfind('.v')+2:])
+          i = 1
+          for MyLine in MyFile:
+            if len(MyLine.split()) == 2:
+              if i != 1:
+                break
             i += 1
-        End_Line = i-1
-        Time_Step_Dic[Current_Model][1] = End_Line
+          End_Line = i-1
+          Time_Step_Dic[Current_Model] = [1,End_Line]
 
         return Time_Step_Dic
 
@@ -2095,10 +2268,11 @@ class Struc(Outputs):
                         + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
             else:
                 self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
-        self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
-                    -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
-                    '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
-
+        self.Variables['V_MLT'] = [np.zeros(len(self.Variables['delta'][0])),'$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
+        vmlt = g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
+                    -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])
+        vmlt[vmlt<0.] = 0.
+        self.Variables['V_MLT'][0] = np.sqrt(vmlt)
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
         self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\epsilon_\mathrm{nucl}+\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\mathrm{eq}\ [\mathrm{km\,s}^{-1}]$','rotation']
@@ -2223,6 +2397,99 @@ class Struc(Outputs):
 
         return
 
+    def Spec_var_oldHirschi(self):
+        if self.Variables['format'][0] != 'old_Hirschi':
+            return
+        imax = len(self.Variables['shell'][0])
+        self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
+        H_P = self.Variables['Hp'][0]
+        if H_P[0] == 0.:
+            H_P[0] = H_P[1]
+        if H_P[-1] == 0.:
+            H_P[-1] = H_P[-2]
+        g_r = self.Variables['g'][0]
+        if g_r[0] == 0.:
+            g_r[0] = g_r[1]
+        if g_r[-1] == 0.:
+            g_r[-1] = g_r[-2]
+        self.Variables['N2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0] \
+                            -self.Variables['Nabrad'][0]+self.Variables['Nabmu'][0]/self.Variables['delta'][0]), \
+                            '$N^2\ [\mathrm{s}^{-1}]$','structure']
+        self.Variables['NT2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0]-self.Variables['Nabrad'][0]),'$N_T^2\ [\mathrm{s}^{-1}]$','structure']
+        self.Variables['Nmu2'] = [g_r/H_P*self.Variables['Nabmu'][0],'$N_\mu^2\ [\mathrm{s}^{-1}]$','structure']
+        self.Variables['Cp'] = [self.Variables['P'][0]*self.Variables['delta'][0]/(self.Variables['Nabad'][0]*self.Variables['rho'][0] \
+                                *self.Variables['T'][0]),r'$\mathrm{C}_P\ [\mathrm{ergs\,g}^{-1}\,\mathrm{K}^{-1}]$','thermo']
+
+    #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
+        U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
+            *self.Variables['Cp'][0]*self.Variables['kappa'][0]*(1.6*self.Variables['Hp'][0])**2.) \
+            *np.sqrt(8.*self.Variables['Hp'][0]/(g_r*self.Variables['delta'][0]))
+        U[np.logical_not(self.Convection)] = 0.
+        A = 2.*((4.*(self.Variables['Nabrad'][0]-self.Variables['Nabad'][0])/9. + ((19./27.)**3.-1./9.)*U**2.))*U
+        A[A<0.] = 0.
+        E = 3.*368./729. * U**2.
+        D = (A/2.)**2. + (E/3.)**3.
+        W = (1./2.*A + np.sqrt(D))**(1./3.)
+        x1 = np.zeros(len(U))
+
+        for i in range(len(U)):
+            po = np.array([1., -19./9.*U[i], 3.*U[i]**2., -(17./9.*U[i]**3.  \
+                    + 8./9.*U[i]*(self.Variables['Nabrad'][0][i]-self.Variables['Nabad'][0][i]))])
+            if self.Convection[i]:
+                sol = np.roots(po)
+                for j in range(3):
+                    if np.imag(sol[j]) == 0.:
+                        x1[i] = np.real(sol[j])
+            else:
+                x1[i] = 0.
+
+        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
+        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
+        for i in range(len(self.Variables['Nabla_int'][0])):
+            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
+                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
+                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
+            else:
+                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
+                    -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
+                    '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
+
+        self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\epsilon_\mathrm{nucl}+\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','energy']
+        self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\mathrm{eq}\ [\mathrm{km\,s}^{-1}]$','rotation']
+        self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,r'$j_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),r'$j_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,r'$j_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['Lang'] = [np.zeros(imax),'Lang','toto']
+        Mrsol = self.Variables['Mr'][0]*Cst.Msol
+        Mrsol[Mrsol == 0.] = 1.e-10
+        Rsq = self.Variables['r_cm'][0]**2.
+        Rsq[imax-1] = self.Variables['r_cm'][0][imax-2]**2./2.**(2./3.)
+        Minert = np.zeros(imax)
+        Minert[1:imax-2] = [(2./3.)*Rsq[i]*(Mrsol[i-1]-Mrsol[i+1])/2. for i in range(1,imax-2)]
+        Minert[0] = (2./3.)*Rsq[0]*(Mrsol[0]-Mrsol[1])/2.
+        Minert[imax-1] = (2./5.)*Rsq[imax-1]*Mrsol[imax-2]
+        self.Variables['Lang'][0] = Minert*self.Variables['Omega'][0]
+        Lin = np.cumsum(self.Variables['Lang'][0])
+# a/M with a from Shapiro & Teukolsky, eq. 12.7.2
+        a_om = Lin*Cst.c/(Cst.G*(Mrsol)**2.)
+        a_om = np.minimum(a_om,1.)
+# Shapiro & Teukolsky, eq. 12.7.24
+        z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
+        z2 = np.sqrt(3.*a_om**2.+z1**2.)
+        r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
+        self.Variables['jKmax'] = [self.Variables['jK'][0],\
+                       r'$j_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
+# Shapiro & Teukolsky, eq. 12.7.18
+        Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
+                                                 r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
+                                                 2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
+        self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mrsol/Cst.c
+
+        return
+
     def Spec_var_full(self):
         if self.Variables['format'][0] != 'full':
             return
@@ -2253,6 +2520,7 @@ class Struc(Outputs):
         switcher = {
             'o2013': self.Spec_var_o2013(),
             'o2010': self.Spec_var_o2010(),
+            'old_Hirschi': self.Spec_var_oldHirschi(),
             'full': self.Spec_var_full(),
             'full_old': self.Spec_var_fullold(),
         }
@@ -2260,7 +2528,8 @@ class Struc(Outputs):
         return switcher.get(fmt,'Unknown format')
 
     def read(self,FileName,num_deb,line_to_read,format,quiet):
-        print 'In read: num_deb,line_to_read:',num_deb,line_to_read
+        if not quiet:
+          print 'In read: num_deb,line_to_read:',num_deb,line_to_read
         if format == '':
             raise FormatError(2,'column number does not match any known format',FileName)
             return
@@ -2298,12 +2567,19 @@ class Struc(Outputs):
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
-            print 'Reading model',self.num_model
+            if not quiet:
+              print 'Reading model',self.num_model
             self.age = float(self.age)
             self.mass = float(self.mass)
             self.n_shell = int(self.n_shell)
             self.time_step = float(self.time_step)
             #nfoot = fileLength-self.n_shell-num_deb-header
+            line_to_read = line_to_read - header
+        elif format in ['old_Hirschi']:
+            self.num_model = int(FileName[FileName.rfind('.v')+2:])
+            self.age,self.mass=MyFile.readline().split()
+            self.age = float(self.age)/10.
+            self.mass = float(self.mass)
             line_to_read = line_to_read - header
         elif format in ['full','full_old']:
             self.num_model=MyFile.readline().split()[3]
@@ -2329,7 +2605,7 @@ class Struc(Outputs):
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
 
-        if format in ['o2013','o2010']:
+        if format in ['o2013','o2010','old_Hirschi']:
             self.Convection = BigArray[:,15]
             self.Convection = self.Convection >= 0.
         elif format in ['full','full_old']:
@@ -2403,6 +2679,19 @@ class Cluster(Outputs):
         self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
         return
 
+    def Spec_var_cluster2016(self):
+        if self.Variables['format'][0][0] != 'cluster2016':
+            return
+        self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\,\sin\,i\ [\mathrm{km\,s}^{-1}]$','rotation']
+        self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\ [R_\odot]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','global properties']
+        self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','global properties']
+        self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\log(\mathscr{L}/\mathscr{L}_\odot)$','global properties']
+        self.Variables['fwg'] = [self.Variables['gmean'][0]-self.Variables['Teff_lgd'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
+        self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
+        return
+
     def Spec_var_clusterold(self):
         if self.Variables['format'][0][0] != 'cluster_old':
             return
@@ -2418,6 +2707,13 @@ class Cluster(Outputs):
 
     def Spec_var_isochr(self):
         if self.Variables['format'][0][0] != 'isochr':
+            return
+        self.Variables['fwg'] = [self.Variables['gpol'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
+        self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
+        return
+
+    def Spec_var_isochr2016(self):
+        if self.Variables['format'][0][0] != 'isochr2016':
             return
         self.Variables['fwg'] = [self.Variables['gpol'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'global properties']
         self.Variables['period'] = [np.ma.array(2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),mask=self.Variables['Omega_surf'][0]==0.),'$\mathrm{P\,[d]}$','rotation']
@@ -2440,8 +2736,10 @@ class Cluster(Outputs):
 
         switcher = {
             'cluster': self.Spec_var_cluster(),
+            'cluster2016': self.Spec_var_cluster2016(),
             'cluster_old': self.Spec_var_clusterold(),
             'isochr': self.Spec_var_isochr(),
+            'isochr2016': self.Spec_var_isochr2016(),
             'isochr_old': self.Spec_var_isochrold(),
             'isochr_veryold': self.Spec_var_isochrveryold(),
         }
@@ -2531,12 +2829,12 @@ class Cluster(Outputs):
             print 'File ',ModelName, 'successfully loaded.'
         return
 
-    def Colour_correction(self,excess,dist_mod):
-        """Correction of the M_V and B-V for a distance modulus and a colour excess, with
+    def Colour_correction(self,excess,dist_mod,mag,col):
+        """Correction of the magnitude and colour for a distance modulus and a colour excess, with
            the average interstellar extinction curve R_V = A_V/E(B-V) = 3.1.
-           Called by the direct command colour_corr(excess,dist_mod,num_star)."""
-        self.Variables['M_V_corr']=[self.Variables['M_V'][0]+dist_mod+3.1*excess,'$\mathrm{m}_\mathrm{V}$','colours']
-        self.Variables['B-V_corr'] = [self.Variables['B-V'][0]+excess,'$\mathrm{B-V}$','colours']
+           Called by the direct command colour_corr(excess,dist_mod,num_star,mag,col)."""
+        self.Variables[mag+'_corr']=[self.Variables[mag][0]+dist_mod+3.1*excess,self.Variables[mag][1],'colours']
+        self.Variables[col+'_corr'] = [self.Variables[col][0]+excess,self.Variables[col][1],'colours']
 
 class Analysis():
     """In construction. Will provide several tools to analyse the evolution or structure files."""
@@ -2871,12 +3169,12 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     if format == '':
         if 'StrucData' in MyVFile:
-            for fmt in readList.Struc_fmt[2:4]:
+            for fmt in readList.Struc_fmt[3:4]:
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
         else:
-            for fmt in readList.Struc_fmt[0:2]:
+            for fmt in readList.Struc_fmt[0:3]:
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
@@ -2887,7 +3185,8 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
             print 'format identified=',format
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
-    print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
+    if not quiet:
+      print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
 
     if toread == []:
         toread = Time_Step_Dic.keys()
@@ -2899,7 +3198,8 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     for Current_Model in sorted(ToReadModels):
         MyModel = Struc()
-        print Current_Model
+        if not quiet:
+          print Current_Model
         Checked = False
         if MyDriver.modeplot != 'struc':
             if not quiet:
@@ -2922,8 +3222,9 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
             except np.linalg.LinAlgError:
                 print 'problem computing MLT, aborting.'
-                os.system(CommandZip)
-                raise
+                if toZip:
+                  os.system(CommandZip)
+                raise np.linalg.LinAlgError
             except FormatError:
                 raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
 
@@ -3069,7 +3370,7 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
         print ''
         Loaded('cluster')
 
-def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False,quiet=True,colour=False):
+def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,forced=False,quiet=True,colour=False):
     """Loads all models (.wg, .dat, or .wg.grids) in the directory given in argument.
         By default, the models are loaded with index 1 for the first one up to n,
             but setting 'ini_index=i' modifies the numbering from i to i+n.
@@ -3090,7 +3391,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         file_short = file[file.rfind('/')+1:]
         print 'file '+file_short
         try:
-            loadE(file,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
+            loadE(file,index,num_deb,format=format,wa=wa,forced=forced,quiet=quiet,colour=colour)
             if not quiet:
                 print 'File '+file_short+' successfully loaded.'
             index += 1
@@ -4393,7 +4694,7 @@ def j_profiles(*args):
     Plot('jKmax')
     if 'legend' in args:
         put_legend(loc=4,fontsize=MyDriver.fontSize)
-    change_label('y',r'$\mathscr{j}_r,\ \mathscr{j}_\mathrm{Schw.},\ \mathscr{j}_\mathrm{Kerr}, \mathscr{j}_\mathrm{Kerr}^\mathrm{max}$')
+    change_label('y',r'$j_r,\ j_\mathrm{Schw.},\ j_\mathrm{Kerr}, j_\mathrm{Kerr}^\mathrm{max}$')
     no_logVar('y')
     noLimits()
     keep_plot(False)
@@ -4420,7 +4721,7 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
         for i in MyDriver.Model_list.keys():
             print MyDriver.Model_list[i].Variables['FileName'],'\t\t',i
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
         print 'This format does not contain informations on convective zones.'
         return
     else:
@@ -4525,11 +4826,11 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
        If an index is provided, for example PlotRatio("M","M",index=0),
           it will plot variable_1 divided by the value of variable_2[index]."""
     abort = False
-    if MyDriver.plotmode == 'evol':
+    if MyDriver.modeplot == 'evol':
       lenvar = 'line'
-    elif MyDriver.plotmode == 'struc':
+    elif MyDriver.modeplot == 'struc':
       lenvar = 'shell'
-    elif MyDriver.plotmode == 'cluster':
+    elif MyDriver.modeplot == 'cluster':
       lenvar = 'Mini'
     if index == 0:
         ilabel = '$_\mathrm{ini}$'
@@ -5158,16 +5459,16 @@ def colours_calc(num_star=0):
         else:
             print 'colours already exist for model',i
 
-def colour_corr(excess,dist_mod,num_star=0):
-    """Corrects the M_V and B-V for a distance modulus and a colour excess.
-       Usage: colour_corr(excess,dist_mod,num_star)
+def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
+    """Corrects the magnitude and colour for a distance modulus and a colour excess.
+       Usage: colour_corr(excess,dist_mod,mag,col,num_star)
               Note that num_star might be a list of models."""
     if MyDriver.modeplot != 'cluster':
         print 'This command is valid only in cluster mode'
         return
     if num_star == 0:
         num_star = MyDriver.Model_list_cluster.keys()
-    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
+    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
     if len([i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]) !=0:
         print 'Model(s) ',[i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()],' do(es) not exist in cluster list.'
 
@@ -6124,14 +6425,16 @@ def closest_line(Xvar='',Yvar='',printline=False):
     if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
         print 'Beware: the line will not be as accurate as if you used the complete .wg file.\n'
     if not printline:
-        return line_i[best_i]
+      if len(MyDriver.SelectedModels) > 1:
+        print 'closest model:',best_i
+      return line_i[best_i]
     else:
-        with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
-            for file_line in myfile:
-                current_model = int(file_line.split()[0])
-                if current_model == line_i[best_i]:
-                    print file_line
-                    return line_i[best_i]
+      with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+        for file_line in myfile:
+          current_model = int(file_line.split()[0])
+          if current_model == line_i[best_i]:
+            print file_line
+            return line_i[best_i]
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
@@ -6225,7 +6528,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     if newFig:
         if MyDriver.closeFig:
             plt.close()
-        MyDriver.AddFigure((11,11))
+        MyDriver.AddFigure((8,8))
         MyDriver.current_Fig.subplots_adjust(wspace=MyDriver.subplotSep)
         New_Axes = MyDriver.current_Fig.add_subplot(111)
     else:
@@ -6271,7 +6574,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
 
     if MyDriver.iPoints:
         if myStyle != '':
-            New_Axes.scatter(myX,myY,myStyle,s=MyDriver.pointSize)
+            New_Axes.plot(myX,myY,myStyle)
         else:
             if zcolour:
                 cmap=cm.get_cmap(MyDriver.colourMap)
