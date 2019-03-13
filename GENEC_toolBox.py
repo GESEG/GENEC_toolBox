@@ -1476,7 +1476,7 @@ class Model(Outputs):
         self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
         self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
         self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
-        
+
         return
 
     def Spec_var_o2013(self):
@@ -2639,9 +2639,9 @@ class Cluster(Outputs):
             self.Variables['M_K'] = [-self.Variables['V-K'][0]+self.Variables['M_V'][0],'M$_\mathrm{K}$','colours']
             self.Variables['M_H'] = [self.Variables['H-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{H}$','colours']
             self.Variables['M_J'] = [self.Variables['J-K'][0]+self.Variables['M_K'][0],'M$_\mathrm{J}$','colours']
-            self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
-            self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
-            self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
+            self.Variables['M_G'] = [self.Variables['G-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G}$','colours']
+            self.Variables['M_Gbp'] = [self.Variables['Gbp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Gbp}$','colours']
+            self.Variables['M_Grp'] = [self.Variables['Grp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Grp}$','colours']
         return
 
     def Spec_var_cluster(self):
