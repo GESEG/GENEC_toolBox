@@ -129,7 +129,7 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS']
+    Evol_fmt = ['o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','starevol']
     Evol_formats = {}
     Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],\
                     ['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],['C12s',8],['C13s',9],['N14s',10],\
@@ -1834,6 +1834,7 @@ class Model(Outputs):
             pass
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO, \
                                                 ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
+        self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\mathrm{H}+t/\tau_\mathrm{He}+t/\tau_\mathrm{adv}$','model']
         if not quiet:
             print 'limits of burning phases:',self.Variables['ind_burning_phases'][0]
         if ind_begH != 0:
@@ -1841,12 +1842,21 @@ class Model(Outputs):
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
         if ind_endH != -1:
             self.Variables['phase'][0][ind_endH:ind_begHe] = 'HHe'
+            tauH = self.Variables['t'][0][ind_endH]
+            ttauH = self.Variables['t'][0]/tauH
+            self.Variables['t_rel'][0][0:ind_endH+1] = ttauH[0:ind_endH+1]
         if ind_begHe != -1:
             self.Variables['phase'][0][ind_begHe:ind_endHe] = 'He'
         if ind_endHe != -1:
             self.Variables['phase'][0][ind_endHe:ind_begC] = 'HeC'
+            tauHe = self.Variables['t'][0][ind_endHe]
+            ttauHe = (self.Variables['t'][0]-tauH)/(tauHe-tauH)
+            self.Variables['t_rel'][0][ind_endH+1:ind_endHe+1] = 1. + ttauHe[ind_endH+1:ind_endHe+1]
         if ind_begC != -1:
             self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
+            tauadv = self.Variables['t'][0][-1]
+            ttauadv = (self.Variables['t'][0]-tauHe)/(tauadv-tauHe)
+            self.Variables['t_rel'][0][ind_endHe+1:] = 2. + ttauadv[ind_endHe+1:]
         if ind_endC != -1:
             self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
         if ind_begNe != -1:
@@ -2642,6 +2652,7 @@ class Cluster(Outputs):
             self.Variables['M_G'] = [self.Variables['G-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G}$','colours']
             self.Variables['M_Gbp'] = [self.Variables['Gbp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Gbp}$','colours']
             self.Variables['M_Grp'] = [self.Variables['Grp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Grp}$','colours']
+            self.Variables['Gbp-Grp'] = [self.Variables['Gbp-V'][0]+self.Variables['Grp-V'][0],'G$_\mathrm{BP}$-G$_\mathrm{RP}$','colours']
         return
 
     def Spec_var_cluster(self):
@@ -3911,6 +3922,9 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         if MyDriver.modeplot != 'evol':
             MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,[],forced_line=forced_line)
         else:
+            if i == Star_list[0] and MyDriver.Xvar == 't_rel':
+                xline(1.,colour='k',lw=0.25)
+                xline(2.,colour='k',lw=0.25)
             MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,MyDriver.Model_list[i].timestep,forced_line=forced_line)
         if MyDriver.Link_ModelCurve:
             if MyDriver.modeplot != 'struc':
@@ -4106,6 +4120,11 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         else:
             bounds = np.linspace(MinMap,MaxMap)
         norm = colors.BoundaryNorm(bounds,cmap.N)
+
+        if MyDriver.modeplot == 'evol':
+            if i == Star_list[0] and MyDriver.Xvar == 't_rel':
+                xline(1.)
+                xline(2.)
 
         if not MyDriver.iPoints:
             segments = MyDriver.Model_list[i].Get_Segments(MyDriver.Xvar,y,myMask)
@@ -4310,7 +4329,8 @@ def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=Fals
         return "You have to enter either nothing (for M_V versus B-V), or a triplet like 'BUB' or 'VBV'."
     else:
         vary = 'M_'+c[0]
-        varx = c[1]+'-'+c[2]
+        last_index = len(c)-1
+        varx = c[1:last_index]+'-'+c[last_index]
     if 'x' in noised.lower():
         varx = varx+'_noised'
     if 'y' in noised.lower():
@@ -4716,7 +4736,7 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
                     MyDriver.AddFigure((8,8))
             KippenSub = MyDriver.current_Fig.add_subplot(mySubplot)
         Xvar_save = MyDriver.Xvar
-        if not MyDriver.Xvar in ['t','t6','t9','ageadv','line']:
+        if not MyDriver.Xvar in ['t','t6','t9','ageadv','line','t_rel']:
             MyDriver.Xvar = 'ageadv'
         if MyDriver.Xvar == 'ageadv':
             MyDriver.axisInv[0] = True
@@ -6068,19 +6088,21 @@ def fit_poly(deg=1,y='',colour='0.80'):
     plt.plot(draw_x,draw_y,c=colour,ls=':')
     plt.show()
 
-def xline(xpos,colour='0.80',line='-'):
+def xline(xpos,colour='0.80',line='-',lw=1):
     """Draws a vertical line at the x position entered as input argument.
        The optional arguments are:
           colour=... to choose the colour (default grey 0.80)
-          line=... to chose the linestyle (default '-')"""
-    plt.axvline(x=xpos,color=colour,ls=line)
+          line=... to chose the linestyle (default '-')
+          lw=... to choose the linewidth (default 1)"""
+    plt.axvline(x=xpos,color=colour,ls=line,lw=lw)
 
-def yline(ypos,colour='0.80',line='-'):
+def yline(ypos,colour='0.80',line='-',lw=1):
     """Draws a horizontal line at the y position entered as input argument.
        The optional arguments are:
           colour=... to choose the colour (default grey 0.80)
-          line=... to chose the linestyle (default '-')"""
-    plt.axhline(y=ypos,color=colour,ls=line)
+          line=... to chose the linestyle (default '-')
+          lw=... to choose the linewidth (default 1)"""
+    plt.axhline(y=ypos,color=colour,ls=line,lw=lw)
 
 def line(x1,x2,y1,y2,colour='0.80',line='-'):
     """Draws a line from (x1,y1) to (x2,y2).
