@@ -1691,8 +1691,6 @@ class Model(Outputs):
         self.Variables['Pc'][0] = np.log10(self.Variables['Pc'][0])
 
         self.Variables['GammaEdd'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Gamma_\mathrm{Edd}$','surface']
-        # no centre angular velocity in starevol, set to 0.
-        self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$','rotation']
         # no mass-loss correction for rotation in starevol, set to 1.
         self.Variables['rot_corr'] = [np.zeros(np.size(self.Variables['Mdot'][0]))+1.,'$F_\Omega$','rotation']
         self.Variables['Ltot'][0] = self.Variables['Ltot'][0]/1.e53
@@ -1729,26 +1727,28 @@ class Model(Outputs):
         self.Variables['Iradmax'][0][np.logical_not(mask)] = np.log10(self.Variables['Iradmax'][0][np.logical_not(mask)])
         
         # We add the period:
-        self.Variables['Prot'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$P\,[\\mathrm{day}]$','rotation']
+        mask = self.Variables['Omega_surf'][0]==0.
+        self.Variables['Prot'] = [np.zeros(np.size(self.Variables['line'][0])),'$P\,[\\mathrm{day}]$','rotation']
+        self.Variables['Prot'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['Omega_surf'][0][np.logical_not(mask)]*3600.*24.)
         # Computation of some Rossby numbers.
         mask = self.Variables['tc_max'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_max'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{max}$','rotation']
-        self.Variables['Ro_max'][0][np.logical_not(mask)] = 1./(self.Variables['tc_max'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        self.Variables['Ro_max'][0][np.logical_not(mask)] = 1./(self.Variables['tc_max'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
         mask = self.Variables['tg'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_g'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{glob.}$','rotation']
-        self.Variables['Ro_g'][0][np.logical_not(mask)] = 1./(self.Variables['tg'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        self.Variables['Ro_g'][0][np.logical_not(mask)] = 1./(self.Variables['tg'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
         mask = self.Variables['tc'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_c'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{1/2H}_\\mathrm{P}}$','rotation']
-        self.Variables['Ro_c'][0][np.logical_not(mask)] = 1./(self.Variables['tc'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        self.Variables['Ro_c'][0][np.logical_not(mask)] = 1./(self.Variables['tc'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
         mask = self.Variables['tc_hp'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_Hp'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{H}_\\mathrm{P}}$','rotation']
-        self.Variables['Ro_Hp'][0][np.logical_not(mask)] = 1./(self.Variables['tc_hp'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        self.Variables['Ro_Hp'][0][np.logical_not(mask)] = 1./(self.Variables['tc_hp'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
         mask = self.Variables['tc_r'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_r'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{R/2}$','rotation']
-        self.Variables['Ro_r'][0][np.logical_not(mask)] = 1./(self.Variables['tc_r'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        self.Variables['Ro_r'][0][np.logical_not(mask)] = 1./(self.Variables['tc_r'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
         mask = self.Variables['tc_m'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_m'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{M/2}$','rotation']
-        self.Variables['Ro_m'][0][np.logical_not(mask)] = 1./(self.Variables['tc_m'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        self.Variables['Ro_m'][0][np.logical_not(mask)] = 1./(self.Variables['tc_m'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
         return
 
     def SpecificVariables(self,fmt):
