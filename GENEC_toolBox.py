@@ -62,6 +62,7 @@ import matplotlib.cm as cm
 import time
 import datetime
 import subprocess
+import six
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
@@ -1135,14 +1136,14 @@ class Driver():
                     self.Config.add_section('Paths')
                     source_dir = os.path.dirname(os.path.abspath(__file__))
                     self.Config.set('Paths','ProgPath',source_dir+os.path.sep)
-                    Data_Path=os.path.expanduser(raw_input('Enter the path to the data directory (for default, leave blank): '))
+                    Data_Path=os.path.expanduser(six.input('Enter the path to the data directory (for default, leave blank): '))
                     if Data_Path == '':
                         Data_Path = os .path.join(source_dir,'data/')
                         print('Data_Path: '+Data_Path)
                     elif not Data_Path.endswith(os.path.sep):
                         Data_Path += os.path.sep
                     self.Config.set('Paths','DataPath',Data_Path)
-                    Fig_Path = os.path.expanduser(raw_input('Enter the path where you want the figure to be created (for default, leave blank): '))
+                    Fig_Path = os.path.expanduser(six.input('Enter the path where you want the figure to be created (for default, leave blank): '))
                     if Fig_Path == '':
                         Fig_Path = './'
                     elif not Fig_Path.endswith(os.path.sep):
@@ -1232,14 +1233,14 @@ class Driver():
         for Existing_Indexes in self.Model_list.keys():
             if number == Existing_Indexes:
                 print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
-                answer = raw_input('Do you want to overwrite it? y/n ')
+                answer = six.input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
                     print('The attributed star numbers are : {0}'.format(self.Model_list.keys()))
-                    answer = raw_input('Would you like to attribute a new number ? y/n ')
+                    answer = six.input('Would you like to attribute a new number ? y/n ')
                     if answer == 'n':
                         return False, number
                     else:
-                        new_num = int(raw_input('Enter new number: '))
+                        new_num = int(six.input('Enter new number: '))
                         if new_num in self.Model_list.keys():
                             print('Again, this number already exists.')
                             return False, number
@@ -2003,7 +2004,7 @@ class Model(Outputs):
             wafile.close()
         except IOError as err:
             print('File error:' + str(err))
-            wafile2 = raw_input('File '+FileName+' not found. Enter a valid path+name:')
+            wafile2 = six.input('File '+FileName+' not found. Enter a valid path+name:')
             try:
                 with open(wafile2,'r'):
                     print('.wa file found: '+FileName)
@@ -2033,7 +2034,7 @@ class Model(Outputs):
             BurnFile.close()
         except IOError as err:
             print('File error:' + str(err))
-            MyBurnFile2 = raw_input('File '+MyBurnFile+' not found. Enter a valid path+name:')
+            MyBurnFile2 = six.input('File '+MyBurnFile+' not found. Enter a valid path+name:')
             try:
                 MyBurnFile = open(MyBurnFile2,'r')
                 print('.burn file found: '+MyBurnFile2)
@@ -5431,7 +5432,7 @@ def get_lifetimes(num_star=0):
         return
     if num_star == 0:
         if len(MyDriver.Model_list_evol) > 1:
-            answer = raw_input('Enter the id number of the star you want to display:\n')
+            answer = six.input('Enter the id number of the star you want to display:\n')
             num_star = int(answer)
         else:
             num_star = MyDriver.Model_list_evol.keys()[0]
@@ -5796,8 +5797,8 @@ def set_colourSequence(NewValue):
         MyDriver.colourSequence = 'iris'
     elif NewValue == 'p':
         print('Personnalised colour sequence')
-        cseq_key = raw_input('Enter new sequence name: ')
-        cseq_list = raw_input('Enter new list (format: [[colours],[names]]): ')
+        cseq_key = six.input('Enter new sequence name: ')
+        cseq_list = six.input('Enter new list (format: [[colours],[names]]): ')
         Rendering.Colours_list[cseq_key] = eval(cseq_list)
         MyDriver.colourSequence = cseq_key
     else:
@@ -6391,7 +6392,7 @@ def clickcursor(event):
 def cursor():
     """Retrieves the position of mouseclicks on the plot."""
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickcursor)
-    raw_input('Press enter when finished.\n')
+    six.input('Press enter when finished.\n')
     return coords[-1]
 
 def clickdist(event):
@@ -6409,7 +6410,7 @@ def dist():
         Point.remove()
     MyDriver.cursor_points = []
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickdist)
-    raw_input('Press enter when finished.\n')
+    six.input('Press enter when finished.\n')
     xdist = float(MyDriver.cursor_position[-1][0]) - float(MyDriver.cursor_position[-2][0])
     ydist = float(MyDriver.cursor_position[-1][1]) - float(MyDriver.cursor_position[-2][1])
     print('Distance along x-axis = {0}'.format(xdist))
