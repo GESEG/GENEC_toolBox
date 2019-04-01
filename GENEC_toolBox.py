@@ -67,6 +67,11 @@ rcParams['ps.usedistiller'] = 'Xpdf'
 rcParams['xtick.direction'] = 'in'
 rcParams['ytick.direction'] = 'in'
 
+def multiReplace(text,wordDict):
+    for key in sorted(wordDict.keys()):
+        text = text.replace(wordDict[key][0],wordDict[key][1])
+    return text
+
 class GtB_version():
     GtB_version = '8.2.0'
 
@@ -125,6 +130,7 @@ class Rendering():
         noisedVar = var+'_noised'
         Noised.append(noisedVar)
     Inversed_by_default = Inversed_by_default + Noised
+
 
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
@@ -598,7 +604,7 @@ class readList():
                 ['Omegaprev',60],['Omfit',89],['dlodlr',50],['Lang',88],['obla',92],['Ur',52],['Vr',53],['Richardson',45], \
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
-                '$r_\mathr{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
+                '$r_\mathrm{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
                 '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
                 r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
                 '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
@@ -607,8 +613,8 @@ class readList():
                 '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
-                '$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
-                '$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
@@ -1131,7 +1137,7 @@ class Driver():
                     Data_Path=os.path.expanduser(raw_input('Enter the path to the data directory (for default, leave blank): '))
                     if Data_Path == '':
                         Data_Path = os .path.join(source_dir,'data/')
-                        print('Data_Path:',Data_Path)
+                        print('Data_Path: '+Data_Path)
                     elif not Data_Path.endswith(os.path.sep):
                         Data_Path += os.path.sep
                     self.Config.set('Paths','DataPath',Data_Path)
@@ -1215,7 +1221,7 @@ class Driver():
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
         for Existing_Indexes in self.Model_list.keys():
             if number == Existing_Indexes:
-                print('This star number is already attributed to model ',self.Model_list[number].Variables['FileName'][0],'.')
+                print('This star number is already attributed to model '+str(self.Model_list[number].Variables['FileName'][0])+'.')
                 answer = raw_input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
                     print('The attributed star numbers are : ', self.Model_list.keys())
@@ -1770,10 +1776,11 @@ class Model(Outputs):
             if 'Extraction' in os.popen('head -1 '+FileName).readline():
                 num_deb=num_deb+15
             colour = True
+        num_fin_stored = num_fin
         if not quiet:
             if format != "starevol":
                 print('Number of columns: '+str(file_cols)+' --> format identified= '+format)
-                print('Loading file ',FileName,'...')
+                print('Loading file '+FileName+'...')
             else:
                 print('No extension detected, trying with starevol format.')
 
@@ -1790,7 +1797,7 @@ class Model(Outputs):
         StarName = os.path.splitext(FileName)[0][FileName.rfind('/')+1:]
         self.Variables['FileName'] = [FileName,StarName,'model']
         self.Variables['format'] = [[format,header],'format and header lines','reading']
-        self.Variables['line_num'] = [[num_deb,num_fin],'boundary lines','reading']
+        self.Variables['line_num'] = [[num_deb,num_fin_stored],'boundary lines','reading']
         self.Variables['options'] = [[colour,wa],'options colour and wa','reading']
         self.Variables['line'][0] = self.Variables['line'][0].astype(int)
         massini = self.Variables['M'][0][0]
@@ -1836,7 +1843,7 @@ class Model(Outputs):
                                                 ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
         self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\mathrm{H}+t/\tau_\mathrm{He}+t/\tau_\mathrm{adv}$','model']
         if not quiet:
-            print('limits of burning phases:',self.Variables['ind_burning_phases'][0])
+            print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
@@ -1982,14 +1989,14 @@ class Model(Outputs):
         """Reads the wa file. Called by the option wa=True in loadE()"""
         try:
             wafile = open(FileName,'r')
-            print('.wa file found: ',FileName)
+            print('.wa file found: '+FileName)
             wafile.close()
         except IOError as err:
             print('File error:' + str(err))
             wafile2 = raw_input('File '+FileName+' not found. Enter a valid path+name:')
             try:
                 with open(wafile2,'r'):
-                    print('.wa file found: ',FileName)
+                    print('.wa file found: '+FileName)
                     wafile = wafile2
                     wafile2.close()
             except IOError as err2:
@@ -2001,7 +2008,7 @@ class Model(Outputs):
         if num_fin == -1:
           num_fin = BigArray.shape[0]
         el_num = (BigArray.shape[1]-3)/2
-        print(el_num,' isotopes read in .wa file')
+        print(str(el_num)+' isotopes read in .wa file')
         for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
             self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
             self.Variables[str(el)+str(A)+'c'] = [BigArray[:num_fin,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
@@ -2012,14 +2019,14 @@ class Model(Outputs):
            By default, it is seeked in the same path as the evolution file."""
         try:
             BurnFile = open(MyBurnFile,'r')
-            print('.burn file found: ',MyBurnFile)
+            print('.burn file found: '+MyBurnFile)
             BurnFile.close()
         except IOError as err:
             print('File error:' + str(err))
             MyBurnFile2 = raw_input('File '+MyBurnFile+' not found. Enter a valid path+name:')
             try:
                 MyBurnFile = open(MyBurnFile2,'r')
-                print('.burn file found: ',MyBurnFile2)
+                print('.burn file found: '+MyBurnFile2)
                 MyBurnFile.close()
             except IOError as err2:
                 print('File problem: ' + str(err2))
@@ -2517,16 +2524,16 @@ class Struc(Outputs):
 
     def read(self,FileName,num_deb,line_to_read,format,quiet):
         if not quiet:
-          print('In read: num_deb,line_to_read:',num_deb,line_to_read)
+          print('In read: num_deb,line_to_read: {0}, {1}'.format(num_deb,line_to_read))
         if format == '':
             raise FormatError(2,'column number does not match any known format',FileName)
             return
         if not quiet:
-            print('Loading file ',FileName,'...')
+            print('Loading file {0}...'.format(FileName))
         i_ext = FileName.rfind('.')
         fileLength = file_len(FileName)
         if not quiet:
-            print('total length of file:',fileLength)
+            print('total length of file: '+str(fileLength))
 
         Struc_varList = readList.Struc_formats[format]['varList'] + MyDriver.added_columns['varList']
         Struc_unitsList = readList.Struc_formats[format]['unitsList'] + MyDriver.added_columns['unitsList']
@@ -2556,7 +2563,7 @@ class Struc(Outputs):
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
             if not quiet:
-              print('Reading model',self.num_model)
+              print('Reading model {0}'.format(self.num_model))
             self.age = float(self.age)
             self.mass = float(self.mass)
             self.n_shell = int(self.n_shell)
@@ -2577,12 +2584,8 @@ class Struc(Outputs):
             self.Ltot=MyFile.readline().split()[2]
             self.Teff=MyFile.readline().split()[2]
             if not quiet:
-                print('Model number: ',self.num_model)
-                print('Time: ',self.age)
-                print('Mass: ',self.mass)
-                print('R: ',self.radius)
-                print('L: ',self.Ltot)
-                print('Teff: ',self.Teff)
+                print('Model number: {0}\nTime: {1}\nMass: {2}'.format(self.num_model,self.age,self.mass))
+                print('R: {0}\nL: {1}\nTeff: {2}'.format(self.radius,self.Ltot,self.Teff))
             #nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
             line_to_read = line_to_read - header
 
@@ -2632,7 +2635,7 @@ class Struc(Outputs):
         self.SpecificVariables(format)
 
         if not quiet:
-            print('File ',FileName, 'successfully loaded.')
+            print('File '+FileName+' successfully loaded.')
         return True
 
 class Cluster(Outputs):
@@ -2740,12 +2743,12 @@ class Cluster(Outputs):
             raise IOError(1,'File does not exist, check name and path',FileName)
             return
         if not quiet:
-            print('Loading file ',FileName,'...')
+            print('Loading file {0}...'.format(FileName))
         lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
         fileLength = file_len(FileName)+1
         file_cols = len(lastline.split())
         if not quiet:
-            print('number of columns:',file_cols)
+            print('number of columns: {0}'.format(file_cols))
         if format == '':
             if 'WARNING' in os.popen('head -1 '+FileName).readline():
                 for fmt in readList.Cluster_fmt[0:2]:
@@ -2758,7 +2761,7 @@ class Cluster(Outputs):
                         format = fmt
                         break
         if not quiet:
-            print('format identified=',format)
+            print('format identified= {0}'.format(format))
         if num_fin == -1:
             num_fin = fileLength
 
@@ -2815,7 +2818,7 @@ class Cluster(Outputs):
         self.ColoursCalc()
 
         if not quiet:
-            print('File ',ModelName, 'successfully loaded.')
+            print('File {0} successfully loaded.'.format(ModelName))
         return
 
     def Colour_correction(self,excess,dist_mod,mag,col):
@@ -2839,7 +2842,7 @@ class Analysis():
 
     def setEntry(self,Star,mode):
         if not mode[0] in self.AuthorisedModes[0] or not mode[1] in self.AuthorisedModes[1]:
-            print('This instance should be initialised with one of the following modes: ',self.AuthorisedModes)
+            print('This instance should be initialised with one of the following modes: '+self.AuthorisedModes[:])
             print('Set to ["list","grids"] by default.')
             mode = ['list','grids']
         else:
@@ -2882,7 +2885,7 @@ class Analysis():
         MyStar = MyDriver.Model_list[num]
         Mini,Oini,Zini = self.setEntry(MyStar,mode)
         if not [Mini,Oini,Zini] in self.Data.keys() and not quiet:
-            print('Entry for M=',Mini,' with OOc=',Oini,' at Z=',Zini,' added.')
+            print('Entry for M= {0} with OOc= {1} at Z= {2} added.'.format(Mini,Oini,Zini))
         H_ini = MyStar.Variables['H1s'][0][0]
         He_ini = 1.-Zini
         phase = 0
@@ -2953,13 +2956,13 @@ class Analysis():
             self.Data[Mini,Oini,Zini].update(Temp_Dic)
         if not quiet:
             print('----------------------------------------------------------------')
-            print('LIFETIMES:\tM= ',Mini,' with OOc= ',Oini,' at Z= ',Zini)
+            print('LIFETIMES:\tM= {0} with OOc= {1} at Z= {2}'.format(Mini,Oini,Zini))
             print('')
-            print('MS lifetime:   ',self.Data[Mini,Oini,Zini]['tauMS'])
-            print('He-b lifetime: ',self.Data[Mini,Oini,Zini]['tauHeb'])
-            print('C-b lifetime:  ',self.Data[Mini,Oini,Zini]['tauCb'])
-            print('Ne-b lifetime: ',self.Data[Mini,Oini,Zini]['tauNeb'])
-            print('O-b lifetime:  ',self.Data[Mini,Oini,Zini]['tauOb'])
+            print('MS lifetime:   '+str(self.Data[Mini,Oini,Zini]['tauMS']))
+            print('He-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauHeb']))
+            print('C-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauCb']))
+            print('Ne-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauNeb']))
+            print('O-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauOb']))
             print('----------------------------------------------------------------')
 
 class Kippenhahn():
@@ -2985,7 +2988,7 @@ class Kippenhahn():
                 self.time_mask.append(False)
                 continue
             if time%5000 == 0:
-                print('Computing time step no: ',time)
+                print('Computing time step no: '+str(time))
             current_vector = np.zeros((self.mass_step))
             ZC_list=[]
             for i in range(np.size(Model.CZ_array[0,:,0])):
@@ -3078,7 +3081,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
 
     if format != "starevol":
         if not os.path.isfile(FileName):
-            print('File '+FileName+' does not exist, check name and path.')
+            print('File {0} does not exist, check name and path.'.format(FileName))
             return
     toZip = False
     if os.path.splitext(FileName)[1] == '.gz':
@@ -3123,7 +3126,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
             else:
                 print('MS not finished, the variable t_tauH will not be available')
         except IOError as IOerr:
-            print('[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename)
+            print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
     if toZip:
         os.system(CommandZip)
 
@@ -3138,7 +3141,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
           quiet (False by default, True to avoid all the babbling)."""
     MyModel = Struc()
     if not os.path.isfile(FileName):
-        print('File '+FileName+' does not exist, check name and path.')
+        print('File {0} does not exist, check name and path.'.format(FileName))
         return
     toZip = False
     if os.path.splitext(FileName)[1] == '.gz':
@@ -3171,7 +3174,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
             raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
             return
         if not quiet:
-            print('format identified=',format)
+            print('format identified= '+format)
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
     if not quiet:
@@ -3208,7 +3211,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                     MyDriver.SelectedModels_struc.append(num_star)
                 num_star += 1
             except IOError as IOerr:
-                print('[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename)
+                print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
             except np.linalg.LinAlgError:
                 print('problem computing MLT, aborting.')
                 if toZip:
@@ -3247,7 +3250,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
             multi_iso = True
         iso_times = sorted(iso_time_dic.keys())
         if not quiet:
-            print('isochrone file with ages:',iso_times)
+            print('isochrone file with ages: '+str(iso_times))
         iso_beg = [iso_time_dic[t] for t in sorted(iso_time_dic.keys())]
         iso_end = [iso_beg[i]+1 for i in range(1,len(iso_beg))]
         iso_end.append(-1)
@@ -3264,7 +3267,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         if not num_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(num_star)
                 except IOError as IOerr:
-                    print('[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename)
+                    print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
     else:
         for (i,beg),end,time in zip(enumerate(iso_beg),iso_end,iso_times):
             MyModel = Cluster()
@@ -3275,7 +3278,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
             if Checked or forced:
                 try:
                     if not quiet:
-                        print('***** loading isochrone at age ',time,' *****')
+                        print('***** loading isochrone at age {0} *****'.format(time))
                     MyModel.read(FileName,beg,end,format=format,quiet=quiet, random=random)
                     MyDriver.store_model(MyModel,mynum_star)
                     if not mynum_star in MyDriver.SelectedModels:
@@ -3283,7 +3286,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         if not mynum_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(mynum_star)
                 except IOError as IOerr:
-                    print('[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename)
+                    print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
 
 def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False,colour=False):
     """ Loads a list of models from a file.
@@ -3301,7 +3304,7 @@ def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
             loadE(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
             index += 1
         except FormatError as WF:
-            print('[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename)
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
             print('column problem in file '+MyPath)
@@ -3347,7 +3350,7 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
             loadC(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet)
             index += 1
         except FormatError as WF:
-            print('[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename)
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
             print('column problem in file '+file)
@@ -3371,7 +3374,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
     num_files = 0
     if DirName[-1] != '/':
         DirName = DirName+'/'
-    print('loading files from directory '+DirName+':')
+    print('loading files from directory {0}:'.format(DirName))
     Selected_files = sorted(glob.glob(DirName+'*'+select+'*'))
     if len(Selected_files) == 0.:
         print('No files matching your request.')
@@ -3382,11 +3385,11 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
         try:
             loadE(file,index,num_deb,format=format,wa=wa,forced=forced,quiet=quiet,colour=colour)
             if not quiet:
-                print('File '+file_short+' successfully loaded.')
+                print('File {0} successfully loaded.'.format(file_short))
             index += 1
             num_files += 1
         except FormatError as WF:
-            print('[Error',str(WF.errno)+']',file_short+': '+WF.strerror)
+            print('[Error {0}] {1}: {2}'.format(WF.errno,file_short,WF.strerror))
             pass
         except IndexError:
             print('column problem in file '+file_short)
@@ -3395,13 +3398,13 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
             print('value problem in file '+file_short)
             pass
         except:
-            print('file '+file_short+' does not seem to be a valid file, skipped.')
+            print('file {0} does not seem to be a valid file, skipped.'.format(file_short))
             pass
     if not quiet:
         print('')
         Loaded('evol')
     else:
-        print(str(num_files)+' files loaded. Details can be displayed with Loaded().')
+        print('{0} files loaded. Details can be displayed with Loaded().'.format(num_files))
 
 def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False,quiet=False):
     """Loads all structures (.v or StrucData) in the directory given in argument.
@@ -3412,20 +3415,20 @@ def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False
         The forced=True option avoids the questions linked to a number already attributed.
         Usage : LoadSFromDir(DirName[,ini_index=...,select ="S0",forced=True,quiet=True])."""
     index = ini_index
-    print('loading files from directory '+DirName+':')
+    print('loading files from directory {0}: '.format(DirName))
     Selected_files = sorted(glob.glob(DirName+'*'+select+'*'))
     if len(Selected_files) == 0.:
         print('No files matching your request.')
         return
     for file in [i for i in Selected_files if ((os.path.splitext(i)[1] == '.dat' and 'StrucData' in os.path.splitext(i)[0]) or '.v' in i)]:
-        print('loading',file)
+        print('loading '+file)
         try:
             increment = loadS(file,index,[],format,forced,quiet)
             if not quiet:
-                print('File '+file+' successfully loaded.')
+                print('File {0} successfully loaded.'.format(file))
             index = index + increment
         except FormatError as WF:
-            print('[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename)
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
             print('column problem in file '+file)
@@ -3446,21 +3449,21 @@ def loadCFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         The forced=True option avoids the questions linked to a number already attributed.
         Usage : LoadCFromDir(DirName[,ini_index=...,select ="006",forced=True,quiet=True])."""
     index = ini_index
-    print('loading files from directory '+DirName+':')
+    print('loading files from directory {0}:'.format(DirName))
     Selected_files = sorted(glob.glob(DirName+'*'+select+'*'))
     if len(Selected_files) == 0.:
         print('No files matching your request.')
         return
     for file in [i for i in Selected_files if (os.path.splitext(i)[1] == '.dat' and os.path.splitext(i)[0][i.rfind('/')+1:i.rfind('/')+4] in ['Clu','Iso'])]:
         if not quiet:
-            print('loading',file)
+            print('loading '+file)
         try:
             loadC(file,index,num_deb,format=format,forced=forced,quiet=quiet)
             if not quiet:
-                print('File '+file+' successfully loaded.')
+                print('File {0} successfully loaded.'.format(file))
             index += 1
         except FormatError as WF:
-            print('[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename)
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
             print('column problem in file '+file)
@@ -3476,28 +3479,28 @@ def LoadedEvol():
     """Prints the models loaded in the database as well as those selected for plots """
     print("Models loaded in database:")
     for i in MyDriver.Model_list_evol.keys():
-        print(i,':\t',MyDriver.Model_list_evol[i].Variables['FileName'][0])
+        print('{0:4d}: {1}'.format(i,MyDriver.Model_list_evol[i].Variables['FileName'][0]))
 
     print('\nModels currently selected for plotting:')
-    print(MyDriver.SelectedModels_evol)
+    print(str(MyDriver.SelectedModels_evol[:]))
 
 def LoadedStruc():
     """Prints the structure loaded in the database as well as those selected for plots """
     print('Structures loaded in database:')
     for i in MyDriver.Model_list_struc.keys():
-        print(i,':\t',MyDriver.Model_list_struc[i].Variables['FileName'][0],'\t',MyDriver.Model_list_struc[i].Variables['Model'][0])
+        print('{0:4d}: {2} in {1}'.format(i,MyDriver.Model_list_struc[i].Variables['FileName'][0],MyDriver.Model_list_struc[i].Variables['Model'][0]))
 
     print('\nStructures currently selected for plotting:')
-    print(MyDriver.SelectedModels_struc)
+    print(str(MyDriver.SelectedModels_struc[:]))
 
 def LoadedCluster():
     """Prints the clusters/isochrones loaded in the database as well as those selected for plots """
     print('Clusters/isochrones loaded in database:')
     for i in MyDriver.Model_list_cluster.keys():
-        print(i,':\t',MyDriver.Model_list_cluster[i].Variables['FileName'][0])
+        print('{0:4d}: {1}'.format(i,MyDriver.Model_list_cluster[i].Variables['FileName'][0]))
 
     print('\nClusters/isochrones currently selected for plotting:')
-    print(MyDriver.SelectedModels_cluster)
+    print(str(MyDriver.SelectedModels_cluster[:]))
 
 def Loaded(mode=''):
     """Prints the files loaded in the database as well as those selected for plots.
@@ -3532,18 +3535,20 @@ def reloadE(model_list):
             loadE(MyDriver.Model_list_evol[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_evol[i].Variables['line_num'][0][0]-MyDriver.Model_list_evol[i].Variables['format'][0][1],\
                 num_fin=MyDriver.Model_list_evol[i].Variables['line_num'][0][1],format=MyDriver.Model_list_evol[i].Variables['format'][0][0],colour=MyDriver.Model_list_evol[i].Variables['options'][0][0],\
                 wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=True)
-            print('Model ',i,'reloaded')
+            print('Model {0} reloaded'.format(i))
     except KeyError:
-        print('Number(s) ',[i for i in flatten([model_list]) if i not in MyDriver.Model_list_evol.keys()],' not attributed to any model')
+        not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_evol.keys()]
+        print('Number(s) {0} not attributed to any model'.format(not_found[:]))
 
 def reloadS(model_list):
     """Reloads the selected structures."""
     try:
         for i in flatten([model_list]):
             loadS(MyDriver.Model_list_struc[i].Variables['FileName'][0],i,MyDriver.Model_list_struc[i].Variables['Model'][0],format=MyDriver.Model_list_struc[i].Variables['format'][0],forced=True,quiet=True)
-            print('Structure ',i,'reloaded')
+            print('Structure {0} reloaded'.format(i))
     except KeyError:
-        print('Number(s) ',[i for i in flatten([model_list]) if i not in MyDriver.Model_list_struc.keys()],' not attributed to any structure')
+        not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_struc.keys()]
+        print('Number(s) {0} not attributed to any structure'.format(not_found[:]))
 
 def reloadC(model_list):
     """Reloads the selected clusters/isochrones."""
@@ -3552,23 +3557,26 @@ def reloadC(model_list):
             loadC(MyDriver.Model_list_cluster[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_cluster[i].Variables['line_num'][0]-MyDriver.Model_list_cluster[i].Variables['format'][0][1],\
                 format=MyDriver.Model_list_cluster[i].Variables['format'][0][0],forced=True,quiet=True)
             if MyDriver.Model_list_cluster[i].Variables['format'][0][0] == 'cluster':
-                print('Cluster ',i,'reloaded')
+                print('Cluster {0} reloaded'.format(i))
             elif MyDriver.Model_list_cluster[i].Variables['format'][0][0] == 'isochr':
-                print('Isochrone ',i,'reloaded')
+                print('Isochrone {0} reloaded'.format(i))
     except KeyError:
-        print('Number(s)',[i for i in flatten([model_list]) if i not in MyDriver.Model_list_cluster.keys()],' not attributed to any cluster/isochrone ')
+        not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_cluster.keys()]
+        print('Number(s) {0} not attributed to any cluster/isochrone'.format(not_found[:]))
 
 def del_model(num_list):
     """Removes the model numbers given in argument from the list of selected models for plotting."""
-    if len([i for i in flatten([num_list]) if i not in MyDriver.SelectedModels]) !=0:
-        print('Model(s) ',[i for i in flatten([num_list]) if i not in MyDriver.SelectedModels],' is (are) not among the selected models.')
-    [MyDriver.SelectedModels.remove(i) for i in flatten([num_list]) if i in MyDriver.SelectedModels]
+    not_found=[i for i in flatten([num_list]) if i not in MyDriver.SelectedModels]
+    if len(not_found) !=0:
+        print('Model(s) {0} is (are) not among the selected models.'.format(not_found[:]))
+    [MyDriver.SelectedModels.remove(i) for i in not_found]
 
 def add_model(num_list):
     """Adds the model numbers given in argument to the list of selected models for plotting """
-    [MyDriver.SelectedModels.append(i) for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
+    added=[i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
+    [MyDriver.SelectedModels.append(i) for i in added]
     if len([i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print('Model(s) ',[i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.')
+        print('Model(s) {0} is (are) not loaded.'.format(added[:]))
 
 def select_model(model_list):
     """Defines the list of selected models for plotting """
@@ -3580,8 +3588,9 @@ def select_model(model_list):
         MyDriver.SelectedModels_struc = MyDriver.SelectedModels
     if MyDriver.modeplot == 'cluster':
         MyDriver.SelectedModels_cluster = MyDriver.SelectedModels
-    if len([i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print('Model(s) ',[i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.')
+    not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()]
+    if len(not_found) !=0:
+        print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
 
 def select_all():
     """Selects all available models in the current mode """
@@ -3621,36 +3630,34 @@ def VarEvol(num=''):
     if num == '':
         num = MyDriver.Model_list_evol.keys()[0]
     Category_list = []
+    replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
     for i in range(len(MyDriver.Model_list_evol[num].Variables.keys())):
         if not MyDriver.Model_list_evol[num].Variables.values()[i][2] in Category_list:
             Category_list.append(MyDriver.Model_list_evol[num].Variables.values()[i][2])
     Category_list.remove('reading')
     for Category in sorted(Category_list):
-        print('\n'+Category.upper()+':')
+        print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
         for key in sorted(MyDriver.Model_list_evol[num].Variables.keys(), key=lambda s: s.lower()):
             if MyDriver.Model_list_evol[num].Variables[key][2] == Category:
-                if len(key) > 6:
-                    print('\t'+key+':\t'+MyDriver.Model_list_evol[num].Variables[key][1])
-                else:
-                    print('\t'+key+':\t\t'+MyDriver.Model_list_evol[num].Variables[key][1])
+                label_print = multiReplace(MyDriver.Model_list_evol[num].Variables[key][1],replaceDic)
+                print('  {0:20s}: {1}'.format(key,label_print))
 
 def VarStruc(num=''):
     """Prints the available variables for plotting in structure mode.
        Needs at least one loaded structure."""
     if num == '':
         num = MyDriver.Model_list_struc.keys()[0]
+    replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
     Category_list = []
     for i in range(len(MyDriver.Model_list_struc[num].Variables.keys())):
         if not MyDriver.Model_list_struc[num].Variables.values()[i][2] in Category_list:
             Category_list.append(MyDriver.Model_list_struc[num].Variables.values()[i][2])
     for Category in sorted(Category_list):
-        print('\n'+Category.upper()+':')
+        print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
         for key in sorted(MyDriver.Model_list_struc[num].Variables.keys(), key=lambda s: s.lower()):
             if MyDriver.Model_list_struc[num].Variables[key][2] == Category:
-                if len(key) > 6:
-                    print('\t'+key+':\t'+MyDriver.Model_list_struc[num].Variables[key][1])
-                else:
-                    print('\t'+key+':\t\t'+MyDriver.Model_list_struc[num].Variables[key][1])
+                label_print = multiReplace(MyDriver.Model_list_struc[num].Variables[key][1],replaceDic)
+                print('  {0:15s}: {1}'.format(key,label_print))
 
 def VarCluster(num=''):
     """Prints the available variables for plotting in cluster mode.
@@ -3658,18 +3665,17 @@ def VarCluster(num=''):
     if num == '':
         num = MyDriver.Model_list_cluster.keys()[0]
     Category_list = []
+    replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
     for i in range(len(MyDriver.Model_list_cluster[num].Variables.keys())):
         if not MyDriver.Model_list_cluster[num].Variables.values()[i][2] in Category_list:
             Category_list.append(MyDriver.Model_list_cluster[num].Variables.values()[i][2])
     Category_list.remove('reading')
     for Category in sorted(Category_list):
-        print('\n'+Category.upper()+':')
+        print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
         for key in sorted(MyDriver.Model_list_cluster[num].Variables.keys(), key=lambda s: s.lower()):
             if MyDriver.Model_list_cluster[num].Variables[key][2] == Category:
-                if len(key) > 6:
-                    print('\t'+key+':\t'+MyDriver.Model_list_cluster[num].Variables[key][1])
-                else:
-                    print('\t'+key+':\t\t'+MyDriver.Model_list_cluster[num].Variables[key][1])
+                label_print = multiReplace(MyDriver.Model_list_cluster[num].Variables[key][1],replaceDic)
+                print('  {0:15s}: {1}'.format(key,label_print))
 
 def Get_Var(var,num_star):
     """Retrieves the variable entered in input to allow personalised manipulation of the variable.
@@ -3700,7 +3706,7 @@ def Set_Var(var,var_name,num_star,**args):
     if not MyDriver.Model_list[num_star].Variables.has_key(var_name):
         MyDriver.Model_list[num_star].Variables[var_name] = [var,MyLabel,MyCat]
     else:
-        print('The key ',var_name,' already exists in this dictionary.')
+        print('The key '+var_name+' already exists in this dictionary.'
 
 def Del_Var(varName,num_star=0,quiet=False):
     """Deletes an entry of the Variables dictionary.
@@ -3714,7 +3720,7 @@ def Del_Var(varName,num_star=0,quiet=False):
                 print('The variable '+varName+' has been successfully deleted in model '+str(i)+'.')
         except KeyError:
             if not quiet:
-                print('The variable you tried to delete does not exist in model '+str(i)+'.')
+                print('The variable you tried to delete does not exist in model '+str(i))
 
 def Deriv(Var1,Var2,num_star=[]):
     """Takes the derivative of variable 1 over variable 2.
@@ -3724,8 +3730,9 @@ def Deriv(Var1,Var2,num_star=[]):
         selectedModels = MyDriver.Model_list.keys()
     else:
         [selectedModels.append(i) for i in flatten([num_star]) if i in MyDriver.Model_list.keys()]
-        if len([i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()]) !=0:
-            print('Model(s) ',[i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.')
+        not_found = [i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()]
+        if len(not_found) !=0:
+            print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
             return
     for i in selectedModels:
         x=Get_Var(Var1,i)
@@ -3735,7 +3742,7 @@ def Deriv(Var1,Var2,num_star=[]):
         dx_min=min(dx)
         dy=[val if val != 0. else dx_min/1.e30 for val in dy]
         Set_Var(dx/dy,'d'+Var1+'_d'+Var2,i,label='$\mathrm{d '+Var1+'}/\mathrm{d '+Var2+'}$')
-    print('The derivative can be plotted under the name d'+Var1+'_d'+Var2)
+    print('The derivative can be plotted under the name d{0}_d{1}'.format(Var1,Var2))
 
 def Vector_split(varName,num_star,quiet=False):
     """Splits a vector into its positive and negative components and adds both in the Variables dictionary.
@@ -3748,7 +3755,7 @@ def Vector_split(varName,num_star,quiet=False):
     Set_Var(myVector_pos,varName+'_pos',num_star,label=myLab,category=myCat)
     Set_Var(myVector_neg,varName+'_neg',num_star,label='$-$'+myLab,category=myCat)
     if not quiet:
-        print('The positive and negative values can be plotted under the name '+varName+'_pos and '+varName+'_neg respectively')
+        print('The positive and negative values can be plotted under the name {0}_pos and {0}_neg respectively'.format(varName))
 
 def Plot(y,plotif=['',''],cshift=0,forced_line=False):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name).
@@ -3790,13 +3797,14 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         bad_var = MyDriver.Xvar
 
     if len(Star_list) == 0:
-        print('No star knows variable',bad_var)
+        print('No star knows variable'+bad_var)
         print('Available variables are:')
         print(sorted(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys(), key=lambda s: s.lower()))
         return
     else:
         if len(Star_list) != len(MyDriver.SelectedModels):
-            print('The variable',bad_var,'does not exist for model(s)',[x for x in MyDriver.SelectedModels if x not in Star_list],'. They will not appear on the plot.')
+            not_found = [x for x in MyDriver.SelectedModels if x not in Star_list]
+            print('The variable {0} does not exist for model(s) {1}. They will not appear on the plot.'.format(bad_var,not_found[:]))
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -3838,7 +3846,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         else:
             myMask = BuildMask(plotif[0],plotif[1],i)
             if all([v == False for v in myMask]):
-                print('Plotif: no points met the condition',plotif[0],plotif[1],' for star ',i)
+                print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
                     print('Aborting...')
                     return
@@ -4041,7 +4049,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         else:
             myMask = BuildMask(plotif[0],plotif[1],i)
             if all([v == False for v in myMask]):
-                print('Plotif: no points met the condition',plotif[0],plotif[1],' for star ',i)
+                print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
                     print('Aborting...')
                     return
@@ -4079,7 +4087,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         else:
             myMask = BuildMask(plotif[0],plotif[1],i)
             if all([v == False for v in myMask]):
-                print('Plotif: no points met the condition',plotif[0],plotif[1],' for star ',i)
+                print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
                     print('Aborting...')
                     return
@@ -4496,7 +4504,9 @@ def Abund(where='x'):
                 Plot('Si28c')
             except:
                 pass
-        print('\n H1:\t\t black\n He4:\t\t grey\n C12:\t\t red\n N14:\t\t green\n O16:\t\t blue\n Ne20:\t\t cyan\n Si28:\t\t orange')
+        elDic = {1:['H1','black'],2:['He4','grey'],3:['C12''red'],4:['N14','green'],5:['O16''blue'],6:['Ne20','cyan'],7:['Si28','orange']}
+        for key in sorted(elDic.keys()):
+            print('\n {0:5d}: {1}'.format(elDic[key][0],elDic[key][1]))
     elif where in 'pP':
         MyDriver.axisLabel[1] = 'Abund. profile [mass frac.]'
         if MyDriver.modeplot != 'struc':
