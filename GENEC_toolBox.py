@@ -1231,10 +1231,10 @@ class Driver():
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
         for Existing_Indexes in self.Model_list.keys():
             if number == Existing_Indexes:
-                print('This star number is already attributed to model '+str(self.Model_list[number].Variables['FileName'][0])+'.')
+                print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
                 answer = raw_input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
-                    print('The attributed star numbers are : ', self.Model_list.keys())
+                    print('The attributed star numbers are : {0}'.format(self.Model_list.keys()))
                     answer = raw_input('Would you like to attribute a new number ? y/n ')
                     if answer == 'n':
                         return False, number
@@ -1513,7 +1513,7 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print('problem at line ',i+1)
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
             print('You need to check this file')
@@ -1540,7 +1540,7 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print('problem at line ',i+1)
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
             print('You need to check this file')
@@ -1582,7 +1582,7 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print('problem at line ',i+1)
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
             print('You need to check this file')
@@ -1611,7 +1611,7 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print('problem at line ',i+1)
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
             print('You need to check this file')
@@ -1637,7 +1637,7 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print('problem at line ',i+1)
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
             print('You need to check this file')
@@ -1789,8 +1789,8 @@ class Model(Outputs):
         num_fin_stored = num_fin
         if not quiet:
             if format != "starevol":
-                print('Number of columns: '+str(file_cols)+' --> format identified= '+format)
-                print('Loading file '+FileName+'...')
+                print('Number of columns: {0} --> format identified= {1}'.format(file_cols,format))
+                print('Loading file {0}...'.format(FileName))
             else:
                 print('No extension detected, trying with starevol format.')
 
@@ -1814,7 +1814,7 @@ class Model(Outputs):
         self.Variables['Mini'] = [massini,'$M_\mathrm{ini}\ [M_\odot]$','model']
         self.imax = np.size(self.Variables['line'][0])
         if not quiet:
-            print('File read, '+str(self.imax)+' lines.')
+            print('File read, {0} lines.'.format(self.imax))
 
         if wa:
             WAfile = FileName.replace('.wg','.wa')
@@ -2091,7 +2091,7 @@ class Model(Outputs):
                     FileName_old = FileName
                     FileName = FileName + ".gz"
                     if not os.path.isfile(FileName):
-                        print("No such fileS " + FileName_old + " or " + FileName + ".")
+                        print("No such fileS {0} or {1}".format(FileName_old,FileName))
                         raise
                         return
             else:
@@ -2645,7 +2645,7 @@ class Struc(Outputs):
         self.SpecificVariables(format)
 
         if not quiet:
-            print('File '+FileName+' successfully loaded.')
+            print('File {0} successfully loaded.'.format(FileName))
         return True
 
 class Cluster(Outputs):
@@ -3195,13 +3195,14 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     ToReadModels = []
     [ToReadModels.append(i) for i in flatten([toread]) if i in Time_Step_Dic.keys()]
-    if len([i for i in flatten([toread]) if i not in Time_Step_Dic.keys()]) !=0:
-        print('Model(s) ',[i for i in flatten([toread]) if i not in Time_Step_Dic.keys()],' is (are) not loaded.')
+    not_found = [i for i in flatten([toread]) if i not in Time_Step_Dic.keys()]
+    if len(not_found) !=0:
+        print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
 
     for Current_Model in sorted(ToReadModels):
         MyModel = Struc()
         if not quiet:
-          print(Current_Model)
+          print(str(Current_Model))
         Checked = False
         if MyDriver.modeplot != 'struc':
             if not quiet:
@@ -4591,13 +4592,10 @@ def Abund(where='x'):
         set_colourFlag('orange')
         if not multiplot:
             MyDriver.lineFlag = '-'
-        else:
-            set_colourFlag('Orchid')
         Plot('Si28')
-        if not multiplot:
-            print('\n H:\t\t black\n He:\t\t grey\n C:\t\t red\n N:\t\t green\n O:\t\t blue\n Ne:\t\t cyan\n Mg:\t\t purple\n Si:\t\t orange')
-        else:
-            print('\n H:\t\t black\n He:\t\t grey\n C:\t\t red\n N:\t\t green\n O:\t\t blue\n Ne:\t\t cyan\n Mg:\t\t purple')
+        elDic = {1:['H','black'],2:['He','grey'],3:['C','red'],4:['N','green'],5:['O','blue'],6:['Ne','cyan'],7:['Mg','purple'],8:['Si','orange']}
+        for key in sorted(elDic.keys()):
+            print('\n {0:5d}: {1}'.format(elDic[key][0],elDic[key][1]))
 
     keep_plot(False)
     set_colourFlag(ColourFlag_save)
@@ -4722,7 +4720,7 @@ def j_profiles(*args):
     MyDriver.axisLabel[0] = False
     MyDriver.Link_ModelCurve = True
 
-def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
+def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
     """Plots a Kippenhahn diagram for the model number entered as input argument.
        The optional parameter burn=True allows for the plotting of the burning zones.
           It needs a file .burn which is seeked by default in the same location as the evolution file,
@@ -4737,7 +4735,7 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
     if not num_star in MyDriver.Model_list.keys():
         print('please chose a model in the following list:')
         for i in MyDriver.Model_list.keys():
-            print(MyDriver.Model_list[i].Variables['FileName'],'\t\t',i)
+            print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
     elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
         print('This format does not contain informations on convective zones.')
@@ -5240,7 +5238,9 @@ def Coeff():
     Plot('Deff')
     set_colourFlag('k')
     Plot('Kther')
-    print('\n Dconv:\t\t blue\n Dshear:\t green\n Dh:\t\t cyan\n Deff:\t\t magenta\n Kther:\t\t black')
+    coeff_Dic = {0:['Dconv','blue'],1:['Dshear','green'],2:['Dh','cyan'],3:['Deff','magenta'],4:['Kther','black']}
+    for key in coeff_Dic:
+        print('{0:6s}: {1}'.format(coeff_Dic[key][0],coeff_Dic[key][1]))
 
     no_logVar('y')
     keep_plot(False)
@@ -5292,7 +5292,7 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
         else:
             lpos = lum_max
             ind = np.where(L_range<lum_max)[0]
-            print(ind)
+            print(str(ind))
             if len(ind)>0:
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
@@ -5397,9 +5397,9 @@ def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
         except:
             failed = failed + [i]
     if not quiet:
-        print('-----\n'+fuel+'-b beginning and end marked by',marker[0],'and',marker[1])
+        print('-----\n{0}-b beginning and end marked by {1} and {2}'.format(fuel,marker[0],marker[1]))
         if failed != []:
-            print('Star(s)',failed,'do(es) not have a phase of',fuel,'burning.')
+            print('Star(s) {0} do(es) not have a phase of {1}-burning.'.format(failed,fuel))
     #return ind_beg_all,ind_end_all,xpos_beg_all,ypos_beg_all,xpos_end_all,ypos_end_all
 
 def PISN_zone():
@@ -5438,11 +5438,11 @@ def get_lifetimes(num_star=0):
     print('---------------------------------------------------------------------')
     print('LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0])
     print('---------------------------------------------------------------------')
-    print('H-b:  ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'") + ' yr')
-    print('He-b: ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'") + ' yr')
-    print('C-b:  ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'") + ' yr')
-    print('Ne-b: ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'") + ' yr')
-    print('O-b:  ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'") + ' yr')
+    print('H-b:  {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'"))
+    print('He-b: {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'"))
+    print('C-b:  {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'"))
+    print('Ne-b: {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'"))
+    print('O-b:  {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'"))
     print('---------------------------------------------------------------------')
 
 def convZones(num_star,colour='0.80'):
@@ -5475,7 +5475,7 @@ def colours_calc(num_star=0):
         if 'M_K' not in MyDriver.Model_list[i].Variables.keys():
             MyDriver.Model_list[i].ColoursCalc()
         else:
-            print('colours already exist for model',i)
+            print('colours already exist for model '+str(i))
 
 def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
     """Corrects the magnitude and colour for a distance modulus and a colour excess.
@@ -5487,8 +5487,9 @@ def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
     if num_star == 0:
         num_star = MyDriver.Model_list_cluster.keys()
     [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
-    if len([i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]) !=0:
-        print('Model(s) ',[i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()],' do(es) not exist in cluster list.')
+    not_found = [i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]
+    if len(not_found) !=0:
+        print('Model(s) {0} do(es) not exist in cluster list.'.format(not_found[:]))
 
 def add_noise(var,value,type='',num_star=0):
     """Adds a noise to a variable (cluster mode only).
@@ -5517,9 +5518,10 @@ def add_noise(var,value,type='',num_star=0):
                     var_noised = np.log10(var_noised)
                 Set_Var(var_noised,var+'_noised',i,label=MyDriver.Model_list_cluster[i].Variables[var][1],category=MyDriver.Model_list_cluster[i].Variables[var][2])
             except KeyError:
-                print('Variable '+var+' not known in model '+str(i)+': skipped...')
-    if len([i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]) !=0:
-        print('Model(s) ',[i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()],' do(es) not exist in cluster list.')
+                print('Variable {0} not known in model {1}: skipped...'.format(var,i))
+    not_found = [i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]
+    if len(not_found) !=0:
+        print('Model(s) {0} do(es) not exist in cluster list.'.format(not_found[:]))
 
 
 def put_legend(loc=1,label=[],fontsize=''):
@@ -5574,13 +5576,14 @@ def set_deltat(deltat,num_list=[]):
     if num_list == []:
         num_list = MyDriver.SelectedModels
     local_num_list = [i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
-    print('Timesteps computed for star(s) ',local_num_list)
-    if len([i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print('Model(s) ',[i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.')
+    print('Timesteps computed for star(s) {0}'.format(local_num_list[:]))
+    not_found = [i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]
+    if len(not_found) !=0:
+        print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
     for num_star in flatten(local_num_list):
-        print('Timesteps of ',deltat,' years computing for star ',num_star)
+        print('Timesteps of {0} years computing for star {1}'.format(deltat,num_star))
         if deltat == MyDriver.Model_list[num_star].deltat:
-            print('Model ',num_star,' is already set with the wanted time step.')
+            print('Model {0} is already set with the wanted time step.'.format(num_star))
             pass
         current_time = MyDriver.Model_list[num_star].Variables['t'][0][0]
         MyDriver.Model_list[num_star].timestep = []
@@ -5644,7 +5647,8 @@ def get_limits(quiet=False):
     ymax = plt.gca().get_ybound()[1]
     actualLimits = [xmin,xmax,ymin,ymax]
     if not quiet:
-        print('To use these limits:\n Limits(xmin='+str(xmin)+',xmax='+str(xmax)+',ymin='+str(ymin)+',ymax='+str(ymax)+')')
+        print('To use these limits:')
+        print('   Limits(xmin={0},xmax={1},ymin={2},ymax={3})'.format(xmin,xmax,ymin,ymax))
     return actualLimits
 
 def Limits(**args):
@@ -5715,7 +5719,7 @@ def set_lineStyle(NewValue,width=1):
     if NewValue in Rendering.Authorised_LineStyle:
         MyDriver.lineFlag = NewValue
     else:
-        print('The value you entered is not correct, please choose one of the following: ',Rendering.Authorised_LineStyle)
+        print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_LineStyle[:]))
 
 def setLine_style(NewValue,width=1):
     """Retrocompatibility command"""
@@ -5733,8 +5737,8 @@ def set_pointStyle(NewValue):
         elif isinstance(NewValue[0],int) and isinstance(NewValue[1],int) and isinstance(NewValue[2],int):
             MyDriver.pointFlag = NewValue
     else:
-        print('The value you entered is not correct, please choose one of the following:',\
-               Rendering.Authorised_PointStyle,'\nor a tuple (numsides,style,angle)')
+        print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_PointStyle[:])
+        print('or a tuple (numsides,style,angle)')
 
 def setPoint_style(NewValue):
     """Retrocompatibility command"""
@@ -5749,7 +5753,7 @@ def set_pointSize(NewValue=0,f=1.):
             if NewValue == 'default':
                 MyDriver.pointSize = 24
             else:
-                print('The argument should be "default" or an integer for the sze in points.')
+                print('The argument should be "default" or an integer for the size in points.')
         elif isinstance(NewValue,int) or isinstance(NewValue,float):
             MyDriver.pointSize = NewValue
     else:
@@ -5800,7 +5804,7 @@ def set_colourSequence(NewValue):
         if NewValue not in Rendering.Colours_list.keys():
             print('The value you entered is not correct. Existing sequences are:')
             for i in Rendering.Colours_list.keys():
-                print(i+': '+ str(Rendering.Colours_list[i][1]))
+                print('{0}: {1}'.format(i,Rendering.Colours_list[i][1]))
         else:
             MyDriver.colourSequence = NewValue
 
@@ -5858,7 +5862,7 @@ def keep_CBlimits(choice=None):
     """Fixes the limits of the colourbar to the actual ones"""
     if choice == True or choice == None:
         [min,max] = MyDriver.get_CBlimits
-        print('colour limits:',min,max)
+        print('colour bar limits: {0},{1}'.format(min,max))
     elif choice == False:
         noCBLimits()
     else:
@@ -5974,7 +5978,7 @@ def configPlot():
                 NewFig = False
             mySubplot = 210 + MyDriver.plotConfig[1]
             if not MyDriver.keepplot:
-                print('Plot ',mySubplot)
+                print('Plot {0}'.format(mySubplot))
                 MyDriver.plotConfig[1] = MyDriver.plotConfig[1] % 2 + 1
         else:
             print('il y a une couille dans le potage')
@@ -5987,7 +5991,7 @@ def configPlot():
                 NewFig = False
             mySubplot = 220 + MyDriver.plotConfig[1]
             if not MyDriver.keepplot:
-                print('Plot ',mySubplot)
+                print('Plot {0}'.format(mySubplot))
                 MyDriver.plotConfig[1] = MyDriver.plotConfig[1] % 4 + 1
         else:
             print('il y a une couille dans le potage')
@@ -6026,7 +6030,7 @@ def multiPlot(plot_num):
     if plot_num in [1,2,4]:
         MyDriver.plotConfig = [plot_num,1]
     else:
-        print('Sorry, we didn\'t code for anything else than 1-, 2-, or 4-plots windows.')
+        print('Sorry, we did not code for anything else than 1-, 2-, or 4-plots windows.')
 
 def defX(varX):
     """Allows to change the default value for the x axis:
@@ -6098,7 +6102,7 @@ def fit_poly(deg=1,y='',colour='0.80'):
         eq_str =  eq_str + '{:+f}x^{:d} '.format(fit[i],len(fit)-i-1)
     eq_str = eq_str + '{:+f}x {:+f}'.format(fit[-2],fit[-1])
     print'--------------------------------------------------------------------'
-    print('FIT equation:',eq_str)
+    print('FIT equation: '+eq_str)
     print('--------------------------------------------------------------------')
     xinf,xsup = plt.gca().get_xbound()
     draw_x = np.linspace(xinf,xsup,100)
@@ -6135,7 +6139,7 @@ def line(x1,x2,y1,y2,colour='0.80',line='-'):
 def slope(value,centre=[0.,0.],colour='0.80',line='-'):
     """Draws a line of slope 'value' on an existing graph.
        The optional parameter centre=[x,y] allows to centre the line on point (x,y)"""
-    print('slope : ',value)
+    print('slope : {0}'.format(value))
     xinf,xsup,yinf,ysup = get_limits(quiet=True)
     if centre == [0.,0.]:
         centre = [xinf+(xsup-xinf)/2.,yinf+(ysup-yinf)/2.]
@@ -6317,9 +6321,9 @@ def MyFig(name,path='',format='svg',layout=''):
         orientation='Landscape'
     else:
         orientation='Squared'
-    print(orientation+' figure: dimensions ',MyDriver.current_Fig.get_size_inches())
+    print('{0} figure: dimensions {1}'.format(orientation,MyDriver.current_Fig.get_size_inches()))
     plt.savefig(path+name+'.'+myFormat,format=myFormat,bbox_inches='tight',edgecolor='none')
-    print('Figure '+path+name+'.'+myFormat+' created successfully')
+    print('Figure {0}{1}.{2} created successfully'.format(path,name,myFormat))
     MyDriver.LatexEnabled = iLatex_save
 
 def change_label(axe,label):
@@ -6350,7 +6354,7 @@ def add_label(x,y,string,**args):
         elif arg == 'va':
             myVAlignment = args[arg]
         else:
-            print('Argument ',arg,' not valid')
+            print('Argument {0} not valid'.format(arg))
     plt.text(x,y,string,color=colour,fontsize=myFontsize,ha=myHAlignment,va=myVAlignment)
 
 def top_label(string,**args):
@@ -6362,7 +6366,7 @@ def top_label(string,**args):
         if arg == 'fontsize':
             myFontsize = args[arg]
         else:
-            print('Argument ',arg,' not valid')
+            print('Argument {0} not valid'.format(arg))
     plt.suptitle(string,fontsize=myFontsize)
 
 def blabla(string):
@@ -6408,11 +6412,11 @@ def dist():
     raw_input('Press enter when finished.\n')
     xdist = float(MyDriver.cursor_position[-1][0]) - float(MyDriver.cursor_position[-2][0])
     ydist = float(MyDriver.cursor_position[-1][1]) - float(MyDriver.cursor_position[-2][1])
-    print('Distance along x-axis = ', xdist)
-    print('Distance along y-axis = ', ydist)
-    print('Absolute distance = ', math.sqrt(xdist**2. + ydist**2.))
+    print('Distance along x-axis = {0}'.format(xdist))
+    print('Distance along y-axis = {0}'.format(ydist))
+    print('Absolute distance = {0}'.format(math.sqrt(xdist**2. + ydist**2.)))
     if xdist!= 0.:
-        print('dy/dx = ',ydist/xdist)
+        print('dy/dx = {0}'.format(ydist/xdist))
     else:
         print('dy/dx = infinity')
 
@@ -6446,14 +6450,14 @@ def closest_line(Xvar='',Yvar='',printline=False):
         print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
     if not printline:
       if len(MyDriver.SelectedModels) > 1:
-        print('closest model:',best_i)
+        print('closest model: {0}'.format(best_i))
       return line_i[best_i]
     else:
       with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
         for file_line in myfile:
           current_model = int(file_line.split()[0])
           if current_model == line_i[best_i]:
-            print(file_line)
+            print(str(file_line))
             return line_i[best_i]
 
 def file_len(fname):
