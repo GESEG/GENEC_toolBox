@@ -60,6 +60,7 @@ import ConfigParser
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
 import time
+import datetime
 import subprocess
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
@@ -1216,6 +1217,15 @@ class Driver():
 
         self.closeFig = True
         self.plotConfig = [1,1]
+
+        today = datetime.datetime.now().strftime("%m-%d")
+        try:
+            drawfile = open(os.path.join(self.Config.get('Paths','DataPath'),today+'.txt'))
+            todays_drawing = drawfile.readlines()
+            for line in todays_drawing:
+                print(line[:-1])
+        except IOError:
+            pass
 
     def checknumber(self,number):
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
@@ -3706,7 +3716,7 @@ def Set_Var(var,var_name,num_star,**args):
     if not MyDriver.Model_list[num_star].Variables.has_key(var_name):
         MyDriver.Model_list[num_star].Variables[var_name] = [var,MyLabel,MyCat]
     else:
-        print('The key '+var_name+' already exists in this dictionary.'
+        print('The key '+var_name+' already exists in this dictionary.')
 
 def Del_Var(varName,num_star=0,quiet=False):
     """Deletes an entry of the Variables dictionary.
