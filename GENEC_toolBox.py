@@ -63,6 +63,7 @@ import time
 import datetime
 import subprocess
 import six
+
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
@@ -2018,6 +2019,7 @@ class Model(Outputs):
                     wafile2.close()
             except IOError as err2:
                 print('File problem: ' + str(err2))
+                self.Variables['options'][1] = False
                 return
 
         wafile = open(FileName,'r')
@@ -3780,7 +3782,7 @@ def Vector_split(varName,num_star,quiet=False):
     if not quiet:
         print('The positive and negative values can be plotted under the name {0}_pos and {0}_neg respectively'.format(varName))
 
-def Plot(y,plotif=['',''],cshift=0,forced_line=False):
+def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name).
        Usage:Plot('VarName')
        Possibility to restrict the data plotted to a condition on a variable:
@@ -3820,14 +3822,15 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         bad_var = MyDriver.Xvar
 
     if len(Star_list) == 0:
-        print('No star knows variable'+bad_var)
-        print('Available variables are:')
-        print(sorted(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys(), key=lambda s: s.lower()))
+        if var_error_print:
+            print('No star knows variable'+bad_var)
+            print('Available variables are:')
+            print(sorted(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys(), key=lambda s: s.lower()))
         return
     else:
         if len(Star_list) != len(MyDriver.SelectedModels):
             not_found = [x for x in MyDriver.SelectedModels if x not in Star_list]
-            print('The variable {0} does not exist for model{2} {1}. {3} will not appear on the plot.'.format(bad_var,not_found[:],\
+            print('Variable {0} does not exist for model{2} {1}. {3} will not appear on the plot.'.format(bad_var,not_found[:],\
                   pluralise(not_found,'','s'),pluralise(not_found,'It','They')))
 
     MyDriver.lastXvar = MyDriver.Xvar
@@ -4526,13 +4529,11 @@ def Abund(where='x'):
             set_colourFlag('Turquoise')
             Plot('Ne20c')
             set_colourFlag('Orange')
-            try:
-                Plot('Si28c')
-            except:
-                pass
+            Plot('Si28c',var_error_print=False)
         elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],6:['Ne20','cyan'],7:['Si28','orange']}
         for key in sorted(elDic.keys()):
             print('{0: >5s}: {1}'.format(elDic[key][0],elDic[key][1]))
+        print('(NB: 28Si available only for stars loaded with wa=True)')
     elif where in 'pP':
         MyDriver.axisLabel[1] = 'Abund. profile [mass frac.]'
         if MyDriver.modeplot != 'struc':
