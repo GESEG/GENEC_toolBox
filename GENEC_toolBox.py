@@ -4530,10 +4530,10 @@ def Abund(where='x'):
             Plot('Ne20c')
             set_colourFlag('Orange')
             Plot('Si28c',var_error_print=False)
-        elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],6:['Ne20','cyan'],7:['Si28','orange']}
+        elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],\
+                 6:['Ne20','cyan'],7:['Si28','orange (NB: available only for stars loaded with wa=True)']}
         for key in sorted(elDic.keys()):
             print('{0: >5s}: {1}'.format(elDic[key][0],elDic[key][1]))
-        print('(NB: 28Si available only for stars loaded with wa=True)')
     elif where in 'pP':
         MyDriver.axisLabel[1] = 'Abund. profile [mass frac.]'
         if MyDriver.modeplot != 'struc':
