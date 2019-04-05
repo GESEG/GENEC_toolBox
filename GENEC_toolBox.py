@@ -74,11 +74,17 @@ def multiReplace(text,wordDict):
         text = text.replace(wordDict[key][0],wordDict[key][1])
     return text
 
+def pluralise(list,sing,plural):
+    if len(list) > 1:
+        return plural
+    else:
+        return sing
+
 class GtB_version():
     GtB_version = '8.2.0'
 
 class Cst():
-    """Physical and astrophysical constants used by GENEC_toolBox"""
+    """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
     Msol = 1.9885e33
     Rsol = 6.9951e10
     Lsol = 3.828e33
@@ -1235,7 +1241,7 @@ class Driver():
                 print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
                 answer = six.input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
-                    print('The attributed star numbers are : {0}'.format(self.Model_list.keys()))
+                    print('The attributed star number{1} {2} : {0}'.format(self.Model_list.keys(),pluralise(self.Model_list.keys(),'','s'),pluralise(self.Model_list.keys(),'is','are')))
                     answer = six.input('Would you like to attribute a new number ? y/n ')
                     if answer == 'n':
                         return False, number
@@ -3198,7 +3204,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
     [ToReadModels.append(i) for i in flatten([toread]) if i in Time_Step_Dic.keys()]
     not_found = [i for i in flatten([toread]) if i not in Time_Step_Dic.keys()]
     if len(not_found) !=0:
-        print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
+        print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
     for Current_Model in sorted(ToReadModels):
         MyModel = Struc()
@@ -3404,19 +3410,19 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
             print('[Error {0}] {1}: {2}'.format(WF.errno,file_short,WF.strerror))
             pass
         except IndexError:
-            print('column problem in file '+file_short)
+            print('Column problem in file '+file_short)
             pass
         except ValueError:
-            print('value problem in file '+file_short)
+            print('Value problem in file '+file_short)
             pass
         except:
-            print('file {0} does not seem to be a valid file, skipped.'.format(file_short))
+            print('File {0} does not seem to be a valid file, skipped.'.format(file_short))
             pass
     if not quiet:
         print('')
         Loaded('evol')
     else:
-        print('{0} files loaded. Details can be displayed with Loaded().'.format(num_files))
+        print('{0} file{1} loaded. Details can be displayed with Loaded().'.format(num_files,pluralise(num_files,'','s')))
 
 def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False,quiet=False):
     """Loads all structures (.v or StrucData) in the directory given in argument.
@@ -3493,7 +3499,7 @@ def LoadedEvol():
     for i in MyDriver.Model_list_evol.keys():
         print('{0:4d}: {1}'.format(i,MyDriver.Model_list_evol[i].Variables['FileName'][0]))
 
-    print('\nModels currently selected for plotting:')
+    print('\nModel{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_evol[:],'','s')))
     print(str(MyDriver.SelectedModels_evol[:]))
 
 def LoadedStruc():
@@ -3502,7 +3508,7 @@ def LoadedStruc():
     for i in MyDriver.Model_list_struc.keys():
         print('{0:4d}: {2} in {1}'.format(i,MyDriver.Model_list_struc[i].Variables['FileName'][0],MyDriver.Model_list_struc[i].Variables['Model'][0]))
 
-    print('\nStructures currently selected for plotting:')
+    print('\nStructure{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_struc[:],'','s')))
     print(str(MyDriver.SelectedModels_struc[:]))
 
 def LoadedCluster():
@@ -3511,7 +3517,7 @@ def LoadedCluster():
     for i in MyDriver.Model_list_cluster.keys():
         print('{0:4d}: {1}'.format(i,MyDriver.Model_list_cluster[i].Variables['FileName'][0]))
 
-    print('\nClusters/isochrones currently selected for plotting:')
+    print('\nCluster{0}/isochrone{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_cluster[:],'','s')))
     print(str(MyDriver.SelectedModels_cluster[:]))
 
 def Loaded(mode=''):
@@ -3550,7 +3556,7 @@ def reloadE(model_list):
             print('Model {0} reloaded'.format(i))
     except KeyError:
         not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_evol.keys()]
-        print('Number(s) {0} not attributed to any model'.format(not_found[:]))
+        print('Number{1} {0} {2} not attributed to any model'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def reloadS(model_list):
     """Reloads the selected structures."""
@@ -3560,7 +3566,7 @@ def reloadS(model_list):
             print('Structure {0} reloaded'.format(i))
     except KeyError:
         not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_struc.keys()]
-        print('Number(s) {0} not attributed to any structure'.format(not_found[:]))
+        print('Number{1} {0} {2} not attributed to any structure'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def reloadC(model_list):
     """Reloads the selected clusters/isochrones."""
@@ -3574,13 +3580,13 @@ def reloadC(model_list):
                 print('Isochrone {0} reloaded'.format(i))
     except KeyError:
         not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_cluster.keys()]
-        print('Number(s) {0} not attributed to any cluster/isochrone'.format(not_found[:]))
+        print('Number{1} {0} {2} not attributed to any cluster/isochrone'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def del_model(num_list):
     """Removes the model numbers given in argument from the list of selected models for plotting."""
     not_found=[i for i in flatten([num_list]) if i not in MyDriver.SelectedModels]
     if len(not_found) !=0:
-        print('Model(s) {0} is (are) not among the selected models.'.format(not_found[:]))
+        print('Model{1} {0} {2} not among the selected models.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
     [MyDriver.SelectedModels.remove(i) for i in not_found]
 
 def add_model(num_list):
@@ -3588,7 +3594,7 @@ def add_model(num_list):
     added=[i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
     [MyDriver.SelectedModels.append(i) for i in added]
     if len([i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print('Model(s) {0} is (are) not loaded.'.format(added[:]))
+        print('Model{1} {0} {2} not loaded.'.format(added[:],pluralise(added,'','s'),pluralise(added,'is','are')))
 
 def select_model(model_list):
     """Defines the list of selected models for plotting """
@@ -3602,7 +3608,7 @@ def select_model(model_list):
         MyDriver.SelectedModels_cluster = MyDriver.SelectedModels
     not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()]
     if len(not_found) !=0:
-        print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
+        print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def select_all():
     """Selects all available models in the current mode """
@@ -3725,14 +3731,19 @@ def Del_Var(varName,num_star=0,quiet=False):
        Usage: Del_Var(varName,num_star)"""
     if num_star == 0:
         num_star = MyDriver.Model_list.keys()
+    failed = []
+    success = []
     for i in flatten([num_star]):
         try:
             del MyDriver.Model_list[i].Variables[varName]
-            if not quiet:
-                print('The variable '+varName+' has been successfully deleted in model '+str(i)+'.')
+            success.append(i)
         except KeyError:
-            if not quiet:
-                print('The variable you tried to delete does not exist in model '+str(i))
+            failed.append(i)
+    if not quiet:
+        if len(success) != 0:
+            print('Variable {0} has been successfully deleted in model{2} {1}'.format(varName,success[:],pluralise(success,'','s')))
+        if len(failed) != 0:
+            print('Variable {0} does not exist in model{2} {1}'.format(varName,failed[:],pluralise(failed,'','s')))
 
 def Deriv(Var1,Var2,num_star=[]):
     """Takes the derivative of variable 1 over variable 2.
@@ -3744,7 +3755,7 @@ def Deriv(Var1,Var2,num_star=[]):
         [selectedModels.append(i) for i in flatten([num_star]) if i in MyDriver.Model_list.keys()]
         not_found = [i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()]
         if len(not_found) !=0:
-            print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
+            print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
             return
     for i in selectedModels:
         x=Get_Var(Var1,i)
@@ -3816,7 +3827,8 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
     else:
         if len(Star_list) != len(MyDriver.SelectedModels):
             not_found = [x for x in MyDriver.SelectedModels if x not in Star_list]
-            print('The variable {0} does not exist for model(s) {1}. They will not appear on the plot.'.format(bad_var,not_found[:]))
+            print('The variable {0} does not exist for model{2} {1}. {3} will not appear on the plot.'.format(bad_var,not_found[:],\
+                  pluralise(not_found,'','s'),pluralise(not_found,'It','They')))
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -4450,10 +4462,12 @@ def Abund(where='x'):
     """Plots the abundance profiles of the main species.
        The input argument may take three values:
           in evol mode: 'c' for central abundances et 's' for surface abundances,
-          in structure mode: 'p' for profile.
+          in structure mode: 'p' for profile, may be omitted.
           in cluster mode: surface anyway, maybe omitted."""
     if where == 'x' and MyDriver.modeplot == 'cluster':
         where = 's'
+    if where == 'x' and MyDriver.modeplot == 'struc':
+        where = 'p'
     if where not in 'cCpPsS':
         print('The argument should be "s,c, or p"')
         return
@@ -4516,9 +4530,9 @@ def Abund(where='x'):
                 Plot('Si28c')
             except:
                 pass
-        elDic = {1:['H1','black'],2:['He4','grey'],3:['C12''red'],4:['N14','green'],5:['O16''blue'],6:['Ne20','cyan'],7:['Si28','orange']}
+        elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],6:['Ne20','cyan'],7:['Si28','orange']}
         for key in sorted(elDic.keys()):
-            print('\n {0:5d}: {1}'.format(elDic[key][0],elDic[key][1]))
+            print('{0: >5s}: {1}'.format(elDic[key][0],elDic[key][1]))
     elif where in 'pP':
         MyDriver.axisLabel[1] = 'Abund. profile [mass frac.]'
         if MyDriver.modeplot != 'struc':
@@ -4538,36 +4552,36 @@ def Abund(where='x'):
         if not multiplot:
             MyDriver.lineFlag = '--'
         else:
-            set_colourFlag('Coral')
+            set_colourFlag('Salmon')
         Plot('C13')
         if not multiplot:
             MyDriver.lineFlag = '-'
-        set_colourFlag('ForestGreen')
+        set_colourFlag('Green')
         Plot('N14')
         if not multiplot:
             MyDriver.lineFlag = '--'
         else:
-            set_colourFlag('Green')
+            set_colourFlag('LimeGreen')
         Plot('N15')
         if not multiplot:
             MyDriver.lineFlag = '-'
             set_colourFlag('Blue')
         else:
-            set_colourFlag('DarkBlue')
+            set_colourFlag('Blue')
         Plot('O16')
         if not multiplot:
             MyDriver.lineFlag = '--'
         else:
-            set_colourFlag('Blue')
+            set_colourFlag('RoyalBlue')
         Plot('O17')
         if not multiplot:
             MyDriver.lineFlag = ':'
         else:
-            set_colourFlag('DodgerBlue')
+            set_colourFlag('DeepSkyBlue')
         Plot('O18')
         if not multiplot:
             MyDriver.lineFlag = '-'
-        set_colourFlag('Turquoise')
+        set_colourFlag('Cyan')
         Plot('Ne20')
         if not multiplot:
             MyDriver.lineFlag = '--'
@@ -4578,7 +4592,7 @@ def Abund(where='x'):
             MyDriver.lineFlag = '-'
             set_colourFlag('MediumOrchid')
         else:
-            set_colourFlag('Purple')
+            set_colourFlag('DarkViolet')
         Plot('Mg24')
         if not multiplot:
             MyDriver.lineFlag = '--'
@@ -4588,15 +4602,20 @@ def Abund(where='x'):
         if not multiplot:
             MyDriver.lineFlag = ':'
         else:
-            set_colourFlag('Orchid')
+            set_colourFlag('Plum')
         Plot('Mg26')
         set_colourFlag('orange')
         if not multiplot:
             MyDriver.lineFlag = '-'
         Plot('Si28')
-        elDic = {1:['H','black'],2:['He','grey'],3:['C','red'],4:['N','green'],5:['O','blue'],6:['Ne','cyan'],7:['Mg','purple'],8:['Si','orange']}
+        if multiplot:
+            elDic = {1:['H','black'],2:['He','grey'],3:['C','red (12),salmon(13)'],4:['N','green (dark 14, light 15)'],\
+                     5:['O','blue (dark 16, medium 17, light 18)'],6:['Ne','cyan (dark 20, light 22)'],7:['Mg','purple (dark 24, medium 25, light 26)'],8:['Si','orange']}
+        else:
+            elDic = {1:['H','black'],2:['He','grey'],3:['C','red (- 12, -- 13)'],4:['N','green (- 14, -- 15)'],\
+                     5:['O','blue (- 16, -- 17, .. 18)'],6:['Ne','cyan (- 20, -- 22)'],7:['Mg','purple (- 24, -- 25, .. 26)'],8:['Si','orange']}
         for key in sorted(elDic.keys()):
-            print('\n {0:5d}: {1}'.format(elDic[key][0],elDic[key][1]))
+            print('{0: >5s}: {1}'.format(elDic[key][0],elDic[key][1]))
 
     keep_plot(False)
     set_colourFlag(ColourFlag_save)
@@ -5241,7 +5260,7 @@ def Coeff():
     Plot('Kther')
     coeff_Dic = {0:['Dconv','blue'],1:['Dshear','green'],2:['Dh','cyan'],3:['Deff','magenta'],4:['Kther','black']}
     for key in coeff_Dic:
-        print('{0:6s}: {1}'.format(coeff_Dic[key][0],coeff_Dic[key][1]))
+        print('{0: >10s}: {1}'.format(coeff_Dic[key][0],coeff_Dic[key][1]))
 
     no_logVar('y')
     keep_plot(False)
@@ -5363,7 +5382,8 @@ def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
         return
     burn_seq = np.array(['H','He','C','Ne','O','Si'])
     if fuel not in burn_seq:
-        print('Unknown burning phase, please check your input.')
+        print('Unknown burning phase, please check your input. Should be:')
+        print(burn_seq)
         return
     failed = []
     ind_beg_all = []
@@ -5400,7 +5420,7 @@ def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
     if not quiet:
         print('-----\n{0}-b beginning and end marked by {1} and {2}'.format(fuel,marker[0],marker[1]))
         if failed != []:
-            print('Star(s) {0} do(es) not have a phase of {1}-burning.'.format(failed,fuel))
+            print('Star{2} {0} do{3} not have a phase of {1}-burning.'.format(failed,fuel,pluralise(failed,'','s'),pluralise(failed,'es','')))
     #return ind_beg_all,ind_end_all,xpos_beg_all,ypos_beg_all,xpos_end_all,ypos_end_all
 
 def PISN_zone():
@@ -5439,11 +5459,11 @@ def get_lifetimes(num_star=0):
     print('---------------------------------------------------------------------')
     print('LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0])
     print('---------------------------------------------------------------------')
-    print('H-b:  {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'"))
-    print('He-b: {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'"))
-    print('C-b:  {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'"))
-    print('Ne-b: {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'"))
-    print('O-b:  {0:,} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'"))
+    print('     H-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'"))
+    print('     He-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'"))
+    print('     C-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'"))
+    print('     Ne-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'"))
+    print('     O-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'"))
     print('---------------------------------------------------------------------')
 
 def convZones(num_star,colour='0.80'):
@@ -5490,7 +5510,7 @@ def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
     [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
     not_found = [i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]
     if len(not_found) !=0:
-        print('Model(s) {0} do(es) not exist in cluster list.'.format(not_found[:]))
+        print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
 def add_noise(var,value,type='',num_star=0):
     """Adds a noise to a variable (cluster mode only).
@@ -5522,7 +5542,7 @@ def add_noise(var,value,type='',num_star=0):
                 print('Variable {0} not known in model {1}: skipped...'.format(var,i))
     not_found = [i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]
     if len(not_found) !=0:
-        print('Model(s) {0} do(es) not exist in cluster list.'.format(not_found[:]))
+        print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
 
 def put_legend(loc=1,label=[],fontsize=''):
@@ -5577,10 +5597,10 @@ def set_deltat(deltat,num_list=[]):
     if num_list == []:
         num_list = MyDriver.SelectedModels
     local_num_list = [i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
-    print('Timesteps computed for star(s) {0}'.format(local_num_list[:]))
+    print('Timesteps computed for star{1} {0}'.format(local_num_list[:],pluralise(local_num_list,'','s')))
     not_found = [i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]
     if len(not_found) !=0:
-        print('Model(s) {0} is (are) not loaded.'.format(not_found[:]))
+        print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
     for num_star in flatten(local_num_list):
         print('Timesteps of {0} years computing for star {1}'.format(deltat,num_star))
         if deltat == MyDriver.Model_list[num_star].deltat:
@@ -5738,7 +5758,7 @@ def set_pointStyle(NewValue):
         elif isinstance(NewValue[0],int) and isinstance(NewValue[1],int) and isinstance(NewValue[2],int):
             MyDriver.pointFlag = NewValue
     else:
-        print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_PointStyle[:])
+        print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_PointStyle[:]))
         print('or a tuple (numsides,style,angle)')
 
 def setPoint_style(NewValue):
@@ -6102,7 +6122,7 @@ def fit_poly(deg=1,y='',colour='0.80'):
     for i in range(len(fit)-2):
         eq_str =  eq_str + '{:+f}x^{:d} '.format(fit[i],len(fit)-i-1)
     eq_str = eq_str + '{:+f}x {:+f}'.format(fit[-2],fit[-1])
-    print'--------------------------------------------------------------------'
+    print('--------------------------------------------------------------------')
     print('FIT equation: '+eq_str)
     print('--------------------------------------------------------------------')
     xinf,xsup = plt.gca().get_xbound()
