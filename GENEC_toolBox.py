@@ -82,7 +82,7 @@ def pluralise(list,sing,plural):
         return sing
 
 class GtB_version():
-    GtB_version = '8.2.0'
+    GtB_version = '8.3.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
