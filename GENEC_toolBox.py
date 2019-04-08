@@ -56,13 +56,13 @@ from matplotlib import rc
 from matplotlib import rcParams
 rc('font',**{'family':'serif','serif':['Times New Roman']})
 rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
-import ConfigParser
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
 import time
 import datetime
 import subprocess
 import six
+from six.moves import configparser,input
 
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
@@ -132,7 +132,7 @@ class Rendering():
     Point_list = ['o','^','*','s','p','v','d','>','<']
     Authorised_LineStyle=['cycle_colour','cycle_all']+Line_list
     Authorised_PointStyle=['cycle_colour','cycle_all']+Point_list
-    Authorised_Colours = ['cycle', 'b', 'c', 'g', 'k', 'm', 'r', 'w', 'y']+colors.cnames.keys()
+    Authorised_Colours = ['cycle', 'b', 'c', 'g', 'k', 'm', 'r', 'w', 'y']+list(colors.cnames.keys())
     Inversed_by_default = ['ageadv','H1c','He4c','Teff','Teffcorr','Teff_lgd','gsurf','gpol','gmean','fwg','Mbol','M_V','M_B']
     Noised = []
     for var in Inversed_by_default:
@@ -1126,7 +1126,7 @@ class Driver():
     """Contains all the set-up variables for the tools developed here.
        Uses a config file that is created on the fly if absent."""
     def __init__(self):
-        self.Config = ConfigParser.ConfigParser()
+        self.Config = configparser.ConfigParser()
         self.Config.optionxform = str
         try:
             with open(os.path.expanduser('~/.GENEC_toolBox.ini')):
@@ -1143,14 +1143,14 @@ class Driver():
                     self.Config.add_section('Paths')
                     source_dir = os.path.dirname(os.path.abspath(__file__))
                     self.Config.set('Paths','ProgPath',source_dir+os.path.sep)
-                    Data_Path=os.path.expanduser(six.input('Enter the path to the data directory (for default, leave blank): '))
+                    Data_Path=os.path.expanduser(input('Enter the path to the data directory (for default, leave blank): '))
                     if Data_Path == '':
                         Data_Path = os .path.join(source_dir,'data/')
                         print('Data_Path: '+Data_Path)
                     elif not Data_Path.endswith(os.path.sep):
                         Data_Path += os.path.sep
                     self.Config.set('Paths','DataPath',Data_Path)
-                    Fig_Path = os.path.expanduser(six.input('Enter the path where you want the figure to be created (for default, leave blank): '))
+                    Fig_Path = os.path.expanduser(input('Enter the path where you want the figure to be created (for default, leave blank): '))
                     if Fig_Path == '':
                         Fig_Path = './'
                     elif not Fig_Path.endswith(os.path.sep):
@@ -1164,7 +1164,7 @@ class Driver():
             self.Config.read(os.path.expanduser('~/.GENEC_toolBox.ini'))
             try:
                 program_path=self.Config.get('Paths','ProgPath')
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'a') as Conf_File:
                     Conf_File.write('ProgPath: '+os.path.dirname(os.path.abspath(__file__))+'/\n')
 
@@ -1237,18 +1237,19 @@ class Driver():
 
     def checknumber(self,number):
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
-        for Existing_Indexes in self.Model_list.keys():
+        for Existing_Indexes in list(self.Model_list.keys()):
             if number == Existing_Indexes:
                 print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
-                answer = six.input('Do you want to overwrite it? y/n ')
+                answer = input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
-                    print('The attributed star number{1} {2} : {0}'.format(self.Model_list.keys(),pluralise(self.Model_list.keys(),'','s'),pluralise(self.Model_list.keys(),'is','are')))
-                    answer = six.input('Would you like to attribute a new number ? y/n ')
+                    print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
+                        pluralise(list(self.Model_list.keys()),'','s'),pluralise(list(self.Model_list.keys()),'is','are')))
+                    answer = input('Would you like to attribute a new number ? y/n ')
                     if answer == 'n':
                         return False, number
                     else:
-                        new_num = int(six.input('Enter new number: '))
-                        if new_num in self.Model_list.keys():
+                        new_num = int(input('Enter new number: '))
+                        if new_num in list(self.Model_list.keys()):
                             print('Again, this number already exists.')
                             return False, number
                         else:
@@ -1290,7 +1291,7 @@ class Driver():
             type = 'model'
         newList=[]
         for i in star_list:
-            if var not in self.Model_list[i].Variables.keys():
+            if var not in list(self.Model_list[i].Variables.keys()):
                 pass
             else:
                 newList.append(i)
@@ -2011,7 +2012,7 @@ class Model(Outputs):
             wafile.close()
         except IOError as err:
             print('File error:' + str(err))
-            wafile2 = six.input('File '+FileName+' not found. Enter a valid path+name:')
+            wafile2 = input('File '+FileName+' not found. Enter a valid path+name:')
             try:
                 with open(wafile2,'r'):
                     print('.wa file found: '+FileName)
@@ -2028,7 +2029,7 @@ class Model(Outputs):
           num_fin = BigArray.shape[0]
         el_num = (BigArray.shape[1]-3)/2
         print(str(el_num)+' isotopes read in .wa file')
-        for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
+        for i,A,el in zip(list(range(el_num)),readList.Abund['AList'],readList.Abund['ZList']):
             self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
             self.Variables[str(el)+str(A)+'c'] = [BigArray[:num_fin,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
 
@@ -2042,7 +2043,7 @@ class Model(Outputs):
             BurnFile.close()
         except IOError as err:
             print('File error:' + str(err))
-            MyBurnFile2 = six.input('File '+MyBurnFile+' not found. Enter a valid path+name:')
+            MyBurnFile2 = input('File '+MyBurnFile+' not found. Enter a valid path+name:')
             try:
                 MyBurnFile = open(MyBurnFile2,'r')
                 print('.burn file found: '+MyBurnFile2)
@@ -2134,7 +2135,7 @@ class Model(Outputs):
                 MyFile = rootName
             else:
                 MyFile = FileName
-            BigArray = np.loadtxt(MyFile,skiprows=num_deb,converters=converters,usecols=range(file_cols))
+            BigArray = np.loadtxt(MyFile,skiprows=num_deb,converters=converters,usecols=list(range(file_cols)))
             if toZip:
                 os.system(CommandZip)
         except ValueError:
@@ -2903,7 +2904,7 @@ class Analysis():
         """Computes the lifetime in the different burning phases."""
         MyStar = MyDriver.Model_list[num]
         Mini,Oini,Zini = self.setEntry(MyStar,mode)
-        if not [Mini,Oini,Zini] in self.Data.keys() and not quiet:
+        if not [Mini,Oini,Zini] in list(self.Data.keys()) and not quiet:
             print('Entry for M= {0} with OOc= {1} at Z= {2} added.'.format(Mini,Oini,Zini))
         H_ini = MyStar.Variables['H1s'][0][0]
         He_ini = 1.-Zini
@@ -3197,14 +3198,14 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
     if not quiet:
-      print(sorted(Time_Step_Dic.items(), key=lambda x: x[0]))
+      print(sorted(list(Time_Step_Dic.items()), key=lambda x: x[0]))
 
     if toread == []:
-        toread = Time_Step_Dic.keys()
+        toread = list(Time_Step_Dic.keys())
 
     ToReadModels = []
-    [ToReadModels.append(i) for i in flatten([toread]) if i in Time_Step_Dic.keys()]
-    not_found = [i for i in flatten([toread]) if i not in Time_Step_Dic.keys()]
+    [ToReadModels.append(i) for i in flatten([toread]) if i in list(Time_Step_Dic.keys())]
+    not_found = [i for i in flatten([toread]) if i not in list(Time_Step_Dic.keys())]
     if len(not_found) !=0:
         print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
@@ -3498,7 +3499,7 @@ def loadCFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
 def LoadedEvol():
     """Prints the models loaded in the database as well as those selected for plots """
     print("Models loaded in database:")
-    for i in MyDriver.Model_list_evol.keys():
+    for i in list(MyDriver.Model_list_evol.keys()):
         print('{0:4d}: {1}'.format(i,MyDriver.Model_list_evol[i].Variables['FileName'][0]))
 
     print('\nModel{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_evol[:],'','s')))
@@ -3507,7 +3508,7 @@ def LoadedEvol():
 def LoadedStruc():
     """Prints the structure loaded in the database as well as those selected for plots """
     print('Structures loaded in database:')
-    for i in MyDriver.Model_list_struc.keys():
+    for i in list(MyDriver.Model_list_struc.keys()):
         print('{0:4d}: {2} in {1}'.format(i,MyDriver.Model_list_struc[i].Variables['FileName'][0],MyDriver.Model_list_struc[i].Variables['Model'][0]))
 
     print('\nStructure{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_struc[:],'','s')))
@@ -3516,7 +3517,7 @@ def LoadedStruc():
 def LoadedCluster():
     """Prints the clusters/isochrones loaded in the database as well as those selected for plots """
     print('Clusters/isochrones loaded in database:')
-    for i in MyDriver.Model_list_cluster.keys():
+    for i in list(MyDriver.Model_list_cluster.keys()):
         print('{0:4d}: {1}'.format(i,MyDriver.Model_list_cluster[i].Variables['FileName'][0]))
 
     print('\nCluster{0}/isochrone{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_cluster[:],'','s')))
@@ -3542,7 +3543,7 @@ def flatten(x):
        Used by add_model(), del_model(), and select_model()."""
     result = []
     for el in x:
-        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+        if hasattr(el, "__iter__") and not isinstance(el, six.string_types):
             result.extend(flatten(el))
         else:
             result.append(el)
@@ -3557,7 +3558,7 @@ def reloadE(model_list):
                 wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=True)
             print('Model {0} reloaded'.format(i))
     except KeyError:
-        not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_evol.keys()]
+        not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_evol.keys())]
         print('Number{1} {0} {2} not attributed to any model'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def reloadS(model_list):
@@ -3567,7 +3568,7 @@ def reloadS(model_list):
             loadS(MyDriver.Model_list_struc[i].Variables['FileName'][0],i,MyDriver.Model_list_struc[i].Variables['Model'][0],format=MyDriver.Model_list_struc[i].Variables['format'][0],forced=True,quiet=True)
             print('Structure {0} reloaded'.format(i))
     except KeyError:
-        not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_struc.keys()]
+        not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_struc.keys())]
         print('Number{1} {0} {2} not attributed to any structure'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def reloadC(model_list):
@@ -3581,7 +3582,7 @@ def reloadC(model_list):
             elif MyDriver.Model_list_cluster[i].Variables['format'][0][0] == 'isochr':
                 print('Isochrone {0} reloaded'.format(i))
     except KeyError:
-        not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list_cluster.keys()]
+        not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_cluster.keys())]
         print('Number{1} {0} {2} not attributed to any cluster/isochrone'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def del_model(num_list):
@@ -3593,28 +3594,28 @@ def del_model(num_list):
 
 def add_model(num_list):
     """Adds the model numbers given in argument to the list of selected models for plotting """
-    added=[i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
+    added=[i for i in flatten([num_list]) if i in list(MyDriver.Model_list.keys())]
     [MyDriver.SelectedModels.append(i) for i in added]
-    if len([i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]) !=0:
+    if len([i for i in flatten([num_list]) if i not in list(MyDriver.Model_list.keys())]) !=0:
         print('Model{1} {0} {2} not loaded.'.format(added[:],pluralise(added,'','s'),pluralise(added,'is','are')))
 
 def select_model(model_list):
     """Defines the list of selected models for plotting """
     MyDriver.SelectedModels = []
-    [MyDriver.SelectedModels.append(i) for i in flatten([model_list]) if i in MyDriver.Model_list.keys()]
+    [MyDriver.SelectedModels.append(i) for i in flatten([model_list]) if i in list(MyDriver.Model_list.keys())]
     if MyDriver.modeplot == 'evol':
         MyDriver.SelectedModels_evol = MyDriver.SelectedModels
     if MyDriver.modeplot == 'struc':
         MyDriver.SelectedModels_struc = MyDriver.SelectedModels
     if MyDriver.modeplot == 'cluster':
         MyDriver.SelectedModels_cluster = MyDriver.SelectedModels
-    not_found=[i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()]
+    not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list.keys())]
     if len(not_found) !=0:
         print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def select_all():
     """Selects all available models in the current mode """
-    select_model(eval('MyDriver.Model_list_'+MyDriver.modeplot+'.keys()'))
+    select_model(eval('list(MyDriver.Model_list_'+MyDriver.modeplot+'.keys())'))
 
 def switch(mode='evol'):
     """Switches from the different modes: evolution, structure, or cluster.
@@ -3648,16 +3649,16 @@ def VarEvol(num=''):
     """Prints the available variables for plotting in evolution mode.
        Needs at least one loaded model."""
     if num == '':
-        num = MyDriver.Model_list_evol.keys()[0]
+        num = list(MyDriver.Model_list_evol.keys())[0]
     Category_list = []
     replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
-    for i in range(len(MyDriver.Model_list_evol[num].Variables.keys())):
-        if not MyDriver.Model_list_evol[num].Variables.values()[i][2] in Category_list:
-            Category_list.append(MyDriver.Model_list_evol[num].Variables.values()[i][2])
+    for i in range(len(list(MyDriver.Model_list_evol[num].Variables.keys()))):
+        if not list(MyDriver.Model_list_evol[num].Variables.values())[i][2] in Category_list:
+            Category_list.append(list(MyDriver.Model_list_evol[num].Variables.values())[i][2])
     Category_list.remove('reading')
     for Category in sorted(Category_list):
         print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
-        for key in sorted(MyDriver.Model_list_evol[num].Variables.keys(), key=lambda s: s.lower()):
+        for key in sorted(list(MyDriver.Model_list_evol[num].Variables.keys()), key=lambda s: s.lower()):
             if MyDriver.Model_list_evol[num].Variables[key][2] == Category:
                 label_print = multiReplace(MyDriver.Model_list_evol[num].Variables[key][1],replaceDic)
                 print('  {0:20s}: {1}'.format(key,label_print))
@@ -3666,15 +3667,15 @@ def VarStruc(num=''):
     """Prints the available variables for plotting in structure mode.
        Needs at least one loaded structure."""
     if num == '':
-        num = MyDriver.Model_list_struc.keys()[0]
+        num = list(MyDriver.Model_list_struc.keys())[0]
     replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
     Category_list = []
-    for i in range(len(MyDriver.Model_list_struc[num].Variables.keys())):
-        if not MyDriver.Model_list_struc[num].Variables.values()[i][2] in Category_list:
-            Category_list.append(MyDriver.Model_list_struc[num].Variables.values()[i][2])
+    for i in range(len(list(MyDriver.Model_list_struc[num].Variables.keys()))):
+        if not list(MyDriver.Model_list_struc[num].Variables.values())[i][2] in Category_list:
+            Category_list.append(list(MyDriver.Model_list_struc[num].Variables.values())[i][2])
     for Category in sorted(Category_list):
         print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
-        for key in sorted(MyDriver.Model_list_struc[num].Variables.keys(), key=lambda s: s.lower()):
+        for key in sorted(list(MyDriver.Model_list_struc[num].Variables.keys()), key=lambda s: s.lower()):
             if MyDriver.Model_list_struc[num].Variables[key][2] == Category:
                 label_print = multiReplace(MyDriver.Model_list_struc[num].Variables[key][1],replaceDic)
                 print('  {0:15s}: {1}'.format(key,label_print))
@@ -3683,16 +3684,16 @@ def VarCluster(num=''):
     """Prints the available variables for plotting in cluster mode.
        Needs at least one loaded cluster."""
     if num == '':
-        num = MyDriver.Model_list_cluster.keys()[0]
+        num = list(MyDriver.Model_list_cluster.keys())[0]
     Category_list = []
     replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
-    for i in range(len(MyDriver.Model_list_cluster[num].Variables.keys())):
-        if not MyDriver.Model_list_cluster[num].Variables.values()[i][2] in Category_list:
-            Category_list.append(MyDriver.Model_list_cluster[num].Variables.values()[i][2])
+    for i in range(len(list(MyDriver.Model_list_cluster[num].Variables.keys()))):
+        if not list(MyDriver.Model_list_cluster[num].Variables.values())[i][2] in Category_list:
+            Category_list.append(list(MyDriver.Model_list_cluster[num].Variables.values())[i][2])
     Category_list.remove('reading')
     for Category in sorted(Category_list):
         print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
-        for key in sorted(MyDriver.Model_list_cluster[num].Variables.keys(), key=lambda s: s.lower()):
+        for key in sorted(list(MyDriver.Model_list_cluster[num].Variables.keys()), key=lambda s: s.lower()):
             if MyDriver.Model_list_cluster[num].Variables[key][2] == Category:
                 label_print = multiReplace(MyDriver.Model_list_cluster[num].Variables[key][1],replaceDic)
                 print('  {0:15s}: {1}'.format(key,label_print))
@@ -3715,7 +3716,7 @@ def Set_Var(var,var_name,num_star,**args):
         The label and category parameters are optional."""
     MyLabel = ''
     MyCat = ''
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'label':
             MyLabel = args[arg]
         elif arg == 'category':
@@ -3723,7 +3724,7 @@ def Set_Var(var,var_name,num_star,**args):
         else:
             print('Bad argument for function Set_Var. Should be label="..." and category="..." .')
 
-    if not MyDriver.Model_list[num_star].Variables.has_key(var_name):
+    if var_name not in MyDriver.Model_list[num_star].Variables:
         MyDriver.Model_list[num_star].Variables[var_name] = [var,MyLabel,MyCat]
     else:
         print('The key '+var_name+' already exists in this dictionary.')
@@ -3732,7 +3733,7 @@ def Del_Var(varName,num_star=0,quiet=False):
     """Deletes an entry of the Variables dictionary.
        Usage: Del_Var(varName,num_star)"""
     if num_star == 0:
-        num_star = MyDriver.Model_list.keys()
+        num_star = list(MyDriver.Model_list.keys())
     failed = []
     success = []
     for i in flatten([num_star]):
@@ -3752,10 +3753,10 @@ def Deriv(Var1,Var2,num_star=[]):
        Entering a number or a list of numbers applies it to one, several or all the stars loaded."""
     selectedModels=[]
     if num_star==[]:
-        selectedModels = MyDriver.Model_list.keys()
+        selectedModels = list(MyDriver.Model_list.keys())
     else:
-        [selectedModels.append(i) for i in flatten([num_star]) if i in MyDriver.Model_list.keys()]
-        not_found = [i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()]
+        [selectedModels.append(i) for i in flatten([num_star]) if i in list(MyDriver.Model_list.keys())]
+        not_found = [i for i in flatten([selectedModels]) if i not in list(MyDriver.Model_list.keys())]
         if len(not_found) !=0:
             print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
             return
@@ -3825,7 +3826,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
         if var_error_print:
             print('No star knows variable'+bad_var)
             print('Available variables are:')
-            print(sorted(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys(), key=lambda s: s.lower()))
+            print(sorted(list(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys()), key=lambda s: s.lower()))
         return
     else:
         if len(Star_list) != len(MyDriver.SelectedModels):
@@ -4753,9 +4754,9 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         - noshade=True to leave only the hatches to mark the cconvective zones."""
     if MyDriver.modeplot != 'evol':
         switch('evol')
-    if not num_star in MyDriver.Model_list.keys():
+    if not num_star in list(MyDriver.Model_list.keys()):
         print('please chose a model in the following list:')
-        for i in MyDriver.Model_list.keys():
+        for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
     elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
@@ -4875,7 +4876,7 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
         ilabel = '$_\mathrm{fin}$'
     else:
         ilabel = ''
-    for star in MyDriver.Model_list.keys():
+    for star in list(MyDriver.Model_list.keys()):
         MyStar = MyDriver.Model_list[star]
         MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),var1+'/'+var2+ilabel,'']
         if index == -9999:
@@ -4890,7 +4891,7 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
                 abort = True
     if not abort:
         Plot('ratio',plotif=plotif,forced_line=forced_line)
-    for star in MyDriver.Model_list.keys():
+    for star in list(MyDriver.Model_list.keys()):
         MyDriver.Model_list[star].Variables.pop('ratio')
 
 def Summary_plots(ixaxis=0,*args,**kwargs):
@@ -4902,7 +4903,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
        If 'legend' is passed as an optional argument, it draws the legend of the lines."""
     autorised_args = ['shift']
     shift = 1
-    for arg in kwargs.keys():
+    for arg in list(kwargs.keys()):
         if arg not in autorised_args:
             print('Bad argument for function Summary_plots. Should be shift=... .')
             return
@@ -5453,10 +5454,10 @@ def get_lifetimes(num_star=0):
         return
     if num_star == 0:
         if len(MyDriver.Model_list_evol) > 1:
-            answer = six.input('Enter the id number of the star you want to display:\n')
+            answer = input('Enter the id number of the star you want to display:\n')
             num_star = int(answer)
         else:
-            num_star = MyDriver.Model_list_evol.keys()[0]
+            num_star = list(MyDriver.Model_list_evol.keys())[0]
     print('---------------------------------------------------------------------')
     print('LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0])
     print('---------------------------------------------------------------------')
@@ -5492,9 +5493,9 @@ def colours_calc(num_star=0):
         print('This command is valid only in evol mode')
         return
     if num_star == 0:
-        num_star = MyDriver.Model_list_evol.keys()
+        num_star = list(MyDriver.Model_list_evol.keys())
     for i in flatten([num_star]):
-        if 'M_K' not in MyDriver.Model_list[i].Variables.keys():
+        if 'M_K' not in list(MyDriver.Model_list[i].Variables.keys()):
             MyDriver.Model_list[i].ColoursCalc()
         else:
             print('colours already exist for model '+str(i))
@@ -5507,9 +5508,9 @@ def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
         print('This command is valid only in cluster mode')
         return
     if num_star == 0:
-        num_star = MyDriver.Model_list_cluster.keys()
-    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
-    not_found = [i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]
+        num_star = list(MyDriver.Model_list_cluster.keys())
+    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in list(MyDriver.Model_list_cluster.keys())]
+    not_found = [i for i in flatten([num_star]) if i not in list(MyDriver.Model_list_cluster.keys())]
     if len(not_found) !=0:
         print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
@@ -5520,9 +5521,9 @@ def add_noise(var,value,type='',num_star=0):
         print('This command is valid only in cluster mode')
         return
     if num_star == 0:
-        num_star = MyDriver.Model_list_cluster.keys()
+        num_star = list(MyDriver.Model_list_cluster.keys())
     for i in flatten([num_star]):
-        if i in MyDriver.Model_list_cluster.keys():
+        if i in list(MyDriver.Model_list_cluster.keys()):
             try:
                 try:
                     Del_Var(var+'_noised',i,quiet=True)
@@ -5541,7 +5542,7 @@ def add_noise(var,value,type='',num_star=0):
                 Set_Var(var_noised,var+'_noised',i,label=MyDriver.Model_list_cluster[i].Variables[var][1],category=MyDriver.Model_list_cluster[i].Variables[var][2])
             except KeyError:
                 print('Variable {0} not known in model {1}: skipped...'.format(var,i))
-    not_found = [i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]
+    not_found = [i for i in flatten([num_star]) if i not in list(MyDriver.Model_list_cluster.keys())]
     if len(not_found) !=0:
         print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
@@ -5597,9 +5598,9 @@ def set_deltat(deltat,num_list=[]):
         return
     if num_list == []:
         num_list = MyDriver.SelectedModels
-    local_num_list = [i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
+    local_num_list = [i for i in flatten([num_list]) if i in list(MyDriver.Model_list.keys())]
     print('Timesteps computed for star{1} {0}'.format(local_num_list[:],pluralise(local_num_list,'','s')))
-    not_found = [i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]
+    not_found = [i for i in flatten([num_list]) if i not in list(MyDriver.Model_list.keys())]
     if len(not_found) !=0:
         print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
     for num_star in flatten(local_num_list):
@@ -5677,7 +5678,7 @@ def Limits(**args):
     """Defines axis limits manually.
        Usage: Limits(xmin=2.,xmax=4.5,ymin=0.,ymax=1.)
        All arguments are optional."""
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg.lower() == 'xmin':
             MyDriver.axisFlag[0] = True
             MyDriver.axisLimits[0] = args[arg]
@@ -5818,14 +5819,14 @@ def set_colourSequence(NewValue):
         MyDriver.colourSequence = 'iris'
     elif NewValue == 'p':
         print('Personnalised colour sequence')
-        cseq_key = six.input('Enter new sequence name: ')
-        cseq_list = six.input('Enter new list (format: [[colours],[names]]): ')
+        cseq_key = input('Enter new sequence name: ')
+        cseq_list = input('Enter new list (format: [[colours],[names]]): ')
         Rendering.Colours_list[cseq_key] = eval(cseq_list)
         MyDriver.colourSequence = cseq_key
     else:
-        if NewValue not in Rendering.Colours_list.keys():
+        if NewValue not in list(Rendering.Colours_list.keys()):
             print('The value you entered is not correct. Existing sequences are:')
-            for i in Rendering.Colours_list.keys():
+            for i in list(Rendering.Colours_list.keys()):
                 print('{0}: {1}'.format(i,Rendering.Colours_list[i][1]))
         else:
             MyDriver.colourSequence = NewValue
@@ -5858,7 +5859,7 @@ def CBLimits(**args):
     """Defines the limits for the colourbar manually.
        Usage: CBLimits(min=2.,max=4.5)
        All arguments are optional."""
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'min':
             MyDriver.CBFlag[0] = True
             MyDriver.CBLimits[0] = args[arg]
@@ -6366,7 +6367,7 @@ def add_label(x,y,string,**args):
     myHAlignment = "left"
     myVAlignment = "bottom"
     colour='k'
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'colour':
             colour = args[arg]
         elif arg == 'fontsize':
@@ -6384,7 +6385,7 @@ def top_label(string,**args):
        If not specified (fontsize=...), the fontsize is the default one (24)
        or the one set by set_fontSize()."""
     myFontsize = MyDriver.fontSize
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'fontsize':
             myFontsize = args[arg]
         else:
@@ -6413,7 +6414,7 @@ def clickcursor(event):
 def cursor():
     """Retrieves the position of mouseclicks on the plot."""
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickcursor)
-    six.input('Press enter when finished.\n')
+    input('Press enter when finished.\n')
     return coords[-1]
 
 def clickdist(event):
@@ -6431,7 +6432,7 @@ def dist():
         Point.remove()
     MyDriver.cursor_points = []
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickdist)
-    six.input('Press enter when finished.\n')
+    input('Press enter when finished.\n')
     xdist = float(MyDriver.cursor_position[-1][0]) - float(MyDriver.cursor_position[-2][0])
     ydist = float(MyDriver.cursor_position[-1][1]) - float(MyDriver.cursor_position[-2][1])
     print('Distance along x-axis = {0}'.format(xdist))
@@ -6530,7 +6531,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
         MyDriver.lineFlag = '-'
     if 'cycle' in MyDriver.pointFlag:
         MyDriver.pointFlag = 'o'
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'skip':
             skip = args[arg]
         if arg == 'last':
