@@ -1733,22 +1733,41 @@ class Model(Outputs):
         # Computation of some Rossby numbers.
         mask = self.Variables['tc_max'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_max'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{max}$','rotation']
-        self.Variables['Ro_max'][0][np.logical_not(mask)] = 1./(self.Variables['tc_max'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
+        self.Variables['Ro_max'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_max'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
         mask = self.Variables['tg'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_g'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{glob.}$','rotation']
-        self.Variables['Ro_g'][0][np.logical_not(mask)] = 1./(self.Variables['tg'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
+        self.Variables['Ro_g'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tg'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
         mask = self.Variables['tc'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_c'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{1/2H}_\\mathrm{P}}$','rotation']
-        self.Variables['Ro_c'][0][np.logical_not(mask)] = 1./(self.Variables['tc'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
+        self.Variables['Ro_c'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
         mask = self.Variables['tc_hp'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_Hp'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{H}_\\mathrm{P}}$','rotation']
-        self.Variables['Ro_Hp'][0][np.logical_not(mask)] = 1./(self.Variables['tc_hp'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
+        self.Variables['Ro_Hp'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_hp'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
         mask = self.Variables['tc_r'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_r'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{R/2}$','rotation']
-        self.Variables['Ro_r'][0][np.logical_not(mask)] = 1./(self.Variables['tc_r'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
+        self.Variables['Ro_r'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_r'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
         mask = self.Variables['tc_m'][0]*self.Variables['Omega_surf'][0]==0.
         self.Variables['Ro_m'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{M/2}$','rotation']
-        self.Variables['Ro_m'][0][np.logical_not(mask)] = 1./(self.Variables['tc_m'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*2.*math.pi*365.*24.*3600.)
+        self.Variables['Ro_m'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_m'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        # Computation of some Rossby numbers for the central parts.
+        mask = self.Variables['tc_max_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_max_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{max, cen}$','rotation']
+        self.Variables['Ro_max_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_max_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tg_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_g_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{glob., cen}$','rotation']
+        self.Variables['Ro_g_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tg_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_c_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{1/2H}_\\mathrm{P}, cen}$','rotation']
+        self.Variables['Ro_c_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_hp_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_Hp_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{H}_\\mathrm{P}, cen}$','rotation']
+        self.Variables['Ro_Hp_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_hp_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_r_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_r_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{R/2, cen}$','rotation']
+        self.Variables['Ro_r_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_r_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_m_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_m_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{M/2, cen}$','rotation']
+        self.Variables['Ro_m_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_m_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
         return
 
     def SpecificVariables(self,fmt):
