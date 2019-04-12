@@ -1370,7 +1370,7 @@ class Outputs():
             if MyDriver.steps:
                 if all([v == True for v in myMask]):
                     x_step,y_step,z_step = Build_timestep(myX,myY,timestep)
-                    plt.scatter(x_step,y_step,facecolors='none',edgecolors=iColour,marker=MyDriver.timestep_marker,s=MyDriver.pointSize)
+                    plt.scatter(x_step,y_step,facecolors='none',edgecolors='k',marker=MyDriver.timestep_marker,s=MyDriver.pointSize)
                 else:
                     print('The plotting of timesteps values is not (yet?) compatible with plotif')
             if not MyDriver.iPoints:
@@ -3858,14 +3858,14 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
             if MyDriver.lineFlag == 'cycle_all':
                 iStyle = Rendering.Line_list[j % len(Rendering.Line_list)]
             elif MyDriver.lineFlag == 'cycle_colour':
-                iStyle = Rendering.Line_list[(j/len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Line_list)]
+                iStyle = Rendering.Line_list[(j//len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Line_list)]
             else:
                 iStyle = MyDriver.lineFlag
         else:
             if MyDriver.pointFlag == 'cycle_all':
                 iStyle = Rendering.Point_list[j % len(Rendering.Point_list)]
             elif MyDriver.pointFlag == 'cycle_colour':
-                iStyle = Rendering.Point_list[(j/len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Point_list)]
+                iStyle = Rendering.Point_list[(j//len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Point_list)]
             else:
                 iStyle = MyDriver.pointFlag
 
@@ -5222,7 +5222,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         MyDriver.Xvar = save_Xvar
         no_logVar("x")
     else:
-        print'this command needs the following modes: "evol", or "struc". Please change the actual mode using switch().'
+        print('this command needs the following modes: "evol", or "struc". Please change the actual mode using switch().')
     MyDriver.Link_ModelCurve = True
     MyDriver.closeFig = True
     multiPlot(1)
@@ -5420,7 +5420,7 @@ def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
         except:
             failed = failed + [i]
     if not quiet:
-        print('-----\n{0}-b beginning and end marked by {1} and {2}'.format(fuel,marker[0],marker[1]))
+        print('-----\n{0}-b - {1}: beginning, {2}: end'.format(fuel,marker[0],marker[1]))
         if failed != []:
             print('Star{2} {0} do{3} not have a phase of {1}-burning.'.format(failed,fuel,pluralise(failed,'','s'),pluralise(failed,'es','')))
     #return ind_beg_all,ind_end_all,xpos_beg_all,ypos_beg_all,xpos_end_all,ypos_end_all
@@ -5621,8 +5621,9 @@ def set_deltat(deltat,num_list=[]):
             if current_time >= MyDriver.Model_list[num_star].Variables['t'][0][i]:
                 i+=1
 
-def timesteps(value):
-    """Switch on or off for the drawing of the timesteps (default=False)."""
+def timesteps(value=True):
+    """Switch on or off for the drawing of the timesteps (default=True).
+    Called without argument, switches on."""
     if not isinstance(value,bool):
         print('Boolean value expected')
         return
@@ -6184,7 +6185,7 @@ def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
         - fontsize=n for setting the fontsize of the string."""
     colourFlag_save = MyDriver.colourFlag
     pointFlag_save = MyDriver.pointFlag
-    pointSize = MyDriver.pointSize
+    pointSize = np.sqrt(MyDriver.pointSize)
     if err != []:
         if np.size(err[0]) > 1:
             err[0] = [[err[0][0]],[err[0][1]]]
@@ -6207,16 +6208,17 @@ def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
             plt.errorbar(x,y,xerr=err[0],yerr=err[1],ecolor='k')
         plt.scatter(x,y,marker=MyDriver.pointFlag,c=MyDriver.colourFlag,s=pointSize,edgecolors='none')
     if label:
-    	if pos == 'left':
-    		ha = 'right'
-    	elif pos == 'center' or pos == 'centre':
-    		ha = 'center'
-    	elif pos == 'right':
-    		ha = 'left'
-    	else:
-    		print("wrong position, should be 'left', 'center', or 'right'. Set to 'right'.")
-    		pos = 'right'
-    		ha = 'left'
+        if pos == 'left':
+            ha = 'right'
+        elif pos == 'center' or pos == 'centre':
+            ha = 'center'
+        elif pos == 'right':
+            ha = 'left'
+        else:
+            print("wrong position, should be 'left', 'center', or 'right'. Set to 'right'.")
+            pos = 'right'
+            ha = 'left'
+
         if fontsize == 0:
             fontsize = MyDriver.fontSize
         else:
@@ -6224,13 +6226,13 @@ def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
         xmin,xmax,ymin,ymax=get_limits(quiet=True)
         delta_x = (xmax-xmin)*0.03
         if pos == 'left' and not MyDriver.axisInv[0]:
-        	new_x = x - delta_x
+            new_x = x - delta_x
         elif pos == 'right' or MyDriver.axisInv[0]:
-        	new_x = x + delta_x
+            new_x = x + delta_x
         elif pos == 'center' or pos == 'centre':
-        	new_x = x
+            new_x = x
         else:
-        	new_x = x + delta_x
+            new_x = x + delta_x
         add_label(new_x,y,label,va='center',ha=ha,fontsize=fontsize)
 
     MyDriver.colourFlag = colourFlag_save
@@ -6605,17 +6607,17 @@ def plotExternal(fileName,colX,colY,*argus,**args):
 
     if zcolour:
         iColour = myZ
-    	if clim == 'old':
-    	    minZ,maxZ = MyDriver.get_CBlimits
-    	else:
-    	    if MyDriver.CBFlag[0]:
-    	        minZ = MyDriver.CBLimits[0]
-    	    else:
-    	        minZ = np.min(myZ)
-    	    if MyDriver.CBFlag[1]:
-    	        maxZ = MyDriver.CBLimits[1]
-    	    else:
-    	        maxZ = np.max(myZ)
+        if clim == 'old':
+            minZ,maxZ = MyDriver.get_CBlimits
+        else:
+            if MyDriver.CBFlag[0]:
+                minZ = MyDriver.CBLimits[0]
+            else:
+                minZ = np.min(myZ)
+            if MyDriver.CBFlag[1]:
+                maxZ = MyDriver.CBLimits[1]
+            else:
+                maxZ = np.max(myZ)
     if varsize:
         points = myS
 
