@@ -56,22 +56,36 @@ from matplotlib import rc
 from matplotlib import rcParams
 rc('font',**{'family':'serif','serif':['Times New Roman']})
 rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
-import ConfigParser
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
 import time
+import datetime
 import subprocess
+import six
+from six.moves import configparser,input
+
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
 rcParams['ps.usedistiller'] = 'Xpdf'
 rcParams['xtick.direction'] = 'in'
 rcParams['ytick.direction'] = 'in'
 
+def multiReplace(text,wordDict):
+    for key in sorted(wordDict.keys()):
+        text = text.replace(wordDict[key][0],wordDict[key][1])
+    return text
+
+def pluralise(list,sing,plural):
+    if len(list) > 1:
+        return plural
+    else:
+        return sing
+
 class GtB_version():
-    GtB_version = '8.2.0'
+    GtB_version = '8.3.0'
 
 class Cst():
-    """Physical and astrophysical constants used by GENEC_toolBox"""
+    """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
     Msol = 1.9885e33
     Rsol = 6.9951e10
     Lsol = 3.828e33
@@ -118,13 +132,14 @@ class Rendering():
     Point_list = ['o','^','*','s','p','v','d','>','<']
     Authorised_LineStyle=['cycle_colour','cycle_all']+Line_list
     Authorised_PointStyle=['cycle_colour','cycle_all']+Point_list
-    Authorised_Colours = ['cycle', 'b', 'c', 'g', 'k', 'm', 'r', 'w', 'y']+colors.cnames.keys()
+    Authorised_Colours = ['cycle', 'b', 'c', 'g', 'k', 'm', 'r', 'w', 'y']+list(colors.cnames.keys())
     Inversed_by_default = ['ageadv','H1c','He4c','Teff','Teffcorr','Teff_lgd','gsurf','gpol','gmean','fwg','Mbol','M_V','M_B']
     Noised = []
     for var in Inversed_by_default:
         noisedVar = var+'_noised'
         Noised.append(noisedVar)
     Inversed_by_default = Inversed_by_default + Noised
+
 
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
@@ -598,7 +613,7 @@ class readList():
                 ['Omegaprev',60],['Omfit',89],['dlodlr',50],['Lang',88],['obla',92],['Ur',52],['Vr',53],['Richardson',45], \
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
-                '$r_\mathr{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
+                '$r_\mathrm{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
                 '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
                 r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
                 '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
@@ -607,8 +622,8 @@ class readList():
                 '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
-                '$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
-                '$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
@@ -1102,7 +1117,7 @@ def Localise_and_Factor(Wanted,array_in,mode):
             factor = (math.log10(Wanted) - math.log10(array_in[a]))/(math.log10(array_in[a+1])- \
                                                                     math.log10(array_in[a]))
         else:
-            print 'Unexpected problem'
+            print('Unexpected problem')
             return
 
     return [factor,a,a+1,array_in[a],array_in[a+1]]
@@ -1111,7 +1126,7 @@ class Driver():
     """Contains all the set-up variables for the tools developed here.
        Uses a config file that is created on the fly if absent."""
     def __init__(self):
-        self.Config = ConfigParser.ConfigParser()
+        self.Config = configparser.ConfigParser()
         self.Config.optionxform = str
         try:
             with open(os.path.expanduser('~/.GENEC_toolBox.ini')):
@@ -1128,28 +1143,28 @@ class Driver():
                     self.Config.add_section('Paths')
                     source_dir = os.path.dirname(os.path.abspath(__file__))
                     self.Config.set('Paths','ProgPath',source_dir+os.path.sep)
-                    Data_Path=os.path.expanduser(raw_input('Enter the path to the data directory (for default, leave blank): '))
+                    Data_Path=os.path.expanduser(input('Enter the path to the data directory (for default, leave blank): '))
                     if Data_Path == '':
                         Data_Path = os .path.join(source_dir,'data/')
-                        print 'Data_Path:',Data_Path
+                        print('Data_Path: '+Data_Path)
                     elif not Data_Path.endswith(os.path.sep):
                         Data_Path += os.path.sep
                     self.Config.set('Paths','DataPath',Data_Path)
-                    Fig_Path = os.path.expanduser(raw_input('Enter the path where you want the figure to be created (for default, leave blank): '))
+                    Fig_Path = os.path.expanduser(input('Enter the path where you want the figure to be created (for default, leave blank): '))
                     if Fig_Path == '':
                         Fig_Path = './'
                     elif not Fig_Path.endswith(os.path.sep):
                         Fig_Path += os.path.sep
                     self.Config.set('Paths','FigPath',Fig_Path)
                     self.Config.write(Conf_File)
-                    print 'Configuration file created at: ~/.GENEC_toolBox.ini'
+                    print('Configuration file created at: ~/.GENEC_toolBox.ini')
                     for (key,opt) in self.Config.items('Paths'):
-                        print '   {0}: {1}'.format(key,opt)
+                        print('   {0}: {1}'.format(key,opt))
         finally:
             self.Config.read(os.path.expanduser('~/.GENEC_toolBox.ini'))
             try:
                 program_path=self.Config.get('Paths','ProgPath')
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 with open(os.path.expanduser('~/.GENEC_toolBox.ini'),'a') as Conf_File:
                     Conf_File.write('ProgPath: '+os.path.dirname(os.path.abspath(__file__))+'/\n')
 
@@ -1211,21 +1226,31 @@ class Driver():
         self.closeFig = True
         self.plotConfig = [1,1]
 
+        today = datetime.datetime.now().strftime("%m-%d")
+        try:
+            drawfile = open(os.path.join(self.Config.get('Paths','DataPath'),today+'.txt'))
+            todays_drawing = drawfile.readlines()
+            for line in todays_drawing:
+                print(line[:-1])
+        except IOError:
+            pass
+
     def checknumber(self,number):
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
-        for Existing_Indexes in self.Model_list.keys():
+        for Existing_Indexes in list(self.Model_list.keys()):
             if number == Existing_Indexes:
-                print 'This star number is already attributed to model ',self.Model_list[number].Variables['FileName'][0],'.'
-                answer = raw_input('Do you want to overwrite it? y/n ')
+                print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
+                answer = input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
-                    print 'The attributed star numbers are : ', self.Model_list.keys()
-                    answer = raw_input('Would you like to attribute a new number ? y/n ')
+                    print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
+                        pluralise(list(self.Model_list.keys()),'','s'),pluralise(list(self.Model_list.keys()),'is','are')))
+                    answer = input('Would you like to attribute a new number ? y/n ')
                     if answer == 'n':
                         return False, number
                     else:
-                        new_num = int(raw_input('Enter new number: '))
-                        if new_num in self.Model_list.keys():
-                            print 'Again, this number already exists.'
+                        new_num = int(input('Enter new number: '))
+                        if new_num in list(self.Model_list.keys()):
+                            print('Again, this number already exists.')
                             return False, number
                         else:
                             return True, new_num
@@ -1266,7 +1291,7 @@ class Driver():
             type = 'model'
         newList=[]
         for i in star_list:
-            if var not in self.Model_list[i].Variables.keys():
+            if var not in list(self.Model_list[i].Variables.keys()):
                 pass
             else:
                 newList.append(i)
@@ -1345,9 +1370,9 @@ class Outputs():
             if MyDriver.steps:
                 if all([v == True for v in myMask]):
                     x_step,y_step,z_step = Build_timestep(myX,myY,timestep)
-                    plt.scatter(x_step,y_step,facecolors='none',edgecolors=iColour,marker=MyDriver.timestep_marker,s=MyDriver.pointSize)
+                    plt.scatter(x_step,y_step,facecolors='none',edgecolors='k',marker=MyDriver.timestep_marker,s=MyDriver.pointSize)
                 else:
-                    print 'The plotting of timesteps values is not (yet?) compatible with plotif'
+                    print('The plotting of timesteps values is not (yet?) compatible with plotif')
             if not MyDriver.iPoints:
                 plt.plot(myX,myY,**plotSettings)
             else:
@@ -1398,7 +1423,7 @@ class Outputs():
             myX.append(x[begin[i]:end[i]+1])
             myY.append(y[begin[i]:end[i]+1])
         if len(begin) != len(end):
-            print 'problem in mask lengths'
+            print('problem in mask lengths')
             return x,y
         if forced_line:
             tempX = np.array(())
@@ -1497,10 +1522,10 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print 'problem at line ',i+1
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
-            print 'You need to check this file'
+            print('You need to check this file')
             raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
             return
         if self.Variables['FileName'][0][-3:] == '.wg':
@@ -1524,10 +1549,10 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print 'problem at line ',i+1
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
-            print 'You need to check this file'
+            print('You need to check this file')
             raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
             return
         return
@@ -1566,10 +1591,10 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print 'problem at line ',i+1
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
-            print 'You need to check this file'
+            print('You need to check this file')
             raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
             return
         if self.Variables['FileName'][0][-3:] == '.wg':
@@ -1595,10 +1620,10 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print 'problem at line ',i+1
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
-            print 'You need to check this file'
+            print('You need to check this file')
             raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
             return
         return
@@ -1621,10 +1646,10 @@ class Model(Outputs):
                 self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
                 self.Variables['gpol'][0][i] = g_pol
             except ValueError:
-                print 'problem at line ',i+1
+                print('problem at line {0}'.format(i+1))
                 line_skip = True
         if line_skip:
-            print 'You need to check this file'
+            print('You need to check this file')
             raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
             return
         if self.Variables['FileName'][0][-3:] == '.wg':
@@ -1770,12 +1795,13 @@ class Model(Outputs):
             if 'Extraction' in os.popen('head -1 '+FileName).readline():
                 num_deb=num_deb+15
             colour = True
+        num_fin_stored = num_fin
         if not quiet:
             if format != "starevol":
-                print 'Number of columns: '+str(file_cols)+' --> format identified= '+format
-                print 'Loading file ',FileName,'...'
+                print('Number of columns: {0} --> format identified= {1}'.format(file_cols,format))
+                print('Loading file {0}...'.format(FileName))
             else:
-                print 'No extension detected, trying with starevol format.'
+                print('No extension detected, trying with starevol format.')
 
         if format == "starevol":
             extensions_list = [".as",".hr",".c1",".c2",".c3",".c4",".s1",".s2",".s3",".s4",".tc1",".tc2",".v1"] +\
@@ -1790,21 +1816,21 @@ class Model(Outputs):
         StarName = os.path.splitext(FileName)[0][FileName.rfind('/')+1:]
         self.Variables['FileName'] = [FileName,StarName,'model']
         self.Variables['format'] = [[format,header],'format and header lines','reading']
-        self.Variables['line_num'] = [[num_deb,num_fin],'boundary lines','reading']
+        self.Variables['line_num'] = [[num_deb,num_fin_stored],'boundary lines','reading']
         self.Variables['options'] = [[colour,wa],'options colour and wa','reading']
         self.Variables['line'][0] = self.Variables['line'][0].astype(int)
         massini = self.Variables['M'][0][0]
         self.Variables['Mini'] = [massini,'$M_\mathrm{ini}\ [M_\odot]$','model']
         self.imax = np.size(self.Variables['line'][0])
         if not quiet:
-            print 'File read, '+str(self.imax)+' lines.'
+            print('File read, {0} lines.'.format(self.imax))
 
         if wa:
             WAfile = FileName.replace('.wg','.wa')
             if WAfile != FileName:
                 self.read_wa(WAfile,num_deb-header,num_fin)
             else:
-                print 'The wa option is valid only when charging a complete wg file.'
+                print('The wa option is valid only when charging a complete wg file.')
 
         ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi = 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
         self.Variables['phase'] = [np.array(['' for x in range(self.imax)],dtype=object),'combustion phase','energetics']
@@ -1836,7 +1862,7 @@ class Model(Outputs):
                                                 ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
         self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\mathrm{H}+t/\tau_\mathrm{He}+t/\tau_\mathrm{adv}$','model']
         if not quiet:
-            print 'limits of burning phases:',self.Variables['ind_burning_phases'][0]
+            print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
@@ -1967,7 +1993,7 @@ class Model(Outputs):
                 i+=1
 
         if not quiet:
-            print 'File successfully loaded.'
+            print('File successfully loaded.')
         return
 
     def TestFloat(self,DataIn):
@@ -1982,18 +2008,19 @@ class Model(Outputs):
         """Reads the wa file. Called by the option wa=True in loadE()"""
         try:
             wafile = open(FileName,'r')
-            print '.wa file found: ',FileName
+            print('.wa file found: '+FileName)
             wafile.close()
         except IOError as err:
             print('File error:' + str(err))
-            wafile2 = raw_input('File '+FileName+' not found. Enter a valid path+name:')
+            wafile2 = input('File '+FileName+' not found. Enter a valid path+name:')
             try:
                 with open(wafile2,'r'):
-                    print '.wa file found: ',FileName
+                    print('.wa file found: '+FileName)
                     wafile = wafile2
                     wafile2.close()
             except IOError as err2:
                 print('File problem: ' + str(err2))
+                self.Variables['options'][1] = False
                 return
 
         wafile = open(FileName,'r')
@@ -2001,8 +2028,8 @@ class Model(Outputs):
         if num_fin == -1:
           num_fin = BigArray.shape[0]
         el_num = (BigArray.shape[1]-3)/2
-        print el_num,' isotopes read in .wa file'
-        for i,A,el in zip(range(el_num),readList.Abund['AList'],readList.Abund['ZList']):
+        print(str(el_num)+' isotopes read in .wa file')
+        for i,A,el in zip(list(range(el_num)),readList.Abund['AList'],readList.Abund['ZList']):
             self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
             self.Variables[str(el)+str(A)+'c'] = [BigArray[:num_fin,el_num+i+3],'$^{'+str(A)+'}$'+str(el)+' [centr. mass frac.]','abundances']
 
@@ -2012,14 +2039,14 @@ class Model(Outputs):
            By default, it is seeked in the same path as the evolution file."""
         try:
             BurnFile = open(MyBurnFile,'r')
-            print '.burn file found: ',MyBurnFile
+            print('.burn file found: '+MyBurnFile)
             BurnFile.close()
         except IOError as err:
             print('File error:' + str(err))
-            MyBurnFile2 = raw_input('File '+MyBurnFile+' not found. Enter a valid path+name:')
+            MyBurnFile2 = input('File '+MyBurnFile+' not found. Enter a valid path+name:')
             try:
                 MyBurnFile = open(MyBurnFile2,'r')
-                print '.burn file found: ',MyBurnFile2
+                print('.burn file found: '+MyBurnFile2)
                 MyBurnFile.close()
             except IOError as err2:
                 print('File problem: ' + str(err2))
@@ -2074,7 +2101,7 @@ class Model(Outputs):
                     FileName_old = FileName
                     FileName = FileName + ".gz"
                     if not os.path.isfile(FileName):
-                        print "No such fileS " + FileName_old + " or " + FileName + "."
+                        print("No such fileS {0} or {1}".format(FileName_old,FileName))
                         raise
                         return
             else:
@@ -2108,12 +2135,12 @@ class Model(Outputs):
                 MyFile = rootName
             else:
                 MyFile = FileName
-            BigArray = np.loadtxt(MyFile,skiprows=num_deb,converters=converters,usecols=range(file_cols))
+            BigArray = np.loadtxt(MyFile,skiprows=num_deb,converters=converters,usecols=list(range(file_cols)))
             if toZip:
                 os.system(CommandZip)
         except ValueError:
             os.system(CommandZip)
-            print "converters couldn't help, probable format error"
+            print("converters couldn't help, probable format error")
             raise ValueError
             return
 
@@ -2517,16 +2544,16 @@ class Struc(Outputs):
 
     def read(self,FileName,num_deb,line_to_read,format,quiet):
         if not quiet:
-          print 'In read: num_deb,line_to_read:',num_deb,line_to_read
+          print('In read: num_deb,line_to_read: {0}, {1}'.format(num_deb,line_to_read))
         if format == '':
             raise FormatError(2,'column number does not match any known format',FileName)
             return
         if not quiet:
-            print 'Loading file ',FileName,'...'
+            print('Loading file {0}...'.format(FileName))
         i_ext = FileName.rfind('.')
         fileLength = file_len(FileName)
         if not quiet:
-            print 'total length of file:',fileLength
+            print('total length of file: '+str(fileLength))
 
         Struc_varList = readList.Struc_formats[format]['varList'] + MyDriver.added_columns['varList']
         Struc_unitsList = readList.Struc_formats[format]['unitsList'] + MyDriver.added_columns['unitsList']
@@ -2556,7 +2583,7 @@ class Struc(Outputs):
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
             if not quiet:
-              print 'Reading model',self.num_model
+              print('Reading model {0}'.format(self.num_model))
             self.age = float(self.age)
             self.mass = float(self.mass)
             self.n_shell = int(self.n_shell)
@@ -2577,12 +2604,8 @@ class Struc(Outputs):
             self.Ltot=MyFile.readline().split()[2]
             self.Teff=MyFile.readline().split()[2]
             if not quiet:
-                print 'Model number: ',self.num_model
-                print 'Time: ',self.age
-                print 'Mass: ',self.mass
-                print 'R: ',self.radius
-                print 'L: ',self.Ltot
-                print 'Teff: ',self.Teff
+                print('Model number: {0}\nTime: {1}\nMass: {2}'.format(self.num_model,self.age,self.mass))
+                print('R: {0}\nL: {1}\nTeff: {2}'.format(self.radius,self.Ltot,self.Teff))
             #nfoot = fileLength-num_deb-line_to_read-Empty_Lines+2
             line_to_read = line_to_read - header
 
@@ -2632,7 +2655,7 @@ class Struc(Outputs):
         self.SpecificVariables(format)
 
         if not quiet:
-            print 'File ',FileName, 'successfully loaded.'
+            print('File {0} successfully loaded.'.format(FileName))
         return True
 
 class Cluster(Outputs):
@@ -2740,12 +2763,12 @@ class Cluster(Outputs):
             raise IOError(1,'File does not exist, check name and path',FileName)
             return
         if not quiet:
-            print 'Loading file ',FileName,'...'
+            print('Loading file {0}...'.format(FileName))
         lastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
         fileLength = file_len(FileName)+1
         file_cols = len(lastline.split())
         if not quiet:
-            print 'number of columns:',file_cols
+            print('number of columns: {0}'.format(file_cols))
         if format == '':
             if 'WARNING' in os.popen('head -1 '+FileName).readline():
                 for fmt in readList.Cluster_fmt[0:2]:
@@ -2758,7 +2781,7 @@ class Cluster(Outputs):
                         format = fmt
                         break
         if not quiet:
-            print 'format identified=',format
+            print('format identified= {0}'.format(format))
         if num_fin == -1:
             num_fin = fileLength
 
@@ -2789,7 +2812,7 @@ class Cluster(Outputs):
         if 'cluster' in format:
             self.Variables['sorted'] = [np.argsort(self.Variables['Mini'][0]),'Mini-sorted index','reading']
         if not quiet:
-            print str(imax)+' lines read.'
+            print(str(imax)+' lines read.')
 
         self.Variables['NH'] = [np.zeros((imax)),'log(N/H [numb.]+12)','abundances']
         mask = self.Variables['H1s'][0]<=0.
@@ -2815,7 +2838,7 @@ class Cluster(Outputs):
         self.ColoursCalc()
 
         if not quiet:
-            print 'File ',ModelName, 'successfully loaded.'
+            print('File {0} successfully loaded.'.format(ModelName))
         return
 
     def Colour_correction(self,excess,dist_mod,mag,col):
@@ -2839,8 +2862,8 @@ class Analysis():
 
     def setEntry(self,Star,mode):
         if not mode[0] in self.AuthorisedModes[0] or not mode[1] in self.AuthorisedModes[1]:
-            print 'This instance should be initialised with one of the following modes: ',self.AuthorisedModes
-            print 'Set to ["list","grids"] by default.'
+            print('This instance should be initialised with one of the following modes: '+self.AuthorisedModes[:])
+            print('Set to ["list","grids"] by default.')
             mode = ['list','grids']
         else:
             self.mode = mode
@@ -2881,8 +2904,8 @@ class Analysis():
         """Computes the lifetime in the different burning phases."""
         MyStar = MyDriver.Model_list[num]
         Mini,Oini,Zini = self.setEntry(MyStar,mode)
-        if not [Mini,Oini,Zini] in self.Data.keys() and not quiet:
-            print 'Entry for M=',Mini,' with OOc=',Oini,' at Z=',Zini,' added.'
+        if not [Mini,Oini,Zini] in list(self.Data.keys()) and not quiet:
+            print('Entry for M= {0} with OOc= {1} at Z= {2} added.'.format(Mini,Oini,Zini))
         H_ini = MyStar.Variables['H1s'][0][0]
         He_ini = 1.-Zini
         phase = 0
@@ -2952,15 +2975,15 @@ class Analysis():
             self.Data[Mini,Oini,Zini] = {}
             self.Data[Mini,Oini,Zini].update(Temp_Dic)
         if not quiet:
-            print '----------------------------------------------------------------'
-            print 'LIFETIMES:\tM= ',Mini,' with OOc= ',Oini,' at Z= ',Zini
-            print ''
-            print 'MS lifetime:   ',self.Data[Mini,Oini,Zini]['tauMS']
-            print 'He-b lifetime: ',self.Data[Mini,Oini,Zini]['tauHeb']
-            print 'C-b lifetime:  ',self.Data[Mini,Oini,Zini]['tauCb']
-            print 'Ne-b lifetime: ',self.Data[Mini,Oini,Zini]['tauNeb']
-            print 'O-b lifetime:  ',self.Data[Mini,Oini,Zini]['tauOb']
-            print '----------------------------------------------------------------'
+            print('----------------------------------------------------------------')
+            print('LIFETIMES:\tM= {0} with OOc= {1} at Z= {2}'.format(Mini,Oini,Zini))
+            print('')
+            print('MS lifetime:   '+str(self.Data[Mini,Oini,Zini]['tauMS']))
+            print('He-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauHeb']))
+            print('C-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauCb']))
+            print('Ne-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauNeb']))
+            print('O-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauOb']))
+            print('----------------------------------------------------------------')
 
 class Kippenhahn():
     """Construction of the Kippenhahn diagram.
@@ -2985,7 +3008,7 @@ class Kippenhahn():
                 self.time_mask.append(False)
                 continue
             if time%5000 == 0:
-                print 'Computing time step no: ',time
+                print('Computing time step no: '+str(time))
             current_vector = np.zeros((self.mass_step))
             ZC_list=[]
             for i in range(np.size(Model.CZ_array[0,:,0])):
@@ -3043,14 +3066,14 @@ def add_column(var,unit='',cat='',verbose=True):
           Usage: add_column(['varName',col_num],'label','category').
        'label' and 'category' are optional. If absent, 'label' will be varName and 'category' will be empty."""
     if verbose:
-        print 'The column has to be added at the end of the file.'
-        print 'Its number must at least be the following (according to mode and format):'
-        print '\t Evol mode'
-        print '\t\t o2013: 110\n\t\t tgrids: 43\n\t\t tools: 55\n\t\t bin: 117'
-        print '\t Struc mode'
-        print '\t\t o2013-o2010: 92\n\t\t full: 24'
-        print '\t Cluster mode'
-        print '\t\t cluster: 49\n\t\t cluster_old: 39\n\t\t isochr: 39\n\t\t isochr_old: 40\n'
+        print('The column has to be added at the end of the file.')
+        print('Its number must at least be the following (according to mode and format):')
+        print('\t Evol mode')
+        print('\t\t o2013: 110\n\t\t tgrids: 43\n\t\t tools: 55\n\t\t bin: 117')
+        print('\t Struc mode')
+        print('\t\t o2013-o2010: 92\n\t\t full: 24')
+        print('\t Cluster mode')
+        print('\t\t cluster: 49\n\t\t cluster_old: 39\n\t\t isochr: 39\n\t\t isochr_old: 40\n')
     if unit == '':
         unit = var[0]+' [cgs]'
     MyDriver.added_columns['varList'] = MyDriver.added_columns['varList'] + [var]
@@ -3078,7 +3101,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
 
     if format != "starevol":
         if not os.path.isfile(FileName):
-            print('File '+FileName+' does not exist, check name and path.')
+            print('File {0} does not exist, check name and path.'.format(FileName))
             return
     toZip = False
     if os.path.splitext(FileName)[1] == '.gz':
@@ -3096,7 +3119,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
     Checked = False
     if MyDriver.modeplot != 'evol':
         if not quiet:
-            print 'Switch to evol mode.'
+            print('Switch to evol mode.')
         switch('evol')
     if not forced:
         Checked, num_star = Driver.checknumber(MyDriver,num_star)
@@ -3121,9 +3144,9 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
             if tauH !=0.:
                 Set_Var(Get_Var('t',num_star)/tauH,'t_tauH',num_star,label=r'$t/\tau_\mathrm{H}$',category='model')
             else:
-                print 'MS not finished, the variable t_tauH will not be available'
+                print('MS not finished, the variable t_tauH will not be available')
         except IOError as IOerr:
-            print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+            print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
     if toZip:
         os.system(CommandZip)
 
@@ -3138,7 +3161,7 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
           quiet (False by default, True to avoid all the babbling)."""
     MyModel = Struc()
     if not os.path.isfile(FileName):
-        print('File '+FileName+' does not exist, check name and path.')
+        print('File {0} does not exist, check name and path.'.format(FileName))
         return
     toZip = False
     if os.path.splitext(FileName)[1] == '.gz':
@@ -3171,28 +3194,29 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
             raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
             return
         if not quiet:
-            print 'format identified=',format
+            print('format identified= '+format)
 
     Time_Step_Dic = MyModel.make_content_list(MyVFile,format)
     if not quiet:
-      print sorted(Time_Step_Dic.items(), key=lambda x: x[0])
+      print(sorted(list(Time_Step_Dic.items()), key=lambda x: x[0]))
 
     if toread == []:
-        toread = Time_Step_Dic.keys()
+        toread = list(Time_Step_Dic.keys())
 
     ToReadModels = []
-    [ToReadModels.append(i) for i in flatten([toread]) if i in Time_Step_Dic.keys()]
-    if len([i for i in flatten([toread]) if i not in Time_Step_Dic.keys()]) !=0:
-        print 'Model(s) ',[i for i in flatten([toread]) if i not in Time_Step_Dic.keys()],' is (are) not loaded.'
+    [ToReadModels.append(i) for i in flatten([toread]) if i in list(Time_Step_Dic.keys())]
+    not_found = [i for i in flatten([toread]) if i not in list(Time_Step_Dic.keys())]
+    if len(not_found) !=0:
+        print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
     for Current_Model in sorted(ToReadModels):
         MyModel = Struc()
         if not quiet:
-          print Current_Model
+          print(str(Current_Model))
         Checked = False
         if MyDriver.modeplot != 'struc':
             if not quiet:
-                print 'Switch to struc mode.'
+                print('Switch to struc mode.')
             switch('struc')
         if not forced:
             Checked, num_star = Driver.checknumber(MyDriver,num_star)
@@ -3208,9 +3232,9 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                     MyDriver.SelectedModels_struc.append(num_star)
                 num_star += 1
             except IOError as IOerr:
-                print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+                print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
             except np.linalg.LinAlgError:
-                print 'problem computing MLT, aborting.'
+                print('problem computing MLT, aborting.')
                 if toZip:
                   os.system(CommandZip)
                 raise np.linalg.LinAlgError
@@ -3233,7 +3257,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
     multi_iso = False
     if MyDriver.modeplot != 'cluster':
         if not quiet:
-            print 'Switch to cluster mode.'
+            print('Switch to cluster mode.')
         switch('cluster')
     if num_fin == -1:
         MyFile = open(FileName)
@@ -3247,7 +3271,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
             multi_iso = True
         iso_times = sorted(iso_time_dic.keys())
         if not quiet:
-            print 'isochrone file with ages:',iso_times
+            print('isochrone file with ages: '+str(iso_times))
         iso_beg = [iso_time_dic[t] for t in sorted(iso_time_dic.keys())]
         iso_end = [iso_beg[i]+1 for i in range(1,len(iso_beg))]
         iso_end.append(-1)
@@ -3264,7 +3288,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         if not num_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(num_star)
                 except IOError as IOerr:
-                    print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+                    print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
     else:
         for (i,beg),end,time in zip(enumerate(iso_beg),iso_end,iso_times):
             MyModel = Cluster()
@@ -3275,7 +3299,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
             if Checked or forced:
                 try:
                     if not quiet:
-                        print '***** loading isochrone at age ',time,' *****'
+                        print('***** loading isochrone at age {0} *****'.format(time))
                     MyModel.read(FileName,beg,end,format=format,quiet=quiet, random=random)
                     MyDriver.store_model(MyModel,mynum_star)
                     if not mynum_star in MyDriver.SelectedModels:
@@ -3283,7 +3307,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         if not mynum_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(mynum_star)
                 except IOError as IOerr:
-                    print '[Error',str(IOerr.errno)+']',IOerr.strerror,': ',IOerr.filename
+                    print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
 
 def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False,colour=False):
     """ Loads a list of models from a file.
@@ -3301,16 +3325,16 @@ def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
             loadE(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
             index += 1
         except FormatError as WF:
-            print '[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
-            print 'column problem in file '+MyPath
+            print('column problem in file '+MyPath)
             pass
         except ValueError:
-            print 'value problem in file '+MyPath
+            print('value problem in file '+MyPath)
             pass
     if not quiet:
-        print ''
+        print('')
         Loaded('evol')
 
 def loadSFromList(FileName,ini_index=1,format='',forced=False,quiet=False):
@@ -3328,7 +3352,7 @@ def loadSFromList(FileName,ini_index=1,format='',forced=False,quiet=False):
         increment = loadS(MyPath,index,[],format,forced,quiet)
         index = index + increment
     if not quiet:
-        print ''
+        print('')
         Loaded('struc')
 
 def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False):
@@ -3347,16 +3371,16 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
             loadC(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet)
             index += 1
         except FormatError as WF:
-            print '[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
-            print 'column problem in file '+file
+            print('column problem in file '+file)
             pass
         except ValueError:
-            print 'value problem in file '+file
+            print('value problem in file '+file)
             pass
     if not quiet:
-        print ''
+        print('')
         Loaded('cluster')
 
 def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,forced=False,quiet=True,colour=False):
@@ -3371,37 +3395,37 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
     num_files = 0
     if DirName[-1] != '/':
         DirName = DirName+'/'
-    print 'loading files from directory '+DirName+':'
+    print('loading files from directory {0}:'.format(DirName))
     Selected_files = sorted(glob.glob(DirName+'*'+select+'*'))
     if len(Selected_files) == 0.:
-        print 'No files matching your request.'
+        print('No files matching your request.')
         return
     for file in [i for i in Selected_files if os.path.splitext(i)[1] in ['.wg','.dat','.grids']]:
         file_short = file[file.rfind('/')+1:]
-        print 'file '+file_short
+        print('file '+file_short)
         try:
             loadE(file,index,num_deb,format=format,wa=wa,forced=forced,quiet=quiet,colour=colour)
             if not quiet:
-                print 'File '+file_short+' successfully loaded.'
+                print('File {0} successfully loaded.'.format(file_short))
             index += 1
             num_files += 1
         except FormatError as WF:
-            print '[Error',str(WF.errno)+']',file_short+': '+WF.strerror
+            print('[Error {0}] {1}: {2}'.format(WF.errno,file_short,WF.strerror))
             pass
         except IndexError:
-            print 'column problem in file '+file_short
+            print('Column problem in file '+file_short)
             pass
         except ValueError:
-            print 'value problem in file '+file_short
+            print('Value problem in file '+file_short)
             pass
         except:
-            print 'file '+file_short+' does not seem to be a valid file, skipped.'
+            print('File {0} does not seem to be a valid file, skipped.'.format(file_short))
             pass
     if not quiet:
-        print ''
+        print('')
         Loaded('evol')
     else:
-        print str(num_files)+' files loaded. Details can be displayed with Loaded().'
+        print('{0} file{1} loaded. Details can be displayed with Loaded().'.format(num_files,pluralise(num_files,'','s')))
 
 def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False,quiet=False):
     """Loads all structures (.v or StrucData) in the directory given in argument.
@@ -3412,29 +3436,29 @@ def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False
         The forced=True option avoids the questions linked to a number already attributed.
         Usage : LoadSFromDir(DirName[,ini_index=...,select ="S0",forced=True,quiet=True])."""
     index = ini_index
-    print 'loading files from directory '+DirName+':'
+    print('loading files from directory {0}: '.format(DirName))
     Selected_files = sorted(glob.glob(DirName+'*'+select+'*'))
     if len(Selected_files) == 0.:
-        print 'No files matching your request.'
+        print('No files matching your request.')
         return
     for file in [i for i in Selected_files if ((os.path.splitext(i)[1] == '.dat' and 'StrucData' in os.path.splitext(i)[0]) or '.v' in i)]:
-        print 'loading',file
+        print('loading '+file)
         try:
             increment = loadS(file,index,[],format,forced,quiet)
             if not quiet:
-                print 'File '+file+' successfully loaded.'
+                print('File {0} successfully loaded.'.format(file))
             index = index + increment
         except FormatError as WF:
-            print '[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
-            print 'column problem in file '+file
+            print('column problem in file '+file)
             pass
         except ValueError:
-            print 'value problem in file '+file
+            print('value problem in file '+file)
             pass
     if not quiet:
-        print ''
+        print('')
         Loaded('struc')
 
 def loadCFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False,quiet=False):
@@ -3446,58 +3470,58 @@ def loadCFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',forced=False
         The forced=True option avoids the questions linked to a number already attributed.
         Usage : LoadCFromDir(DirName[,ini_index=...,select ="006",forced=True,quiet=True])."""
     index = ini_index
-    print 'loading files from directory '+DirName+':'
+    print('loading files from directory {0}:'.format(DirName))
     Selected_files = sorted(glob.glob(DirName+'*'+select+'*'))
     if len(Selected_files) == 0.:
-        print 'No files matching your request.'
+        print('No files matching your request.')
         return
     for file in [i for i in Selected_files if (os.path.splitext(i)[1] == '.dat' and os.path.splitext(i)[0][i.rfind('/')+1:i.rfind('/')+4] in ['Clu','Iso'])]:
         if not quiet:
-            print 'loading',file
+            print('loading '+file)
         try:
             loadC(file,index,num_deb,format=format,forced=forced,quiet=quiet)
             if not quiet:
-                print 'File '+file+' successfully loaded.'
+                print('File {0} successfully loaded.'.format(file))
             index += 1
         except FormatError as WF:
-            print '[Error',str(WF.errno)+']',WF.strerror,': ',WF.filename
+            print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
             pass
         except IndexError:
-            print 'column problem in file '+file
+            print('column problem in file '+file)
             pass
         except ValueError:
-            print 'value problem in file '+file
+            print('value problem in file '+file)
             pass
     if not quiet:
-        print ''
+        print('')
         Loaded('cluster')
 
 def LoadedEvol():
     """Prints the models loaded in the database as well as those selected for plots """
-    print "Models loaded in database:"
-    for i in MyDriver.Model_list_evol.keys():
-        print i,':\t',MyDriver.Model_list_evol[i].Variables['FileName'][0]
+    print("Models loaded in database:")
+    for i in list(MyDriver.Model_list_evol.keys()):
+        print('{0:4d}: {1}'.format(i,MyDriver.Model_list_evol[i].Variables['FileName'][0]))
 
-    print '\nModels currently selected for plotting:'
-    print MyDriver.SelectedModels_evol
+    print('\nModel{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_evol[:],'','s')))
+    print(str(MyDriver.SelectedModels_evol[:]))
 
 def LoadedStruc():
     """Prints the structure loaded in the database as well as those selected for plots """
-    print 'Structures loaded in database:'
-    for i in MyDriver.Model_list_struc.keys():
-        print i,':\t',MyDriver.Model_list_struc[i].Variables['FileName'][0],'\t',MyDriver.Model_list_struc[i].Variables['Model'][0]
+    print('Structures loaded in database:')
+    for i in list(MyDriver.Model_list_struc.keys()):
+        print('{0:4d}: {2} in {1}'.format(i,MyDriver.Model_list_struc[i].Variables['FileName'][0],MyDriver.Model_list_struc[i].Variables['Model'][0]))
 
-    print '\nStructures currently selected for plotting:'
-    print MyDriver.SelectedModels_struc
+    print('\nStructure{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_struc[:],'','s')))
+    print(str(MyDriver.SelectedModels_struc[:]))
 
 def LoadedCluster():
     """Prints the clusters/isochrones loaded in the database as well as those selected for plots """
-    print 'Clusters/isochrones loaded in database:'
-    for i in MyDriver.Model_list_cluster.keys():
-        print i,':\t',MyDriver.Model_list_cluster[i].Variables['FileName'][0]
+    print('Clusters/isochrones loaded in database:')
+    for i in list(MyDriver.Model_list_cluster.keys()):
+        print('{0:4d}: {1}'.format(i,MyDriver.Model_list_cluster[i].Variables['FileName'][0]))
 
-    print '\nClusters/isochrones currently selected for plotting:'
-    print MyDriver.SelectedModels_cluster
+    print('\nCluster{0}/isochrone{0} currently selected for plotting:'.format(pluralise(MyDriver.SelectedModels_cluster[:],'','s')))
+    print(str(MyDriver.SelectedModels_cluster[:]))
 
 def Loaded(mode=''):
     """Prints the files loaded in the database as well as those selected for plots.
@@ -3512,14 +3536,14 @@ def Loaded(mode=''):
     elif mode== 'cluster':
         LoadedCluster()
     else:
-        print 'wrong mode selected'
+        print('wrong mode selected')
 
 def flatten(x):
     """Allows to treat equally a list and a number when selecting models.
        Used by add_model(), del_model(), and select_model()."""
     result = []
     for el in x:
-        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+        if hasattr(el, "__iter__") and not isinstance(el, six.string_types):
             result.extend(flatten(el))
         else:
             result.append(el)
@@ -3532,18 +3556,20 @@ def reloadE(model_list):
             loadE(MyDriver.Model_list_evol[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_evol[i].Variables['line_num'][0][0]-MyDriver.Model_list_evol[i].Variables['format'][0][1],\
                 num_fin=MyDriver.Model_list_evol[i].Variables['line_num'][0][1],format=MyDriver.Model_list_evol[i].Variables['format'][0][0],colour=MyDriver.Model_list_evol[i].Variables['options'][0][0],\
                 wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=True)
-            print 'Model ',i,'reloaded'
+            print('Model {0} reloaded'.format(i))
     except KeyError:
-        print 'Number(s) ',[i for i in flatten([model_list]) if i not in MyDriver.Model_list_evol.keys()],' not attributed to any model'
+        not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_evol.keys())]
+        print('Number{1} {0} {2} not attributed to any model'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def reloadS(model_list):
     """Reloads the selected structures."""
     try:
         for i in flatten([model_list]):
             loadS(MyDriver.Model_list_struc[i].Variables['FileName'][0],i,MyDriver.Model_list_struc[i].Variables['Model'][0],format=MyDriver.Model_list_struc[i].Variables['format'][0],forced=True,quiet=True)
-            print 'Structure ',i,'reloaded'
+            print('Structure {0} reloaded'.format(i))
     except KeyError:
-        print 'Number(s) ',[i for i in flatten([model_list]) if i not in MyDriver.Model_list_struc.keys()],' not attributed to any structure'
+        not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_struc.keys())]
+        print('Number{1} {0} {2} not attributed to any structure'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def reloadC(model_list):
     """Reloads the selected clusters/isochrones."""
@@ -3552,47 +3578,51 @@ def reloadC(model_list):
             loadC(MyDriver.Model_list_cluster[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_cluster[i].Variables['line_num'][0]-MyDriver.Model_list_cluster[i].Variables['format'][0][1],\
                 format=MyDriver.Model_list_cluster[i].Variables['format'][0][0],forced=True,quiet=True)
             if MyDriver.Model_list_cluster[i].Variables['format'][0][0] == 'cluster':
-                print 'Cluster ',i,'reloaded'
+                print('Cluster {0} reloaded'.format(i))
             elif MyDriver.Model_list_cluster[i].Variables['format'][0][0] == 'isochr':
-                print 'Isochrone ',i,'reloaded'
+                print('Isochrone {0} reloaded'.format(i))
     except KeyError:
-        print 'Number(s)',[i for i in flatten([model_list]) if i not in MyDriver.Model_list_cluster.keys()],' not attributed to any cluster/isochrone '
+        not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_cluster.keys())]
+        print('Number{1} {0} {2} not attributed to any cluster/isochrone'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def del_model(num_list):
     """Removes the model numbers given in argument from the list of selected models for plotting."""
-    if len([i for i in flatten([num_list]) if i not in MyDriver.SelectedModels]) !=0:
-        print 'Model(s) ',[i for i in flatten([num_list]) if i not in MyDriver.SelectedModels],' is (are) not among the selected models.'
-    [MyDriver.SelectedModels.remove(i) for i in flatten([num_list]) if i in MyDriver.SelectedModels]
+    not_found=[i for i in flatten([num_list]) if i not in MyDriver.SelectedModels]
+    if len(not_found) !=0:
+        print('Model{1} {0} {2} not among the selected models.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
+    [MyDriver.SelectedModels.remove(i) for i in not_found]
 
 def add_model(num_list):
     """Adds the model numbers given in argument to the list of selected models for plotting """
-    [MyDriver.SelectedModels.append(i) for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
-    if len([i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print 'Model(s) ',[i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.'
+    added=[i for i in flatten([num_list]) if i in list(MyDriver.Model_list.keys())]
+    [MyDriver.SelectedModels.append(i) for i in added]
+    if len([i for i in flatten([num_list]) if i not in list(MyDriver.Model_list.keys())]) !=0:
+        print('Model{1} {0} {2} not loaded.'.format(added[:],pluralise(added,'','s'),pluralise(added,'is','are')))
 
 def select_model(model_list):
     """Defines the list of selected models for plotting """
     MyDriver.SelectedModels = []
-    [MyDriver.SelectedModels.append(i) for i in flatten([model_list]) if i in MyDriver.Model_list.keys()]
+    [MyDriver.SelectedModels.append(i) for i in flatten([model_list]) if i in list(MyDriver.Model_list.keys())]
     if MyDriver.modeplot == 'evol':
         MyDriver.SelectedModels_evol = MyDriver.SelectedModels
     if MyDriver.modeplot == 'struc':
         MyDriver.SelectedModels_struc = MyDriver.SelectedModels
     if MyDriver.modeplot == 'cluster':
         MyDriver.SelectedModels_cluster = MyDriver.SelectedModels
-    if len([i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print 'Model(s) ',[i for i in flatten([model_list]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.'
+    not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list.keys())]
+    if len(not_found) !=0:
+        print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
 
 def select_all():
     """Selects all available models in the current mode """
-    select_model(eval('MyDriver.Model_list_'+MyDriver.modeplot+'.keys()'))
+    select_model(eval('list(MyDriver.Model_list_'+MyDriver.modeplot+'.keys())'))
 
 def switch(mode='evol'):
     """Switches from the different modes: evolution, structure, or cluster.
        Usage: switch('struc')"""
     Allowed_modes = ['evol','struc','cluster']
     if not mode in Allowed_modes:
-        print 'The input argument should be "evol", "struc", or "cluster".'
+        print('The input argument should be "evol", "struc", or "cluster".')
         return
     if mode == 'evol' and MyDriver.modeplot != 'evol':
         MyDriver.SelectedModels = MyDriver.SelectedModels_evol
@@ -3619,57 +3649,54 @@ def VarEvol(num=''):
     """Prints the available variables for plotting in evolution mode.
        Needs at least one loaded model."""
     if num == '':
-        num = MyDriver.Model_list_evol.keys()[0]
+        num = list(MyDriver.Model_list_evol.keys())[0]
     Category_list = []
-    for i in range(len(MyDriver.Model_list_evol[num].Variables.keys())):
-        if not MyDriver.Model_list_evol[num].Variables.values()[i][2] in Category_list:
-            Category_list.append(MyDriver.Model_list_evol[num].Variables.values()[i][2])
+    replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
+    for i in range(len(list(MyDriver.Model_list_evol[num].Variables.keys()))):
+        if not list(MyDriver.Model_list_evol[num].Variables.values())[i][2] in Category_list:
+            Category_list.append(list(MyDriver.Model_list_evol[num].Variables.values())[i][2])
     Category_list.remove('reading')
     for Category in sorted(Category_list):
-        print '\n'+Category.upper()+':'
-        for key in sorted(MyDriver.Model_list_evol[num].Variables.keys(), key=lambda s: s.lower()):
+        print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
+        for key in sorted(list(MyDriver.Model_list_evol[num].Variables.keys()), key=lambda s: s.lower()):
             if MyDriver.Model_list_evol[num].Variables[key][2] == Category:
-                if len(key) > 6:
-                    print '\t'+key+':\t'+MyDriver.Model_list_evol[num].Variables[key][1]
-                else:
-                    print '\t'+key+':\t\t'+MyDriver.Model_list_evol[num].Variables[key][1]
+                label_print = multiReplace(MyDriver.Model_list_evol[num].Variables[key][1],replaceDic)
+                print('  {0:20s}: {1}'.format(key,label_print))
 
 def VarStruc(num=''):
     """Prints the available variables for plotting in structure mode.
        Needs at least one loaded structure."""
     if num == '':
-        num = MyDriver.Model_list_struc.keys()[0]
+        num = list(MyDriver.Model_list_struc.keys())[0]
+    replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
     Category_list = []
-    for i in range(len(MyDriver.Model_list_struc[num].Variables.keys())):
-        if not MyDriver.Model_list_struc[num].Variables.values()[i][2] in Category_list:
-            Category_list.append(MyDriver.Model_list_struc[num].Variables.values()[i][2])
+    for i in range(len(list(MyDriver.Model_list_struc[num].Variables.keys()))):
+        if not list(MyDriver.Model_list_struc[num].Variables.values())[i][2] in Category_list:
+            Category_list.append(list(MyDriver.Model_list_struc[num].Variables.values())[i][2])
     for Category in sorted(Category_list):
-        print '\n'+Category.upper()+':'
-        for key in sorted(MyDriver.Model_list_struc[num].Variables.keys(), key=lambda s: s.lower()):
+        print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
+        for key in sorted(list(MyDriver.Model_list_struc[num].Variables.keys()), key=lambda s: s.lower()):
             if MyDriver.Model_list_struc[num].Variables[key][2] == Category:
-                if len(key) > 6:
-                    print '\t'+key+':\t'+MyDriver.Model_list_struc[num].Variables[key][1]
-                else:
-                    print '\t'+key+':\t\t'+MyDriver.Model_list_struc[num].Variables[key][1]
+                label_print = multiReplace(MyDriver.Model_list_struc[num].Variables[key][1],replaceDic)
+                print('  {0:15s}: {1}'.format(key,label_print))
 
 def VarCluster(num=''):
     """Prints the available variables for plotting in cluster mode.
        Needs at least one loaded cluster."""
     if num == '':
-        num = MyDriver.Model_list_cluster.keys()[0]
+        num = list(MyDriver.Model_list_cluster.keys())[0]
     Category_list = []
-    for i in range(len(MyDriver.Model_list_cluster[num].Variables.keys())):
-        if not MyDriver.Model_list_cluster[num].Variables.values()[i][2] in Category_list:
-            Category_list.append(MyDriver.Model_list_cluster[num].Variables.values()[i][2])
+    replaceDic = {1:['\mathrm',''],2:['\mathscr',''],3:['$',''],4:['\,',' '],5:['\\','']}
+    for i in range(len(list(MyDriver.Model_list_cluster[num].Variables.keys()))):
+        if not list(MyDriver.Model_list_cluster[num].Variables.values())[i][2] in Category_list:
+            Category_list.append(list(MyDriver.Model_list_cluster[num].Variables.values())[i][2])
     Category_list.remove('reading')
     for Category in sorted(Category_list):
-        print '\n'+Category.upper()+':'
-        for key in sorted(MyDriver.Model_list_cluster[num].Variables.keys(), key=lambda s: s.lower()):
+        print('\n{0}:\n'.format(Category.upper())+(len(Category)+1)*'-')
+        for key in sorted(list(MyDriver.Model_list_cluster[num].Variables.keys()), key=lambda s: s.lower()):
             if MyDriver.Model_list_cluster[num].Variables[key][2] == Category:
-                if len(key) > 6:
-                    print '\t'+key+':\t'+MyDriver.Model_list_cluster[num].Variables[key][1]
-                else:
-                    print '\t'+key+':\t\t'+MyDriver.Model_list_cluster[num].Variables[key][1]
+                label_print = multiReplace(MyDriver.Model_list_cluster[num].Variables[key][1],replaceDic)
+                print('  {0:15s}: {1}'.format(key,label_print))
 
 def Get_Var(var,num_star):
     """Retrieves the variable entered in input to allow personalised manipulation of the variable.
@@ -3689,7 +3716,7 @@ def Set_Var(var,var_name,num_star,**args):
         The label and category parameters are optional."""
     MyLabel = ''
     MyCat = ''
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'label':
             MyLabel = args[arg]
         elif arg == 'category':
@@ -3697,35 +3724,41 @@ def Set_Var(var,var_name,num_star,**args):
         else:
             print('Bad argument for function Set_Var. Should be label="..." and category="..." .')
 
-    if not MyDriver.Model_list[num_star].Variables.has_key(var_name):
+    if var_name not in MyDriver.Model_list[num_star].Variables:
         MyDriver.Model_list[num_star].Variables[var_name] = [var,MyLabel,MyCat]
     else:
-        print 'The key ',var_name,' already exists in this dictionary.'
+        print('The key '+var_name+' already exists in this dictionary.')
 
 def Del_Var(varName,num_star=0,quiet=False):
     """Deletes an entry of the Variables dictionary.
        Usage: Del_Var(varName,num_star)"""
     if num_star == 0:
-        num_star = MyDriver.Model_list.keys()
+        num_star = list(MyDriver.Model_list.keys())
+    failed = []
+    success = []
     for i in flatten([num_star]):
         try:
             del MyDriver.Model_list[i].Variables[varName]
-            if not quiet:
-                print 'The variable '+varName+' has been successfully deleted in model '+str(i)+'.'
+            success.append(i)
         except KeyError:
-            if not quiet:
-                print 'The variable you tried to delete does not exist in model '+str(i)+'.'
+            failed.append(i)
+    if not quiet:
+        if len(success) != 0:
+            print('Variable {0} has been successfully deleted in model{2} {1}'.format(varName,success[:],pluralise(success,'','s')))
+        if len(failed) != 0:
+            print('Variable {0} does not exist in model{2} {1}'.format(varName,failed[:],pluralise(failed,'','s')))
 
 def Deriv(Var1,Var2,num_star=[]):
     """Takes the derivative of variable 1 over variable 2.
        Entering a number or a list of numbers applies it to one, several or all the stars loaded."""
     selectedModels=[]
     if num_star==[]:
-        selectedModels = MyDriver.Model_list.keys()
+        selectedModels = list(MyDriver.Model_list.keys())
     else:
-        [selectedModels.append(i) for i in flatten([num_star]) if i in MyDriver.Model_list.keys()]
-        if len([i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()]) !=0:
-            print 'Model(s) ',[i for i in flatten([selectedModels]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.'
+        [selectedModels.append(i) for i in flatten([num_star]) if i in list(MyDriver.Model_list.keys())]
+        not_found = [i for i in flatten([selectedModels]) if i not in list(MyDriver.Model_list.keys())]
+        if len(not_found) !=0:
+            print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
             return
     for i in selectedModels:
         x=Get_Var(Var1,i)
@@ -3735,7 +3768,7 @@ def Deriv(Var1,Var2,num_star=[]):
         dx_min=min(dx)
         dy=[val if val != 0. else dx_min/1.e30 for val in dy]
         Set_Var(dx/dy,'d'+Var1+'_d'+Var2,i,label='$\mathrm{d '+Var1+'}/\mathrm{d '+Var2+'}$')
-    print 'The derivative can be plotted under the name d'+Var1+'_d'+Var2
+    print('The derivative can be plotted under the name d{0}_d{1}'.format(Var1,Var2))
 
 def Vector_split(varName,num_star,quiet=False):
     """Splits a vector into its positive and negative components and adds both in the Variables dictionary.
@@ -3748,9 +3781,9 @@ def Vector_split(varName,num_star,quiet=False):
     Set_Var(myVector_pos,varName+'_pos',num_star,label=myLab,category=myCat)
     Set_Var(myVector_neg,varName+'_neg',num_star,label='$-$'+myLab,category=myCat)
     if not quiet:
-        print 'The positive and negative values can be plotted under the name '+varName+'_pos and '+varName+'_neg respectively'
+        print('The positive and negative values can be plotted under the name {0}_pos and {0}_neg respectively'.format(varName))
 
-def Plot(y,plotif=['',''],cshift=0,forced_line=False):
+def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name).
        Usage:Plot('VarName')
        Possibility to restrict the data plotted to a condition on a variable:
@@ -3790,13 +3823,16 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         bad_var = MyDriver.Xvar
 
     if len(Star_list) == 0:
-        print 'No star knows variable',bad_var
-        print 'Available variables are:'
-        print sorted(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys(), key=lambda s: s.lower())
+        if var_error_print:
+            print('No star knows variable'+bad_var)
+            print('Available variables are:')
+            print(sorted(list(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys()), key=lambda s: s.lower()))
         return
     else:
         if len(Star_list) != len(MyDriver.SelectedModels):
-            print 'The variable',bad_var,'does not exist for model(s)',[x for x in MyDriver.SelectedModels if x not in Star_list],'. They will not appear on the plot.'
+            not_found = [x for x in MyDriver.SelectedModels if x not in Star_list]
+            print('Variable {0} does not exist for model{2} {1}. {3} will not appear on the plot.'.format(bad_var,not_found[:],\
+                  pluralise(not_found,'','s'),pluralise(not_found,'It','They')))
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -3822,14 +3858,14 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
             if MyDriver.lineFlag == 'cycle_all':
                 iStyle = Rendering.Line_list[j % len(Rendering.Line_list)]
             elif MyDriver.lineFlag == 'cycle_colour':
-                iStyle = Rendering.Line_list[(j/len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Line_list)]
+                iStyle = Rendering.Line_list[(j//len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Line_list)]
             else:
                 iStyle = MyDriver.lineFlag
         else:
             if MyDriver.pointFlag == 'cycle_all':
                 iStyle = Rendering.Point_list[j % len(Rendering.Point_list)]
             elif MyDriver.pointFlag == 'cycle_colour':
-                iStyle = Rendering.Point_list[(j/len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Point_list)]
+                iStyle = Rendering.Point_list[(j//len(Rendering.Colours_list[MyDriver.colourSequence][0])) % len(Rendering.Point_list)]
             else:
                 iStyle = MyDriver.pointFlag
 
@@ -3838,9 +3874,9 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
         else:
             myMask = BuildMask(plotif[0],plotif[1],i)
             if all([v == False for v in myMask]):
-                print 'Plotif: no points met the condition',plotif[0],plotif[1],' for star ',i
+                print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
-                    print 'Aborting...'
+                    print('Aborting...')
                     return
                 else:
                     continue
@@ -3928,9 +3964,9 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False):
             MyDriver.Model_list[i].Plot(MyDriver.Xvar,y,myMask,iColour,iStyle,myLegend,MyDriver.Model_list[i].timestep,forced_line=forced_line)
         if MyDriver.Link_ModelCurve:
             if MyDriver.modeplot != 'struc':
-                print '{0: <7s}: {1: 4d} - {2}'.format(ColourName,i,MyDriver.Model_list[i].Variables['FileName'][0])
+                print('{0: <7s}: {1: 4d} - {2}'.format(ColourName,i,MyDriver.Model_list[i].Variables['FileName'][0]))
             else:
-                print '{0: <7s}: {1: 4d} - {2} ({3})'.format(ColourName,i,MyDriver.Model_list[i].Variables['FileName'][0],MyDriver.Model_list[i].Variables['Model'][0])
+                print('{0: <7s}: {1: 4d} - {2} ({3})'.format(ColourName,i,MyDriver.Model_list[i].Variables['FileName'][0],MyDriver.Model_list[i].Variables['Model'][0]))
         j += 1
 
     axisInv_save = list(MyDriver.axisInv)
@@ -4026,7 +4062,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         Star_list=MyDriver.Zero_LengthOK(pointsize,Star_list)
 
     if len(Star_list) == 0:
-        print "Nothing left in the input list!"
+        print("Nothing left in the input list!")
         return
 
     myZ = {}
@@ -4041,9 +4077,9 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         else:
             myMask = BuildMask(plotif[0],plotif[1],i)
             if all([v == False for v in myMask]):
-                print 'Plotif: no points met the condition',plotif[0],plotif[1],' for star ',i
+                print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
-                    print 'Aborting...'
+                    print('Aborting...')
                     return
                 else:
                     continue
@@ -4079,9 +4115,9 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         else:
             myMask = BuildMask(plotif[0],plotif[1],i)
             if all([v == False for v in myMask]):
-                print 'Plotif: no points met the condition',plotif[0],plotif[1],' for star ',i
+                print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
-                    print 'Aborting...'
+                    print('Aborting...')
                     return
                 else:
                     continue
@@ -4186,7 +4222,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
     MyDriver.get_CBlimits = MyCB.get_clim()
-    print MyDriver.get_CBlimits
+    print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -4280,7 +4316,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plot
           binz=n to set the number of colours for the colour plot;
           plotif=['var','cond'], for limiting the plot to a condition on a variable."""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
-        print 'Wrong mode for HRD'
+        print('Wrong mode for HRD')
         return
     if dark and MyDriver.modeplot != 'cluster':
         return 'The gravity (+limb) darkening option is yet available only in cluster mode.'
@@ -4316,10 +4352,10 @@ def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=Fals
     """Plots a CMD for the colours entered in parameters. If called without argument, M_V versus B-V is plotted.
        Usage: CMD(), or CMD('VBV')"""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
-        print 'Wrong mode for HRD'
+        print('Wrong mode for HRD')
         return
     if noised and MyDriver.modeplot != 'cluster':
-        print 'Argument "noised" only available for clusters'
+        print('Argument "noised" only available for clusters')
         noised = ''
     Xvar_save = MyDriver.Xvar
     if c == '':
@@ -4381,7 +4417,7 @@ def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
     if MyDriver.modeplot != 'cluster' and (dark or mean):
-        print 'arguments "dark", "mean", or "noised" available only for clusters'
+        print('arguments "dark", "mean", or "noised" available only for clusters')
         dark=False
         mean=False
         noised=False
@@ -4430,12 +4466,14 @@ def Abund(where='x'):
     """Plots the abundance profiles of the main species.
        The input argument may take three values:
           in evol mode: 'c' for central abundances et 's' for surface abundances,
-          in structure mode: 'p' for profile.
+          in structure mode: 'p' for profile, may be omitted.
           in cluster mode: surface anyway, maybe omitted."""
     if where == 'x' and MyDriver.modeplot == 'cluster':
         where = 's'
+    if where == 'x' and MyDriver.modeplot == 'struc':
+        where = 'p'
     if where not in 'cCpPsS':
-        print 'The argument should be "s,c, or p"'
+        print('The argument should be "s,c, or p"')
         return
     Xvar_save = MyDriver.Xvar
     LineFlag_save = MyDriver.lineFlag
@@ -4492,11 +4530,11 @@ def Abund(where='x'):
             set_colourFlag('Turquoise')
             Plot('Ne20c')
             set_colourFlag('Orange')
-            try:
-                Plot('Si28c')
-            except:
-                pass
-        print '\n H1:\t\t black\n He4:\t\t grey\n C12:\t\t red\n N14:\t\t green\n O16:\t\t blue\n Ne20:\t\t cyan\n Si28:\t\t orange'
+            Plot('Si28c',var_error_print=False)
+        elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],\
+                 6:['Ne20','cyan'],7:['Si28','orange (NB: available only for stars loaded with wa=True)']}
+        for key in sorted(elDic.keys()):
+            print('{0: >5s}: {1}'.format(elDic[key][0],elDic[key][1]))
     elif where in 'pP':
         MyDriver.axisLabel[1] = 'Abund. profile [mass frac.]'
         if MyDriver.modeplot != 'struc':
@@ -4516,36 +4554,36 @@ def Abund(where='x'):
         if not multiplot:
             MyDriver.lineFlag = '--'
         else:
-            set_colourFlag('Coral')
+            set_colourFlag('Salmon')
         Plot('C13')
         if not multiplot:
             MyDriver.lineFlag = '-'
-        set_colourFlag('ForestGreen')
+        set_colourFlag('Green')
         Plot('N14')
         if not multiplot:
             MyDriver.lineFlag = '--'
         else:
-            set_colourFlag('Green')
+            set_colourFlag('LimeGreen')
         Plot('N15')
         if not multiplot:
             MyDriver.lineFlag = '-'
             set_colourFlag('Blue')
         else:
-            set_colourFlag('DarkBlue')
+            set_colourFlag('Blue')
         Plot('O16')
         if not multiplot:
             MyDriver.lineFlag = '--'
         else:
-            set_colourFlag('Blue')
+            set_colourFlag('RoyalBlue')
         Plot('O17')
         if not multiplot:
             MyDriver.lineFlag = ':'
         else:
-            set_colourFlag('DodgerBlue')
+            set_colourFlag('DeepSkyBlue')
         Plot('O18')
         if not multiplot:
             MyDriver.lineFlag = '-'
-        set_colourFlag('Turquoise')
+        set_colourFlag('Cyan')
         Plot('Ne20')
         if not multiplot:
             MyDriver.lineFlag = '--'
@@ -4556,7 +4594,7 @@ def Abund(where='x'):
             MyDriver.lineFlag = '-'
             set_colourFlag('MediumOrchid')
         else:
-            set_colourFlag('Purple')
+            set_colourFlag('DarkViolet')
         Plot('Mg24')
         if not multiplot:
             MyDriver.lineFlag = '--'
@@ -4566,18 +4604,20 @@ def Abund(where='x'):
         if not multiplot:
             MyDriver.lineFlag = ':'
         else:
-            set_colourFlag('Orchid')
+            set_colourFlag('Plum')
         Plot('Mg26')
         set_colourFlag('orange')
         if not multiplot:
             MyDriver.lineFlag = '-'
-        else:
-            set_colourFlag('Orchid')
         Plot('Si28')
-        if not multiplot:
-            print '\n H:\t\t black\n He:\t\t grey\n C:\t\t red\n N:\t\t green\n O:\t\t blue\n Ne:\t\t cyan\n Mg:\t\t purple\n Si:\t\t orange'
+        if multiplot:
+            elDic = {1:['H','black'],2:['He','grey'],3:['C','red (12),salmon(13)'],4:['N','green (dark 14, light 15)'],\
+                     5:['O','blue (dark 16, medium 17, light 18)'],6:['Ne','cyan (dark 20, light 22)'],7:['Mg','purple (dark 24, medium 25, light 26)'],8:['Si','orange']}
         else:
-            print '\n H:\t\t black\n He:\t\t grey\n C:\t\t red\n N:\t\t green\n O:\t\t blue\n Ne:\t\t cyan\n Mg:\t\t purple'
+            elDic = {1:['H','black'],2:['He','grey'],3:['C','red (- 12, -- 13)'],4:['N','green (- 14, -- 15)'],\
+                     5:['O','blue (- 16, -- 17, .. 18)'],6:['Ne','cyan (- 20, -- 22)'],7:['Mg','purple (- 24, -- 25, .. 26)'],8:['Si','orange']}
+        for key in sorted(elDic.keys()):
+            print('{0: >5s}: {1}'.format(elDic[key][0],elDic[key][1]))
 
     keep_plot(False)
     set_colourFlag(ColourFlag_save)
@@ -4618,8 +4658,8 @@ def eps(mode=1,conv=True):
     if len(num_star) > 1:
         set_lineStyle('cycle_all')
         if conv:
-            print 'More than one structure plotted, no convective zones will be plotted.'
-            print 'You can plot them later with convZones(num,colour).'
+            print('More than one structure plotted, no convective zones will be plotted.')
+            print('You can plot them later with convZones(num,colour).')
             conv = False
     else:
         set_lineStyle('-')
@@ -4702,7 +4742,7 @@ def j_profiles(*args):
     MyDriver.axisLabel[0] = False
     MyDriver.Link_ModelCurve = True
 
-def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
+def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
     """Plots a Kippenhahn diagram for the model number entered as input argument.
        The optional parameter burn=True allows for the plotting of the burning zones.
           It needs a file .burn which is seeked by default in the same location as the evolution file,
@@ -4714,13 +4754,13 @@ def Kippen(num_star,burn=False,shift=1,hatch='',noshade=False):
         - noshade=True to leave only the hatches to mark the cconvective zones."""
     if MyDriver.modeplot != 'evol':
         switch('evol')
-    if not num_star in MyDriver.Model_list.keys():
-        print 'please chose a model in the following list:'
-        for i in MyDriver.Model_list.keys():
-            print MyDriver.Model_list[i].Variables['FileName'],'\t\t',i
+    if not num_star in list(MyDriver.Model_list.keys()):
+        print('please chose a model in the following list:')
+        for i in list(MyDriver.Model_list.keys()):
+            print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
     elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
-        print 'This format does not contain informations on convective zones.'
+        print('This format does not contain informations on convective zones.')
         return
     else:
         rc('text', usetex=MyDriver.LatexEnabled)
@@ -4836,7 +4876,7 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
         ilabel = '$_\mathrm{fin}$'
     else:
         ilabel = ''
-    for star in MyDriver.Model_list.keys():
+    for star in list(MyDriver.Model_list.keys()):
         MyStar = MyDriver.Model_list[star]
         MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),var1+'/'+var2+ilabel,'']
         if index == -9999:
@@ -4847,11 +4887,11 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
             if MyStar.Variables[var2][0][int(index)] != 0.:
                 MyStar.Variables['ratio'][0] = MyStar.Variables[var1][0]/MyStar.Variables[var2][0][int(index)]
             else:
-                print 'ratio not computable, division by zero.'
+                print('ratio not computable, division by zero.')
                 abort = True
     if not abort:
         Plot('ratio',plotif=plotif,forced_line=forced_line)
-    for star in MyDriver.Model_list.keys():
+    for star in list(MyDriver.Model_list.keys()):
         MyDriver.Model_list[star].Variables.pop('ratio')
 
 def Summary_plots(ixaxis=0,*args,**kwargs):
@@ -4863,9 +4903,9 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
        If 'legend' is passed as an optional argument, it draws the legend of the lines."""
     autorised_args = ['shift']
     shift = 1
-    for arg in kwargs.keys():
+    for arg in list(kwargs.keys()):
         if arg not in autorised_args:
-            print 'Bad argument for function Summary_plots. Should be shift=... .'
+            print('Bad argument for function Summary_plots. Should be shift=... .')
             return
         if arg == 'shift':
             shift = kwargs[arg]
@@ -4891,12 +4931,12 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
           current_Xvar='line'
         MyDriver.Xvar=current_Xvar
 
-        print 'Evolution plots, x-axis is '+Xvariable
+        print('Evolution plots, x-axis is '+Xvariable)
         multiPlot(4)
         set_fontSize(12)
-        print '-----------------------------------------------'
-        print 'DHR1: HRD, Abund(c), kippenhahn, L-Teff vs time'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('DHR1: HRD, Abund(c), kippenhahn, L-Teff vs time')
+        print('-----------------------------------------------')
         HRD_plot()
         Abund('c')
         MyDriver.Link_ModelCurve = False
@@ -4913,9 +4953,9 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         change_label('y','$\log(T_\mathrm{eff},\,L)$')
         keep_plot(False)
         set_colourFlag('Black')
-        print '-----------------------------------------------'
-        print 'DHR2: Vsurf, OOc, Mdot, Oc/Os'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('DHR2: Vsurf, OOc, Mdot, Oc/Os')
+        print('-----------------------------------------------')
         Plot('Vsurf')
         Plot('OOc')
         Plot('Mdot')
@@ -4923,17 +4963,17 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         plotRatio('Omega_surf','Omega_cen')
         change_label('y','$\log(\Omega_\mathrm{surf}/\Omega_\mathrm{cen})$')
         no_logVar('y')
-        print '-----------------------------------------------'
-        print 'DHR3: Abund(s), N/O, N/H, N/C'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('DHR3: Abund(s), N/O, N/H, N/C')
+        print('-----------------------------------------------')
         Abund('s')
         MyDriver.Link_ModelCurve = False
         Plot('NO')
         Plot('NH')
         Plot('NC')
-        print '-----------------------------------------------'
-        print 'DHR4: T_c vs rho_c, T_c-rho_c vs time'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('DHR4: T_c vs rho_c, T_c-rho_c vs time')
+        print('-----------------------------------------------')
         multiPlot(2)
         set_fontSize(18)
         if 'legend' in args:
@@ -4976,17 +5016,17 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
 
         subplotSep_save = MyDriver.subplotSep
         pointSize_save = MyDriver.pointSize
-        print 'Structure plots, x-axis is '+Xvariable
-        print '-----------------------------------------------'
-        print 'STR1: Abund(p)'
-        print '-----------------------------------------------'
+        print('Structure plots, x-axis is '+Xvariable)
+        print('-----------------------------------------------')
+        print('STR1: Abund(p)')
+        print('-----------------------------------------------')
         logVar('y')
         Abund('p')
         no_logVar('y')
         MyDriver.Link_ModelCurve = False
-        print '-----------------------------------------------'
-        print 'STR2: T, r, P, rho'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('STR2: T, r, P, rho')
+        print('-----------------------------------------------')
         logVar('y')
         set_colourFlag('Blue')
         Plot('T')
@@ -5002,9 +5042,9 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
             put_legend(loc=1,fontsize=MyDriver.fontSize/1.5)
         change_label('y',r'$\log(T,\,r,\,P,\,\rho)$')
         keep_plot(False)
-        print '-----------------------------------------------'
-        print 'STR3: L+eps, T vs rho, eps_reac+epsgrav, nablas+kappa'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('STR3: L+eps, T vs rho, eps_reac+epsgrav, nablas+kappa')
+        print('-----------------------------------------------')
         multiPlot(4)
         MyDriver.subplotSep = 0.3
         set_fontSize(12)
@@ -5083,9 +5123,9 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         MyDriver.subplotSep = subplotSep_save
         no_logVar('y')
         plot1var()
-        print '-----------------------------------------------'
-        print 'STR4: D, N2, c_s+V_MLT, magn.'
-        print '-----------------------------------------------'
+        print('-----------------------------------------------')
+        print('STR4: D, N2, c_s+V_MLT, magn.')
+        print('-----------------------------------------------')
         MyDriver.subplotSep = 0.4
         logVar('y')
         Limits(ymin=0.)
@@ -5145,9 +5185,9 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         no_logVar('y')
         keep_plot(False)
         if not norot:
-            print '-----------------------------------------------'
-            print 'STR5: Omega, Omega/Omega_c, V_eq, j, U+V.'
-            print '-----------------------------------------------'
+            print('-----------------------------------------------')
+            print('STR5: Omega, Omega/Omega_c, V_eq, j, U+V.')
+            print('-----------------------------------------------')
             logVar('y')
             set_colourFlag('Blue')
             Plot('Omega')
@@ -5182,7 +5222,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         MyDriver.Xvar = save_Xvar
         no_logVar("x")
     else:
-        print'this command needs the following modes: "evol", or "struc". Please change the actual mode using switch().'
+        print('this command needs the following modes: "evol", or "struc". Please change the actual mode using switch().')
     MyDriver.Link_ModelCurve = True
     MyDriver.closeFig = True
     multiPlot(1)
@@ -5193,7 +5233,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
 def Coeff():
     """Plots the diffusion coefficients Dconv, Dshear, Dh, and Deff, as well as Kther."""
     if MyDriver.modeplot != 'struc':
-        print 'This plot is available only in struc mode'
+        print('This plot is available only in struc mode')
         return
 
     LineFlag_save = MyDriver.lineFlag
@@ -5220,7 +5260,9 @@ def Coeff():
     Plot('Deff')
     set_colourFlag('k')
     Plot('Kther')
-    print '\n Dconv:\t\t blue\n Dshear:\t green\n Dh:\t\t cyan\n Deff:\t\t magenta\n Kther:\t\t black'
+    coeff_Dic = {0:['Dconv','blue'],1:['Dshear','green'],2:['Dh','cyan'],3:['Deff','magenta'],4:['Kther','black']}
+    for key in coeff_Dic:
+        print('{0: >10s}: {1}'.format(coeff_Dic[key][0],coeff_Dic[key][1]))
 
     no_logVar('y')
     keep_plot(False)
@@ -5272,7 +5314,7 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
         else:
             lpos = lum_max
             ind = np.where(L_range<lum_max)[0]
-            print ind
+            print(str(ind))
             if len(ind)>0:
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
@@ -5326,9 +5368,9 @@ def Cepheid_strip(Zzone=''):
         shade(CephT,CephL)
     else:
         if not mCeph:
-            print 'Cepheid strip not drawn, masses out of range.'
+            print('Cepheid strip not drawn, masses out of range.')
         if test_multiZ:
-            print 'Cepheid strip not drawn, more than one metallicity detected.'
+            print('Cepheid strip not drawn, more than one metallicity detected.')
 
 def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
     """Marks the beginning and end of a given burning phase in the current plot.
@@ -5338,11 +5380,12 @@ def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
         - marker=['',''] to modify the default markers (['o','x']);
         - colour='', to modify the default colour (black)."""
     if MyDriver.modeplot != 'evol':
-        print 'Possible only in evol mode.'
+        print('Possible only in evol mode.')
         return
     burn_seq = np.array(['H','He','C','Ne','O','Si'])
     if fuel not in burn_seq:
-        print 'Unknown burning phase, please check your input.'
+        print('Unknown burning phase, please check your input. Should be:')
+        print(burn_seq)
         return
     failed = []
     ind_beg_all = []
@@ -5377,9 +5420,9 @@ def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
         except:
             failed = failed + [i]
     if not quiet:
-        print '-----\n'+fuel+'-b beginning and end marked by',marker[0],'and',marker[1]
+        print('-----\n{0}-b - {1}: beginning, {2}: end'.format(fuel,marker[0],marker[1]))
         if failed != []:
-            print 'Star(s)',failed,'do(es) not have a phase of',fuel,'burning.'
+            print('Star{2} {0} do{3} not have a phase of {1}-burning.'.format(failed,fuel,pluralise(failed,'','s'),pluralise(failed,'es','')))
     #return ind_beg_all,ind_end_all,xpos_beg_all,ypos_beg_all,xpos_end_all,ypos_end_all
 
 def PISN_zone():
@@ -5407,28 +5450,28 @@ def PISN_zone():
 def get_lifetimes(num_star=0):
     """Prints the lifetimes of the different stages."""
     if MyDriver.modeplot != 'evol':
-        print 'The lifetimes display is possible only in evol mode. Please change with switch("evol").'
+        print('The lifetimes display is possible only in evol mode. Please change with switch("evol").')
         return
     if num_star == 0:
         if len(MyDriver.Model_list_evol) > 1:
-            answer = raw_input('Enter the id number of the star you want to display:\n')
+            answer = input('Enter the id number of the star you want to display:\n')
             num_star = int(answer)
         else:
-            num_star = MyDriver.Model_list_evol.keys()[0]
-    print '---------------------------------------------------------------------'
-    print 'LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0]
-    print '---------------------------------------------------------------------'
-    print 'H-b:  ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'") + ' yr'
-    print 'He-b: ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'") + ' yr'
-    print 'C-b:  ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'") + ' yr'
-    print 'Ne-b: ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'") + ' yr'
-    print 'O-b:  ' + '{0:,}'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'") + ' yr'
-    print '---------------------------------------------------------------------'
+            num_star = list(MyDriver.Model_list_evol.keys())[0]
+    print('---------------------------------------------------------------------')
+    print('LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0])
+    print('---------------------------------------------------------------------')
+    print('     H-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'"))
+    print('     He-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'"))
+    print('     C-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'"))
+    print('     Ne-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'"))
+    print('     O-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'"))
+    print('---------------------------------------------------------------------')
 
 def convZones(num_star,colour='0.80'):
     """Shades the convective zones in a structure plot."""
     if MyDriver.modeplot != 'struc':
-        print 'The drawing of convective zones is possible only in structure mode. Please change with switch().'
+        print('The drawing of convective zones is possible only in structure mode. Please change with switch().')
         return
     selected_models_save = list(MyDriver.SelectedModels)
     select_model(num_star)
@@ -5447,39 +5490,40 @@ def convZones(num_star,colour='0.80'):
 def colours_calc(num_star=0):
     """Computes the colours and magnitudes of models in evol mode."""
     if MyDriver.modeplot != 'evol':
-        print 'This command is valid only in evol mode'
+        print('This command is valid only in evol mode')
         return
     if num_star == 0:
-        num_star = MyDriver.Model_list_evol.keys()
+        num_star = list(MyDriver.Model_list_evol.keys())
     for i in flatten([num_star]):
-        if 'M_K' not in MyDriver.Model_list[i].Variables.keys():
+        if 'M_K' not in list(MyDriver.Model_list[i].Variables.keys()):
             MyDriver.Model_list[i].ColoursCalc()
         else:
-            print 'colours already exist for model',i
+            print('colours already exist for model '+str(i))
 
 def colour_corr(excess,dist_mod,mag='M_V',col='B-V',num_star=0):
     """Corrects the magnitude and colour for a distance modulus and a colour excess.
        Usage: colour_corr(excess,dist_mod,mag,col,num_star)
               Note that num_star might be a list of models."""
     if MyDriver.modeplot != 'cluster':
-        print 'This command is valid only in cluster mode'
+        print('This command is valid only in cluster mode')
         return
     if num_star == 0:
-        num_star = MyDriver.Model_list_cluster.keys()
-    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in MyDriver.Model_list_cluster.keys()]
-    if len([i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]) !=0:
-        print 'Model(s) ',[i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()],' do(es) not exist in cluster list.'
+        num_star = list(MyDriver.Model_list_cluster.keys())
+    [MyDriver.Model_list[i].Colour_correction(excess,dist_mod,mag,col) for i in flatten([num_star]) if i in list(MyDriver.Model_list_cluster.keys())]
+    not_found = [i for i in flatten([num_star]) if i not in list(MyDriver.Model_list_cluster.keys())]
+    if len(not_found) !=0:
+        print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
 def add_noise(var,value,type='',num_star=0):
     """Adds a noise to a variable (cluster mode only).
        Usage: add_noise(var,value,num_star)."""
     if MyDriver.modeplot != 'cluster':
-        print 'This command is valid only in cluster mode'
+        print('This command is valid only in cluster mode')
         return
     if num_star == 0:
-        num_star = MyDriver.Model_list_cluster.keys()
+        num_star = list(MyDriver.Model_list_cluster.keys())
     for i in flatten([num_star]):
-        if i in MyDriver.Model_list_cluster.keys():
+        if i in list(MyDriver.Model_list_cluster.keys()):
             try:
                 try:
                     Del_Var(var+'_noised',i,quiet=True)
@@ -5497,9 +5541,10 @@ def add_noise(var,value,type='',num_star=0):
                     var_noised = np.log10(var_noised)
                 Set_Var(var_noised,var+'_noised',i,label=MyDriver.Model_list_cluster[i].Variables[var][1],category=MyDriver.Model_list_cluster[i].Variables[var][2])
             except KeyError:
-                print 'Variable '+var+' not known in model '+str(i)+': skipped...'
-    if len([i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()]) !=0:
-        print 'Model(s) ',[i for i in flatten([num_star]) if i not in MyDriver.Model_list_cluster.keys()],' do(es) not exist in cluster list.'
+                print('Variable {0} not known in model {1}: skipped...'.format(var,i))
+    not_found = [i for i in flatten([num_star]) if i not in list(MyDriver.Model_list_cluster.keys())]
+    if len(not_found) !=0:
+        print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
 
 def put_legend(loc=1,label=[],fontsize=''):
@@ -5549,18 +5594,19 @@ def Build_timestep(x,y,timestep,z=[]):
 def set_deltat(deltat,num_list=[]):
     """Allows to change the default timestep computed while reading the file (1.e6)."""
     if MyDriver.modeplot !='evol':
-        print 'Timesteps plotting only available in evol mode'
+        print('Timesteps plotting only available in evol mode')
         return
     if num_list == []:
         num_list = MyDriver.SelectedModels
-    local_num_list = [i for i in flatten([num_list]) if i in MyDriver.Model_list.keys()]
-    print 'Timesteps computed for star(s) ',local_num_list
-    if len([i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()]) !=0:
-        print 'Model(s) ',[i for i in flatten([num_list]) if i not in MyDriver.Model_list.keys()],' is (are) not loaded.'
+    local_num_list = [i for i in flatten([num_list]) if i in list(MyDriver.Model_list.keys())]
+    print('Timesteps computed for star{1} {0}'.format(local_num_list[:],pluralise(local_num_list,'','s')))
+    not_found = [i for i in flatten([num_list]) if i not in list(MyDriver.Model_list.keys())]
+    if len(not_found) !=0:
+        print('Model{1} {0} {2} not loaded.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
     for num_star in flatten(local_num_list):
-        print 'Timesteps of ',deltat,' years computing for star ',num_star
+        print('Timesteps of {0} years computing for star {1}'.format(deltat,num_star))
         if deltat == MyDriver.Model_list[num_star].deltat:
-            print 'Model ',num_star,' is already set with the wanted time step.'
+            print('Model {0} is already set with the wanted time step.'.format(num_star))
             pass
         current_time = MyDriver.Model_list[num_star].Variables['t'][0][0]
         MyDriver.Model_list[num_star].timestep = []
@@ -5575,10 +5621,11 @@ def set_deltat(deltat,num_list=[]):
             if current_time >= MyDriver.Model_list[num_star].Variables['t'][0][i]:
                 i+=1
 
-def timesteps(value):
-    """Switch on or off for the drawing of the timesteps (default=False)."""
+def timesteps(value=True):
+    """Switch on or off for the drawing of the timesteps (default=True).
+    Called without argument, switches on."""
     if not isinstance(value,bool):
-        print 'Boolean value expected'
+        print('Boolean value expected')
         return
     MyDriver.steps = value
 
@@ -5624,14 +5671,15 @@ def get_limits(quiet=False):
     ymax = plt.gca().get_ybound()[1]
     actualLimits = [xmin,xmax,ymin,ymax]
     if not quiet:
-        print 'To use these limits:\n Limits(xmin='+str(xmin)+',xmax='+str(xmax)+',ymin='+str(ymin)+',ymax='+str(ymax)+')'
+        print('To use these limits:')
+        print('   Limits(xmin={0},xmax={1},ymin={2},ymax={3})'.format(xmin,xmax,ymin,ymax))
     return actualLimits
 
 def Limits(**args):
     """Defines axis limits manually.
        Usage: Limits(xmin=2.,xmax=4.5,ymin=0.,ymax=1.)
        All arguments are optional."""
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg.lower() == 'xmin':
             MyDriver.axisFlag[0] = True
             MyDriver.axisLimits[0] = args[arg]
@@ -5695,7 +5743,7 @@ def set_lineStyle(NewValue,width=1):
     if NewValue in Rendering.Authorised_LineStyle:
         MyDriver.lineFlag = NewValue
     else:
-        print 'The value you entered is not correct, please choose one of the following: ',Rendering.Authorised_LineStyle
+        print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_LineStyle[:]))
 
 def setLine_style(NewValue,width=1):
     """Retrocompatibility command"""
@@ -5713,8 +5761,8 @@ def set_pointStyle(NewValue):
         elif isinstance(NewValue[0],int) and isinstance(NewValue[1],int) and isinstance(NewValue[2],int):
             MyDriver.pointFlag = NewValue
     else:
-        print 'The value you entered is not correct, please choose one of the following:',\
-               Rendering.Authorised_PointStyle,'\nor a tuple (numsides,style,angle)'
+        print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_PointStyle[:]))
+        print('or a tuple (numsides,style,angle)')
 
 def setPoint_style(NewValue):
     """Retrocompatibility command"""
@@ -5729,7 +5777,7 @@ def set_pointSize(NewValue=0,f=1.):
             if NewValue == 'default':
                 MyDriver.pointSize = 24
             else:
-                print 'The argument should be "default" or an integer for the sze in points.'
+                print('The argument should be "default" or an integer for the size in points.')
         elif isinstance(NewValue,int) or isinstance(NewValue,float):
             MyDriver.pointSize = NewValue
     else:
@@ -5747,7 +5795,7 @@ def set_PSminmax(min=0,max=0):
             if min == 'default':
                 MyDriver.PSmin = 5
                 MyDriver.PSmax = 200
-                print 'min and max point size set to default values (5,200)'
+                print('min and max point size set to default values (5,200)')
         if isinstance(min,int) or isinstance(min,float):
             MyDriver.PSmin = min
     if max != 0:
@@ -5760,7 +5808,7 @@ def timestep_marker(NewValue):
     if NewValue in ['o','^','s','p','v','d','>','<']:
         MyDriver.timestep_marker = NewValue
     else:
-        print 'The value you entered is not correct, please choose one of the following: o,^,s,p,v,d,>,<'
+        print('The value you entered is not correct, please choose one of the following: o,^,s,p,v,d,>,<')
 
 def set_colourSequence(NewValue):
     """Sets the colour sequence when plotting more than one model.
@@ -5771,16 +5819,16 @@ def set_colourSequence(NewValue):
     elif NewValue == 'i':
         MyDriver.colourSequence = 'iris'
     elif NewValue == 'p':
-        print 'Personnalised colour sequence'
-        cseq_key = raw_input('Enter new sequence name: ')
-        cseq_list = raw_input('Enter new list (format: [[colours],[names]]): ')
+        print('Personnalised colour sequence')
+        cseq_key = input('Enter new sequence name: ')
+        cseq_list = input('Enter new list (format: [[colours],[names]]): ')
         Rendering.Colours_list[cseq_key] = eval(cseq_list)
         MyDriver.colourSequence = cseq_key
     else:
-        if NewValue not in Rendering.Colours_list.keys():
-            print 'The value you entered is not correct. Existing sequences are:'
-            for i in Rendering.Colours_list.keys():
-                print i+': '+ str(Rendering.Colours_list[i][1])
+        if NewValue not in list(Rendering.Colours_list.keys()):
+            print('The value you entered is not correct. Existing sequences are:')
+            for i in list(Rendering.Colours_list.keys()):
+                print('{0}: {1}'.format(i,Rendering.Colours_list[i][1]))
         else:
             MyDriver.colourSequence = NewValue
 
@@ -5799,20 +5847,20 @@ def set_colourFlag(NewValue):
         if NewValue.lower() in Rendering.Authorised_Colours:
             MyDriver.colourFlag = NewValue
         else:
-            print 'The name you entered does not exist. Check and try again'
+            print('The name you entered does not exist. Check and try again')
     elif isinstance(NewValue,tuple):
         if isinstance(NewValue[0],float) and isinstance(NewValue[1],float) and isinstance(NewValue[2],float):
             MyDriver.colourFlag = NewValue
     elif isinstance(NewValue,float):
         MyDriver.colourFlag = (NewValue,NewValue,NewValue)
     else:
-        print 'The value you entered is not correct'
+        print('The value you entered is not correct')
 
 def CBLimits(**args):
     """Defines the limits for the colourbar manually.
        Usage: CBLimits(min=2.,max=4.5)
        All arguments are optional."""
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'min':
             MyDriver.CBFlag[0] = True
             MyDriver.CBLimits[0] = args[arg]
@@ -5838,7 +5886,7 @@ def keep_CBlimits(choice=None):
     """Fixes the limits of the colourbar to the actual ones"""
     if choice == True or choice == None:
         [min,max] = MyDriver.get_CBlimits
-        print 'colour limits:',min,max
+        print('colour bar limits: {0},{1}'.format(min,max))
     elif choice == False:
         noCBLimits()
     else:
@@ -5852,7 +5900,7 @@ def axis_inv(*args):
     """Inversion of axis.
        Usage: axis_inv("axis") with axis = 'x', 'y', 'xy'."""
     if not args:
-        print 'You need to precise wich axis you want to invert: x, y, or both (xy)?'
+        print('You need to precise wich axis you want to invert: x, y, or both (xy)?')
     else:
         for arg in args:
             if 'x' in arg.lower():
@@ -5876,7 +5924,7 @@ def logVar(*args):
     """Plots the variable in log.
        Usage: logVar("axis") with axis = 'x', 'y', 'z', or any combination such as 'xy'."""
     if not args:
-        print 'You need to precise for wich axis you want the logarithmic value: x, y, z, or anycombination (xy)?'
+        print('You need to precise for wich axis you want the logarithmic value: x, y, z, or anycombination (xy)?')
     else:
         for arg in args:
             if 'x' in arg.lower():
@@ -5913,7 +5961,7 @@ def logScale(*args):
     """Plots the variable on a log scale (ticks).
        Usage: logScale("axis") with axis = 'x', 'y', 'xy'."""
     if not args:
-        print 'You need to precise for wich axis you want the logarithmic scale: x, y, or both (xy)?'
+        print('You need to precise for wich axis you want the logarithmic scale: x, y, or both (xy)?')
     else:
         for arg in args:
             if 'x' in arg.lower():
@@ -5944,7 +5992,7 @@ def configPlot():
                 NewFig = False
             mySubplot = 111
         else:
-            print 'il y a une couille dans le potage'
+            print('il y a une couille dans le potage')
             return True,111
     elif  MyDriver.plotConfig[0] == 2:
         if  MyDriver.plotConfig[1] in [1,2]:
@@ -5954,10 +6002,10 @@ def configPlot():
                 NewFig = False
             mySubplot = 210 + MyDriver.plotConfig[1]
             if not MyDriver.keepplot:
-                print 'Plot ',mySubplot
+                print('Plot {0}'.format(mySubplot))
                 MyDriver.plotConfig[1] = MyDriver.plotConfig[1] % 2 + 1
         else:
-            print 'il y a une couille dans le potage'
+            print('il y a une couille dans le potage')
             return True,111
     elif  MyDriver.plotConfig[0] == 4:
         if  MyDriver.plotConfig[1] in [1,2,3,4]:
@@ -5967,10 +6015,10 @@ def configPlot():
                 NewFig = False
             mySubplot = 220 + MyDriver.plotConfig[1]
             if not MyDriver.keepplot:
-                print 'Plot ',mySubplot
+                print('Plot {0}'.format(mySubplot))
                 MyDriver.plotConfig[1] = MyDriver.plotConfig[1] % 4 + 1
         else:
-            print 'il y a une couille dans le potage'
+            print('il y a une couille dans le potage')
             return True,111
     return NewFig,mySubplot
 
@@ -5979,7 +6027,7 @@ def keep_plot(value):
     if value in [False,True]:
         MyDriver.keepplot = value
     else:
-        print 'Needs to be True or False.'
+        print('Needs to be True or False.')
         return
 
 def plot2var(mode = 'same'):
@@ -5991,7 +6039,7 @@ def plot2var(mode = 'same'):
     elif mode == 'double':
         MyDriver.multiplot = True
     else:
-        print 'Mode should be "same" or "double"...'
+        print('Mode should be "same" or "double"...')
         return
 
     keep_plot(True)
@@ -6006,7 +6054,7 @@ def multiPlot(plot_num):
     if plot_num in [1,2,4]:
         MyDriver.plotConfig = [plot_num,1]
     else:
-        print 'Sorry, we didn\'t code for anything else than 1-, 2-, or 4-plots windows.'
+        print('Sorry, we did not code for anything else than 1-, 2-, or 4-plots windows.')
 
 def defX(varX):
     """Allows to change the default value for the x axis:
@@ -6059,8 +6107,8 @@ def default_settings():
         MyDriver.Xvar = 'Teff'
         MyDriver.iPoints = True
     else:
-        print 'Wrong mode, should be one of the following:\n\t evol\n\t struc\n\t cluster.\n'
-        print 'The default x variable could not be recovered.'
+        print('Wrong mode, should be one of the following:\n\t evol\n\t struc\n\t cluster.\n')
+        print('The default x variable could not be recovered.')
 
 def fit_poly(deg=1,y='',colour='0.80'):
     """Returns the factor of the polynomial fit of the degree entered as deg=... (default 1).
@@ -6077,9 +6125,9 @@ def fit_poly(deg=1,y='',colour='0.80'):
     for i in range(len(fit)-2):
         eq_str =  eq_str + '{:+f}x^{:d} '.format(fit[i],len(fit)-i-1)
     eq_str = eq_str + '{:+f}x {:+f}'.format(fit[-2],fit[-1])
-    print '--------------------------------------------------------------------'
-    print 'FIT equation:',eq_str
-    print '--------------------------------------------------------------------'
+    print('--------------------------------------------------------------------')
+    print('FIT equation: '+eq_str)
+    print('--------------------------------------------------------------------')
     xinf,xsup = plt.gca().get_xbound()
     draw_x = np.linspace(xinf,xsup,100)
     draw_y = np.zeros(len(draw_x))
@@ -6115,7 +6163,7 @@ def line(x1,x2,y1,y2,colour='0.80',line='-'):
 def slope(value,centre=[0.,0.],colour='0.80',line='-'):
     """Draws a line of slope 'value' on an existing graph.
        The optional parameter centre=[x,y] allows to centre the line on point (x,y)"""
-    print 'slope : ',value
+    print('slope : {0}'.format(value))
     xinf,xsup,yinf,ysup = get_limits(quiet=True)
     if centre == [0.,0.]:
         centre = [xinf+(xsup-xinf)/2.,yinf+(ysup-yinf)/2.]
@@ -6137,7 +6185,7 @@ def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
         - fontsize=n for setting the fontsize of the string."""
     colourFlag_save = MyDriver.colourFlag
     pointFlag_save = MyDriver.pointFlag
-    pointSize = MyDriver.pointSize
+    pointSize = np.sqrt(MyDriver.pointSize)
     if err != []:
         if np.size(err[0]) > 1:
             err[0] = [[err[0][0]],[err[0][1]]]
@@ -6160,16 +6208,17 @@ def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
             plt.errorbar(x,y,xerr=err[0],yerr=err[1],ecolor='k')
         plt.scatter(x,y,marker=MyDriver.pointFlag,c=MyDriver.colourFlag,s=pointSize,edgecolors='none')
     if label:
-    	if pos == 'left':
-    		ha = 'right'
-    	elif pos == 'center' or pos == 'centre':
-    		ha = 'center'
-    	elif pos == 'right':
-    		ha = 'left'
-    	else:
-    		print "wrong position, should be 'left', 'center', or 'right'. Set to 'right'."
-    		pos = 'right'
-    		ha = 'left'
+        if pos == 'left':
+            ha = 'right'
+        elif pos == 'center' or pos == 'centre':
+            ha = 'center'
+        elif pos == 'right':
+            ha = 'left'
+        else:
+            print("wrong position, should be 'left', 'center', or 'right'. Set to 'right'.")
+            pos = 'right'
+            ha = 'left'
+
         if fontsize == 0:
             fontsize = MyDriver.fontSize
         else:
@@ -6177,13 +6226,13 @@ def dotxy(x,y,style='',err=[],size=0,f=0,label='',pos='right',fontsize=0):
         xmin,xmax,ymin,ymax=get_limits(quiet=True)
         delta_x = (xmax-xmin)*0.03
         if pos == 'left' and not MyDriver.axisInv[0]:
-        	new_x = x - delta_x
+            new_x = x - delta_x
         elif pos == 'right' or MyDriver.axisInv[0]:
-        	new_x = x + delta_x
+            new_x = x + delta_x
         elif pos == 'center' or pos == 'centre':
-        	new_x = x
+            new_x = x
         else:
-        	new_x = x + delta_x
+            new_x = x + delta_x
         add_label(new_x,y,label,va='center',ha=ha,fontsize=fontsize)
 
     MyDriver.colourFlag = colourFlag_save
@@ -6200,13 +6249,13 @@ def shade(x,y,colour='0.80',alpha=0.20,hatch=''):
         elif isinstance(x,np.ndarray):
             x = np.hstack((x,x[-1]))
         else:
-            print "Problem with the kind of data in shade."
+            print("Problem with the kind of data in shade.")
         if isinstance(y,list):
             y.append(y[0])
         elif isinstance(y,np.ndarray):
             y = np.hstack((y,y[-1]))
         else:
-            print "Problem with the kind of data in shade."
+            print("Problem with the kind of data in shade.")
     plt.fill(x,y,color=colour,alpha=alpha,hatch=hatch)
     plt.draw()
 
@@ -6232,7 +6281,7 @@ def set_fontSize(size=0,f=1.):
             if size == 'default':
                 MyDriver.fontSize = 24
             else:
-                print 'The argument should be "default" or an integer for the sze in points.'
+                print('The argument should be "default" or an integer for the sze in points.')
         elif isinstance(size,int) or isinstance(size,float):
             MyDriver.fontSize = size
     else:
@@ -6297,9 +6346,9 @@ def MyFig(name,path='',format='svg',layout=''):
         orientation='Landscape'
     else:
         orientation='Squared'
-    print orientation+' figure: dimensions ',MyDriver.current_Fig.get_size_inches()
+    print('{0} figure: dimensions {1}'.format(orientation,MyDriver.current_Fig.get_size_inches()))
     plt.savefig(path+name+'.'+myFormat,format=myFormat,bbox_inches='tight',edgecolor='none')
-    print('Figure '+path+name+'.'+myFormat+' created successfully')
+    print('Figure {0}{1}.{2} created successfully'.format(path,name,myFormat))
     MyDriver.LatexEnabled = iLatex_save
 
 def change_label(axe,label):
@@ -6320,7 +6369,7 @@ def add_label(x,y,string,**args):
     myHAlignment = "left"
     myVAlignment = "bottom"
     colour='k'
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'colour':
             colour = args[arg]
         elif arg == 'fontsize':
@@ -6330,7 +6379,7 @@ def add_label(x,y,string,**args):
         elif arg == 'va':
             myVAlignment = args[arg]
         else:
-            print 'Argument ',arg,' not valid'
+            print('Argument {0} not valid'.format(arg))
     plt.text(x,y,string,color=colour,fontsize=myFontsize,ha=myHAlignment,va=myVAlignment)
 
 def top_label(string,**args):
@@ -6338,11 +6387,11 @@ def top_label(string,**args):
        If not specified (fontsize=...), the fontsize is the default one (24)
        or the one set by set_fontSize()."""
     myFontsize = MyDriver.fontSize
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'fontsize':
             myFontsize = args[arg]
         else:
-            print 'Argument ',arg,' not valid'
+            print('Argument {0} not valid'.format(arg))
     plt.suptitle(string,fontsize=myFontsize)
 
 def blabla(string):
@@ -6361,18 +6410,18 @@ def clickcursor(event):
     global coords
     coords=[]
     coords.append((event.xdata,event.ydata))
-    print 'x=%f, y=%f'%(event.xdata, event.ydata)
+    print('x=%f, y=%f'%(event.xdata, event.ydata))
     Points = plt.plot(event.xdata,event.ydata,'ob')
 
 def cursor():
     """Retrieves the position of mouseclicks on the plot."""
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickcursor)
-    raw_input('Press enter when finished.\n')
+    input('Press enter when finished.\n')
     return coords[-1]
 
 def clickdist(event):
     """Needed by the command dist()."""
-    print 'x=%f, y=%f'%(event.xdata, event.ydata)
+    print('x=%f, y=%f'%(event.xdata, event.ydata))
     MyDriver.cursor_position.append([event.xdata,event.ydata])
     Points = plt.plot(event.xdata,event.ydata,'or')
     Pts = Points.pop(0)
@@ -6385,16 +6434,16 @@ def dist():
         Point.remove()
     MyDriver.cursor_points = []
     MyDriver.Cursor_Event_ID=MyDriver.current_Fig.canvas.mpl_connect('button_press_event', clickdist)
-    raw_input('Press enter when finished.\n')
+    input('Press enter when finished.\n')
     xdist = float(MyDriver.cursor_position[-1][0]) - float(MyDriver.cursor_position[-2][0])
     ydist = float(MyDriver.cursor_position[-1][1]) - float(MyDriver.cursor_position[-2][1])
-    print 'Distance along x-axis = ', xdist
-    print 'Distance along y-axis = ', ydist
-    print 'Absolute distance = ', math.sqrt(xdist**2. + ydist**2.)
+    print('Distance along x-axis = {0}'.format(xdist))
+    print('Distance along y-axis = {0}'.format(ydist))
+    print('Absolute distance = {0}'.format(math.sqrt(xdist**2. + ydist**2.)))
     if xdist!= 0.:
-        print 'dy/dx = ',ydist/xdist
+        print('dy/dx = {0}'.format(ydist/xdist))
     else:
-        print 'dy/dx = infinity'
+        print('dy/dx = infinity')
 
 def closest_line(Xvar='',Yvar='',printline=False):
     """Finds the closest line from a cursor selection.
@@ -6423,17 +6472,17 @@ def closest_line(Xvar='',Yvar='',printline=False):
             best_i = i
         line_i[i] = myline[closest]
     if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
-        print 'Beware: the line will not be as accurate as if you used the complete .wg file.\n'
+        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
     if not printline:
       if len(MyDriver.SelectedModels) > 1:
-        print 'closest model:',best_i
+        print('closest model: {0}'.format(best_i))
       return line_i[best_i]
     else:
       with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
         for file_line in myfile:
           current_model = int(file_line.split()[0])
           if current_model == line_i[best_i]:
-            print file_line
+            print(str(file_line))
             return line_i[best_i]
 
 def file_len(fname):
@@ -6484,7 +6533,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
         MyDriver.lineFlag = '-'
     if 'cycle' in MyDriver.pointFlag:
         MyDriver.pointFlag = 'o'
-    for arg in args.keys():
+    for arg in list(args.keys()):
         if arg == 'skip':
             skip = args[arg]
         if arg == 'last':
@@ -6558,17 +6607,17 @@ def plotExternal(fileName,colX,colY,*argus,**args):
 
     if zcolour:
         iColour = myZ
-    	if clim == 'old':
-    	    minZ,maxZ = MyDriver.get_CBlimits
-    	else:
-    	    if MyDriver.CBFlag[0]:
-    	        minZ = MyDriver.CBLimits[0]
-    	    else:
-    	        minZ = np.min(myZ)
-    	    if MyDriver.CBFlag[1]:
-    	        maxZ = MyDriver.CBLimits[1]
-    	    else:
-    	        maxZ = np.max(myZ)
+        if clim == 'old':
+            minZ,maxZ = MyDriver.get_CBlimits
+        else:
+            if MyDriver.CBFlag[0]:
+                minZ = MyDriver.CBLimits[0]
+            else:
+                minZ = np.min(myZ)
+            if MyDriver.CBFlag[1]:
+                maxZ = MyDriver.CBLimits[1]
+            else:
+                maxZ = np.max(myZ)
     if varsize:
         points = myS
 

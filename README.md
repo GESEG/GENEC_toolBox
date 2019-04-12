@@ -7,7 +7,21 @@ Requires:
  - scipy >= 0.19
  - matplotlib >= 2.0
 
+Please read carefully the changes brought by version 8.3.0 to respect the syntax that allows
+both python2 and python3 compatibility.
+
 # CHANGES:
+
+v. 8.3.0:
+ * change of syntax to be python2 AND python3 compatible
+  ** use of print() instead of print
+  ** use of list(d.keys()) instead of d.keys()
+  ** same for d.items() and d.values()
+  ** use of list(range()) instead of range()
+  ** use of input() instead of raw_input()
+  ** use of configparser instead of ConfigParser
+
+  ** NB: input() and configparser are imported through the six module
 
 v. 8.2.0:
  * Gaia colours are included
