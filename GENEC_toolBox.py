@@ -76,10 +76,36 @@ def multiReplace(text,wordDict):
     return text
 
 def pluralise(list,sing,plural):
-    if len(list) > 1:
+    if len(flatten([list])) > 1:
         return plural
     else:
         return sing
+
+def engineer_format(value,precision=5,units='yr'):
+    incPrefixes = {0:'',1:'k',2:'M',3:'G',4:'T',5:'P',6:'E',7:'Z',8:'Y'}
+    decPrefixes = {0:'',1:'m',2:'u',3:'n',4:'p',5:'f',6:'a',7:'z',8:'y'}
+    timeUnits = {0:[365.,'d  '],1:[24.,'hr  '],2:[60.,'m  '],3:[60.,'s  ']}
+    if value == 0.:
+        return '0 {0}'.format(units)
+    power = math.floor(np.log10(value))
+    digit = 10.**(np.log10(value) - power)
+    multiplier = power%3
+    prefix_key = abs((power - multiplier) // 3)
+    digit = digit * 10.**multiplier
+    digit_string = '{1:6.{0}f}'.format(precision,digit)
+    if power >= 0:
+        prefix = incPrefixes[prefix_key]
+    else:
+        if units != 'yr':
+            prefix = decPrefixes[prefix_key]
+        else:
+            down_value = value
+            for i in list(timeUnits.keys()):
+                down_value = down_value*timeUnits[i][0]
+                if math.floor(np.log10(down_value)) >= 0 or i == 3:
+                    return '{1:6.{0}f} {2}'.format(precision,down_value,timeUnits[i][1])
+
+    return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
     GtB_version = '8.3.1'
@@ -1184,6 +1210,11 @@ class Driver():
         self.tickwidth = 1
         self.subplotSep = 0.2
         self.logScale = [False,False]
+        self.plotgrid = False
+        self.grid_ax = 'both'
+        self.gridls = '-'
+        self.gridlw = 0.2
+        self.gridlc = '0.80'
         self.minorLoc = 0
 
         self.LatexEnabled = False
@@ -1468,6 +1499,7 @@ class Model(Outputs):
         self.Variables['M_G'] = [np.zeros((imax)),'M$_\mathrm{G}','colours']
         self.Variables['M_Gbp'] = [np.zeros((imax)),'M$_\mathrm{Gbp}','colours']
         self.Variables['M_Grp'] = [np.zeros((imax)),'M$_\mathrm{Grp}','colours']
+        self.Variables['Gbp-Grp'] = [np.zeros((imax)),'Gbp-Grp','colours']
 
         for i in range(self.imax):
             self.Colours.Colours_Conversion(self.Variables['FeH'][0][i],self.Variables['gpol'][0][i],10.**self.Variables['Teff'][0][i])
@@ -1501,6 +1533,7 @@ class Model(Outputs):
         self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
         self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
         self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
+        self.Variables['Gbp-Grp'][0] = self.Variables['Gbp-V'][0]-self.Variables['Grp-V'][0]
 
         return
 
@@ -1750,7 +1783,7 @@ class Model(Outputs):
         mask = self.Variables['Iradmax'][0]<=0.
         self.Variables['Iradmax'][0][mask] = 0.
         self.Variables['Iradmax'][0][np.logical_not(mask)] = np.log10(self.Variables['Iradmax'][0][np.logical_not(mask)])
-        
+
         # We add the period:
         mask = self.Variables['Omega_surf'][0]==0.
         self.Variables['Prot'] = [np.zeros(np.size(self.Variables['line'][0])),'$P\,[\\mathrm{day}]$','rotation']
@@ -3913,7 +3946,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
         if not masked:
             myMask = (np.zeros(len(MyDriver.Model_list[i].Variables[y][0])) == 0.)
         else:
-            myMask = BuildMask(plotif[0],plotif[1],i)
+            myMask = BuildMask(plotif,i)
             if all([v == False for v in myMask]):
                 print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
@@ -4050,6 +4083,9 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     if MyDriver.logScale[1] == False:
         New_Axes.ticklabel_format(style='sci',scilimits=(-3,4),axis='y')
 
+    if MyDriver.plotgrid:
+        plt.grid(which='both',axis=MyDriver.grid_ax,ls=MyDriver.gridls,lw=MyDriver.gridlw,color=MyDriver.gridlc)
+
     plt.show(block=False)
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
@@ -4116,7 +4152,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         if not masked:
             myMask = (np.zeros(len(MyDriver.Model_list[i].Variables[y][0])) == 0.)
         else:
-            myMask = BuildMask(plotif[0],plotif[1],i)
+            myMask = BuildMask(plotif,i)
             if all([v == False for v in myMask]):
                 print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
@@ -4154,7 +4190,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         if not masked:
             myMask = (np.zeros(len(MyDriver.Model_list[i].Variables[y][0])) == 0.)
         else:
-            myMask = BuildMask(plotif[0],plotif[1],i)
+            myMask = BuildMask(plotif,i)
             if all([v == False for v in myMask]):
                 print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
@@ -4267,6 +4303,9 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
+
+    if MyDriver.plotgrid:
+        plt.grid(which='both',axis=MyDriver.grid_ax,ls=MyDriver.gridls,lw=MyDriver.gridlw,color=MyDriver.gridlc)
 
     plt.draw()
     plt.show(block=False)
@@ -4846,6 +4885,9 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
 
         plt.xlabel(MyDriver.Model_list[num_star].Variables[MyDriver.Xvar][1],fontsize = MyDriver.fontSize+4)
         plt.ylabel('$M_r\ [M_\odot]$',fontsize = MyDriver.fontSize+4)
+        if MyDriver.Xvar == 't_rel':
+            xline(1.)
+            xline(2.)
         if burn:
             Evol_file = MyDriver.Model_list[num_star].Variables['FileName'][0]
             i_ext = Evol_file.rfind('.')
@@ -5502,11 +5544,11 @@ def get_lifetimes(num_star=0):
     print('---------------------------------------------------------------------')
     print('LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0])
     print('---------------------------------------------------------------------')
-    print('     H-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'"))
-    print('     He-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'"))
-    print('     C-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'"))
-    print('     Ne-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'"))
-    print('     O-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'"))
+    print('     H-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0])))
+    print('     He-b:  {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1])))
+    print('     C-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2])))
+    print('     Ne-b:  {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3])))
+    print('     O-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4])))
     print('---------------------------------------------------------------------')
 
 def convZones(num_star,colour='0.80'):
@@ -5611,11 +5653,53 @@ def put_legend(loc=1,label=[],fontsize=''):
         fontsize = MyDriver.fontSize/1.5
     plt.legend(handles,labels,loc=loc,fontsize=fontsize)
 
-def BuildMask(var,cond,i):
+def BuildMask(plotif,i):
     """Needed by Plot() to limit the plotting to conditions."""
-    if not isinstance(var,list):
+    comp_double = ['==','!=','<=','>=']
+    comp_simple = ['=','<','>']
+    if isinstance(plotif,list):
+        if isinstance(plotif[0],list):
+            if plotif[0][1][0] in ['=','!','>','<']:
+                var = [v[0] for v in plotif[:]]
+                cond = [c[1] for c in plotif[:]]
+            else:
+                var = plotif[0]
+                cond = plotif[1]
+        else:
+            if any([c in plotif[0] for c in comp_simple]):
+                var = []
+                cond = []
+                for condition in plotif:
+                    comparator = ''
+                    for comp in comp_double:
+                        if comp in condition:
+                            comparator = comp
+                            break
+                    if comparator == '':
+                        for comp in comp_simple:
+                            if comp in condition:
+                                comparator = comp
+                                break
+                    v,c = condition.split(comparator)
+                    var.append(v)
+                    cond.append(comparator+c)
+            else:
+                var = [plotif[0]]
+                cond = [plotif[1]]
+    else:
+        comparator = ''
+        for comp in comp_double:
+            if comp in plotif:
+                comparator = comp
+                break
+        if comparator == '':
+            for comp in comp_simple:
+                if comp in plotif:
+                    comparator = comp
+                    break
+        var,cond = plotif.split(comparator)
         var = [var]
-        cond = [cond]
+        cond = [comparator+cond]
     Mask = (np.zeros(len(MyDriver.Model_list[i].Variables[var[0]][0])) == 0.)
     for myVar,myCond in zip(var,cond):
         cond_var = MyDriver.Model_list[i].Variables[myVar][0]
@@ -5669,6 +5753,79 @@ def timesteps(value=True):
         print('Boolean value expected')
         return
     MyDriver.steps = value
+
+def dot_age(age,num_star=0,marker='o',colour='',age_print=False,precision=5,legend_star=0):
+    single_colour = False
+    single_marker = False
+    log_age = False
+    age_string = 'age{0}'.format(pluralise(age,'','s'))
+    if all(a < 12. for a in flatten([age])):
+        log_age = True
+        age = [10.**a for a in flatten([age])]
+        age_string = 'log(age{0})'.format(pluralise(age,'','s'))
+    if num_star == 0:
+        num_star = list(MyDriver.Model_list.keys())
+    if not colour:
+        if MyDriver.colourFlag != 'cycle':
+            colour = MyDriver.colourFlag
+        else:
+            colour = 'k'
+    age_list_size = len(flatten([age]))
+    if age_list_size > 1:
+        if len(marker) > 1 and len(marker) != age_list_size:
+            print('markers number needs to be equal to ages number')
+            return
+        elif len(marker) == 1:
+            single_marker = True
+            marker = age_list_size * [marker]
+        if len(colour) > 1 and len(colour) != age_list_size:
+            print('colours number needs to be equal to ages number')
+            return
+        elif len(colour) == 1:
+            single_colour = True
+            colour = age_list_size * [colour]
+    else:
+        single_colour = True
+        single_marker = True
+    Xvar = MyDriver.lastXvar
+    Yvar = MyDriver.lastYvar
+    if not age_print:
+        print('Mark{0} at {1}:'.format(pluralise(age,'','s'),age_string))
+        for j,a in enumerate(age):
+            if log_age:
+                a_print = '{0:10.6g}'.format(np.log10(a))
+            else:
+                a_print = engineer_format(a)
+            if not single_colour and not single_marker:
+                print('  {0} {1} - {2}'.format(colour[j],marker[j],a_print))
+            elif single_colour and not single_marker:
+                print('  {0} - {1}'.format(marker[j],a_print))
+            elif single_marker and not single_colour:
+                print('  {0} - {1}'.format(colour[j],a_print))
+            else:
+                print('  {0} - {1}'.format(j+1,a_print))
+    for i in flatten([num_star]):
+        myAge = Get_Var('t',i)
+        applied_age = [a for a in age if a <= myAge[-1]]
+        if len(applied_age) != len(age):
+            #age_dead = list(set(age)-set(applied_age))[0]
+            print('Star {0} dies at {1} {2}'.format(i,'log(age)' if log_age else 'age',\
+                  np.log10(myAge[-1]) if log_age else engineer_format(myAge[-1])))
+        interp_AgeX = interpolate.interp1d(myAge,Get_Var(Xvar,i))
+        interp_AgeY = interpolate.interp1d(myAge,Get_Var(Yvar,i))
+        try:
+            x_list = interp_AgeX(applied_age)
+            y_list = interp_AgeY(applied_age)
+        except ValueError:
+            continue
+        for j,a in enumerate(applied_age):
+            if log_age:
+                a_print = '{0:10.6g}'.format(np.log10(a))
+            else:
+                a_print = engineer_format(a,precision=precision)
+            plt.scatter(x_list[j],y_list[j],c=colour[j],marker=marker[j])
+            if age_print and (legend_star==0 or legend_star==i):
+                plt.text(x_list[j],y_list[j],' {0}'.format(a_print))
 
 def DefNewLimits(CurrentLimits):
     """Needed by Plot."""
@@ -5997,30 +6154,28 @@ def no_log_Var(*args):
     """Retrocompatibility command"""
     no_logVar(*args)
 
-
-def logScale(*args):
+def logScale(ax='xy',grid=True,ls='-',lw=0.2,lc='0.80'):
     """Plots the variable on a log scale (ticks).
        Usage: logScale("axis") with axis = 'x', 'y', 'xy'."""
-    if not args:
-        print('You need to precise for wich axis you want the logarithmic scale: x, y, or both (xy)?')
-    else:
-        for arg in args:
-            if 'x' in arg.lower():
-                MyDriver.logScale[0] = True
-            if 'y' in arg.lower():
-                MyDriver.logScale[1] = True
+    if 'x' in ax.lower():
+        MyDriver.logScale[0] = True
+    if 'y' in ax.lower():
+        MyDriver.logScale[1] = True
+    if grid:
+        MyDriver.plotgrid = True
+        MyDriver.grid_ax = ax.replace('xy','both')
+        MyDriver.gridls = ls
+        MyDriver.gridlw = lw
+        MyDriver.gridlc = lc
 
-def no_logScale(*args):
+def no_logScale(ax='xy'):
     """Returns to plotting the variable in linear scale.
        Usage: no_logScale("axis") with axis = 'x', 'y', 'xy'."""
-    if not args:
-        MyDriver.logScale = [False,False]
-    else:
-        for arg in args:
-            if 'x' in arg.lower():
-                MyDriver.logScale[0] = False
-            if 'y' in arg.lower():
-                MyDriver.logScale[1] = False
+    if 'x' in ax.lower():
+        MyDriver.logScale[0] = False
+    if 'y' in ax.lower():
+        MyDriver.logScale[1] = False
+    MyDriver.plotgrid = False
 
 def configPlot():
     """Used by Plot() and Kippen().
@@ -6111,6 +6266,11 @@ def default_settings():
     MyDriver.minorLoc = 0
     MyDriver.subplotSep = 0.2
     MyDriver.logScale = [False,False]
+    MyDriver.plotgrid = False
+    MyDriver.grid_ax = 'both'
+    MyDriver.gridls = '-'
+    MyDriver.gridlw = 0.2
+    MyDriver.gridlc = '0.80'
     MyDriver.lineFlag = 'cycle_colour'
     MyDriver.lineWidth = 1
     MyDriver.colourFlag = 'cycle'
@@ -6434,6 +6594,16 @@ def top_label(string,**args):
         else:
             print('Argument {0} not valid'.format(arg))
     plt.suptitle(string,fontsize=myFontsize)
+
+def display_grid(value=True,ax='xy',ls='-',lw=0.25,lc='0.80'):
+    if value:
+        MyDriver.plotgrid = True
+        MyDriver.grid_ax = ax.replace('xy','both')
+        MyDriver.gridls = ls
+        MyDriver.gridlw = lw
+        MyDriver.gridlc = lc
+    else:
+        MyDriver.plotgrid = False
 
 def blabla(string):
     """Creates an svg file in the FigPath containing the string entered as input argument."""
