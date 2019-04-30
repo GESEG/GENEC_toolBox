@@ -1537,6 +1537,53 @@ class Model(Outputs):
 
         return
 
+    def Star_flag(self):
+        O_type_Limit = 4.47712
+        B_type_Limit = 3.99078
+        A_type_Limit = 3.86332
+        F_type_Limit = 3.77379
+        G_type_Limit = 3.71181
+        K_type_Limit = 3.58433
+        RSG_Temp = 3.66
+        YSG_Temp = 3.9
+        BSG_Temp = 4.4
+        SG_L = 4.0
+        WR_temp = 4.
+        WR_H = 0.3
+        WNL_H = 1.e-5
+
+        lum = self.Variables['L'][0]
+        teff = self.Variables['Teff'][0]
+        phase = self.Variables['phase'][0]
+        H = self.Variables['H1s'][0]
+        C = self.Variables['C12s'][0]
+        N = self.Variables['N14s'][0]
+
+        star_flag = np.empty(self.imax,dtype='S6')
+
+        star_flag[teff>O_type_Limit] = 'O-type'
+        star_flag[np.logical_and(teff<=O_type_Limit,teff>B_type_Limit)] = 'B-type'
+        star_flag[np.logical_and(teff<=B_type_Limit,teff>A_type_Limit)] = 'A-type'
+        star_flag[np.logical_and(teff<=A_type_Limit,teff>F_type_Limit)] = 'F-type'
+        star_flag[np.logical_and(teff<=F_type_Limit,teff>G_type_Limit)] = 'G-type'
+        star_flag[np.logical_and(teff<=G_type_Limit,teff>K_type_Limit)] = 'K-type'
+        star_flag[teff<=K_type_Limit] = 'M-type'
+
+        not_MS = phase != 'H'
+        star_flag[np.logical_and(not_MS,np.logical_and(teff>=A_type_Limit,lum>=SG_L))] = 'BSG'
+        star_flag[np.logical_and(not_MS,np.logical_and(teff<=RSG_Temp,lum>=SG_L))] = 'RSG'
+        star_flag[np.logical_and(not_MS,np.logical_and(np.logical_and(teff>RSG_Temp,teff<=YSG_Temp),lum>=SG_L))] = 'YSG'
+
+        is_a_WR = np.logical_and(teff>=WR_temp,H<=WR_H)
+        star_flag[np.logical_and(is_a_WR,H>WNL_H)] = 'WNL'
+        star_flag[np.logical_and(is_a_WR,np.logical_and(H<=WNL_H,C<=N))] = 'WNE'
+        is_a_WCO = np.logical_and(is_a_WR,np.logical_and(H<=WNL_H,C>N))
+        is_a_WO = np.logical_and(is_a_WCO,teff>5.25)
+        star_flag[np.logical_and(is_a_WCO,np.logical_not(is_a_WO))] = 'WC'
+        star_flag[np.logical_and(is_a_WCO,is_a_WO)] = 'WO'
+
+        self.Variables['star_flag'] = [star_flag,'star type','model']
+
     def Spec_var_o2013(self):
         if self.Variables['format'][0][0] != 'o2013':
             return
@@ -2049,6 +2096,7 @@ class Model(Outputs):
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
+        self.Star_flag()
         if colour:
             self.ColoursCalc()
         self.Variables['ageadv'][0] = np.log10(self.Variables['ageadv'][0])
