@@ -1559,7 +1559,7 @@ class Model(Outputs):
         C = self.Variables['C12s'][0]
         N = self.Variables['N14s'][0]
 
-        star_flag = np.empty(self.imax,dtype='S6')
+        star_flag = np.empty(self.imax,dtype='<U6')
 
         star_flag[teff>O_type_Limit] = 'O-type'
         star_flag[np.logical_and(teff<=O_type_Limit,teff>B_type_Limit)] = 'B-type'
