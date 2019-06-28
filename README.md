@@ -11,6 +11,8 @@ Please read carefully the changes brought by version 8.3.0 to respect the syntax
 both python2 and python3 compatibility.
 
 # CHANGES:
+v. 8.3.2:
+ * new variable star_flag which displays the star type for evolution files
 
 v. 8.3.1:
  * new function dot_age(age) to print a dot at (a) given age(s) on any plot
@@ -24,7 +26,6 @@ v. 8.3.0:
   ** use of print() instead of print
   ** use of list(d.keys()) instead of d.keys()
   ** same for d.items() and d.values()
-  ** use of list(range()) instead of range()
   ** use of input() instead of raw_input()
   ** use of configparser instead of ConfigParser
 

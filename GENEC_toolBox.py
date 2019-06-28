@@ -108,7 +108,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.3.1'
+    GtB_version = '8.3.2'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -2165,7 +2165,7 @@ class Model(Outputs):
             BurnFile.close()
         except IOError as err:
             print('File error:' + str(err))
-            MyBurnFile2 = input('File '+MyBurnFile+' not found. Enter a valid path+name:')
+            MyBurnFile2 = input('File '+MyBurnFile+' not found. Enter a valid path+name: ')
             try:
                 MyBurnFile = open(MyBurnFile2,'r')
                 print('.burn file found: '+MyBurnFile2)
@@ -2399,12 +2399,10 @@ class Struc(Outputs):
 
         self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
         self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
-        for i in range(len(self.Variables['Nabla_int'][0])):
-            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
-                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
-            else:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
+        self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
+                        + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
+        self.Variables['Nabla_int'][0][np.logical_not(nabla_mask)] = self.Variables['Nabad'][0][np.logical_not(nabla_mask)] - 2.*U[np.logical_not(nabla_mask)]**2.
         self.Variables['V_MLT'] = [np.zeros(len(self.Variables['delta'][0])),'$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
         vmlt = g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
                     -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])
@@ -2493,12 +2491,10 @@ class Struc(Outputs):
 
         self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
         self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
-        for i in range(len(self.Variables['Nabla_int'][0])):
-            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
-                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
-            else:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
+        self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
+                        + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
+        self.Variables['Nabla_int'][0][np.logical_not(nabla_mask)] = self.Variables['Nabad'][0][np.logical_not(nabla_mask)] - 2.*U[np.logical_not(nabla_mask)]**2.
         self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
                     -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
                     '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
@@ -2582,12 +2578,10 @@ class Struc(Outputs):
 
         self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
         self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
-        for i in range(len(self.Variables['Nabla_int'][0])):
-            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
-                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
-            else:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
+        self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
+                        + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
+        self.Variables['Nabla_int'][0][np.logical_not(nabla_mask)] = self.Variables['Nabad'][0][np.logical_not(nabla_mask)] - 2.*U[np.logical_not(nabla_mask)]**2.
         self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
                     -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
                     '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
