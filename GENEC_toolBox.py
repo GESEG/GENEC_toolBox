@@ -179,7 +179,7 @@ class readList():
                     ['Ne20c',30],['Ne22c',31],['Al26c',43],['Vsurf',57],['Vcrit1',55],['Vcrit2',56],['OOc',38],['Omega_surf',39],\
                     ['Omega_cen',40],['oblat',41],['rot_corr',44],['jspe3',48],['jspe5',49],['GammaOmega',58],['Ltotint',64],\
                     ['Ltot',109],['mominert',63],['Mdot',18],['dMmech',60],['Mdot_mech',61],['dlelex',62],['Erot',65],\
-                    ['Epot',66],['Egaz',67],['Erad',68]],\
+                    ['Epot',66],['Egaz',67],['Erad',68],['snube7',36],['snub8',37]],\
                     'unitsList':['model num','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
                     '$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\Gamma_\mathrm{Edd}$','$M_\mathrm{cc}/M_\mathrm{tot}$',\
                     r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$','$\log(T_\mathrm{c}\ [K])$',\
@@ -205,14 +205,14 @@ class readList():
                     '$(\log(\dot{M})_\mathrm{mech}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
                     '$\Delta\,\mathscr{L}_\mathrm{rad+aniso+mech}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
                     '$E_\mathrm{rot}\ [E_{51}]$','$E_\mathrm{pot}\ [E_{51}]$','$E_\mathrm{th,gaz}\ [E_{51}]$',\
-                    '$E_\mathrm{rad}\ [E_{51}]$'],\
+                    '$E_\mathrm{rad}\ [E_{51}]$',r'$F_\nu(^7\mathrm{Be})\ [\mathrm{SNU}]$',r'$F_\nu(^8\mathrm{B})\ [\mathrm{SNU}]$'],\
                     'catList':['model','model','model','surface','surface','surface','surface','centre','centre','centre',
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation','rotation',\
                     'rotation','rotation','rotation','rotation','rotation','rotation','rotation','winds','winds','winds','winds',\
-                    'energetics','energetics','energetics','energetics'],'header':0,'column_number':110}
+                    'energetics','energetics','energetics','energetics','energetics','energetics'],'header':0,'column_number':110}
     Evol_formats['tgrids'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',40],['Mccrel',16],['rhoc',19],['Tc',20],\
                     ['H1s',5],['He4s',6],['C12s',7],['C13s',8],['N14s',9],['O16s',10],['O17s',11],['O18s',12],['Ne20s',13],['Ne22s',14],['Al26s',15],\
                     ['H1c',21],['He4c',22],['C12c',23],['C13c',24],['N14c',25],['O16c',26],['O17c',27],['O18c',28],['Ne20c',29],['Ne22c',30],['Al26c',31],\
