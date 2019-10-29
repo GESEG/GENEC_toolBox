@@ -1465,9 +1465,9 @@ class Model(Outputs):
         self.Variables['Gbp-V'] = [np.zeros((imax)),'Gbp-V','colours']
         self.Variables['Grp-V'] = [np.zeros((imax)),'Grp-V','colours']
         self.Variables['GFlag'] = [np.zeros((imax)),'GFlag','colours']
-        self.Variables['M_G'] = [np.zeros((imax)),'M$_\mathrm{G}','colours']
-        self.Variables['M_Gbp'] = [np.zeros((imax)),'M$_\mathrm{Gbp}','colours']
-        self.Variables['M_Grp'] = [np.zeros((imax)),'M$_\mathrm{Grp}','colours']
+        self.Variables['M_G'] = [np.zeros((imax)),'M$_\mathrm{G}$','colours']
+        self.Variables['M_Gbp'] = [np.zeros((imax)),'M$_\mathrm{Gbp}$','colours']
+        self.Variables['M_Grp'] = [np.zeros((imax)),'M$_\mathrm{Grp}$','colours']
 
         for i in range(self.imax):
             self.Colours.Colours_Conversion(self.Variables['FeH'][0][i],self.Variables['gpol'][0][i],10.**self.Variables['Teff'][0][i])
@@ -1494,7 +1494,8 @@ class Model(Outputs):
                                     - 0.281000*self.Variables['V-I'][0]**2. \
                                     + 0.036550*self.Variables['V-I'][0]**3.
         self.Variables['Gbp-V'][0] = -0.05204 + 0.483000*self.Variables['V-I'][0] \
-                                     - 0.200100*self.Variables['V-I'][0]**2.
+                                     - 0.200100*self.Variables['V-I'][0]**2. \
+                                     + 0.02186*self.Variables['V-I'][0]**3.
         self.Variables['Grp-V'][0] = 0.00024280 - 0.867500*self.Variables['V-I'][0] \
                                      - 0.028660*self.Variables['V-I'][0]**2.
         self.Variables['GFlag'][0][np.where(np.logical_or(self.Variables['V-I'][0]<-0.3,self.Variables['V-I'][0]>2.7))] = 1
