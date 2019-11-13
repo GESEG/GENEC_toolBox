@@ -2305,6 +2305,8 @@ class Model(Outputs):
     def WindEject(self,spec):
         eject = integrate.cumtrapz(self.Variables[spec][0]*10.**(self.Variables["Mdot"][0]),self.Variables["t"][0])
         eject = np.hstack(([0.],eject))
+        mlost = self.Variables["M"][0]-self.Variables["M"][0][0]
+        toremove = mlost*self.Variables[spec][0][0]
         anum = ''.join(x for x in spec if x.isdigit())
         atom = spec[:spec.find(str(anum))]
         label_eject = '$M_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
@@ -2312,6 +2314,10 @@ class Model(Outputs):
         var_name = spec+"ejw"
 
         self.Variables[var_name] = [eject,label_eject,type_eject]
+        
+        var_name = spec+"yw"
+        label_eject = '$\\mathrm{yields}_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
+        self.Variables[var_name] = [eject-toremove,label_eject,type_eject]
         return
 
 class Struc(Outputs):
