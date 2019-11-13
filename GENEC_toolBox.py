@@ -3918,9 +3918,12 @@ def Deriv(Var1,Var2,num_star=[]):
 
 def Compute_EjWinds(spec,num_star):
     if MyDriver.modeplot != "evol":
-        print('The computation of the wind ejectat composition can only be done in evol mode.')
+        print('The computation of the wind ejecta composition can only be done in evol mode.')
         return
-
+    Aspec = ['N15s','F19s','Ne21s','Na23s','Mg24s','Mg25s','Mg26s','Al27s','Si28s','S32s','Ar36s','Ca40s','Ti44s','Cr48s','Fe52s','Ni56s']
+    if spec in Aspec and not MyDriver.Model_list[num_star].Variables['options'][0][1]:
+      print('This chemical species is only available from the .a file. Reload star '+str(num_star)+' with option "wa=True"')
+      return
     MyDriver.Model_list[num_star].WindEject(spec)
     return
 
