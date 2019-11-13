@@ -47,6 +47,7 @@ import os
 import sys
 import glob
 from scipy import interpolate
+from scipy import integrate
 import math
 import numpy as np
 import matplotlib.ticker as mptick
@@ -2290,6 +2291,16 @@ class Model(Outputs):
         standard_columns()
 
         return header
+        
+    def WindEject(self,spec):
+        eject = integrate.cumtrapz(self.Variables[spec][0]*10.**(self.Variables["Mdot"][0]),self.Variables["t"][0])
+        eject = np.hstack(([0.],eject))
+        label_eject = "$M_{X}\\,[\\mathrm{M}_\\odot]$"
+        type_eject = "winds"
+        var_name = spec+"ejw"
+        
+        self.Variables[var_name] = [eject,label_eject,type_eject]
+        return
 
 class Struc(Outputs):
     """Contains all the utilities to read and process the structure files.
@@ -3886,6 +3897,15 @@ def Deriv(Var1,Var2,num_star=[]):
         dy=[val if val != 0. else dx_min/1.e30 for val in dy]
         Set_Var(dx/dy,'d'+Var1+'_d'+Var2,i,label='$\mathrm{d '+Var1+'}/\mathrm{d '+Var2+'}$')
     print('The derivative can be plotted under the name d{0}_d{1}'.format(Var1,Var2))
+
+def Compute_EjWinds(spec,num_star):
+    if MyDriver.modeplot != "evol":
+        print('The computation of the wind ejectat composition can only be done in evol mode.')
+        return
+    
+    MyDriver.Model_list[num_star].WindEject(spec)
+    return
+
 
 def Vector_split(varName,num_star,quiet=False):
     """Splits a vector into its positive and negative components and adds both in the Variables dictionary.
