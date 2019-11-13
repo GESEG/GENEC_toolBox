@@ -2148,10 +2148,20 @@ class Model(Outputs):
                 return
 
         wafile = open(FileName,'r')
-        BigArray = np.genfromtxt(wafile,skip_header=num_deb,comments=None)
+        if not os.path.isfile(FileName):
+            raise IOError(1,'File does not exist, check name and path',FileName)
+            return
+        alastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
+        afile_cols = len(alastline.split())
+
+        converters = {}
+        for i in range(afile_cols):
+            converters[i] = lambda s: self.TestFloat(s)
+
+        BigArray = np.loadtxt(wafile,skiprows=num_deb,converters=converters)
         if num_fin == -1:
           num_fin = BigArray.shape[0]
-        el_num = (BigArray.shape[1]-3)/2
+        el_num = int((BigArray.shape[1]-3)/2)
         print(str(el_num)+' isotopes read in .wa file')
         for i,A,el in zip(list(range(el_num)),readList.Abund['AList'],readList.Abund['ZList']):
             self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
