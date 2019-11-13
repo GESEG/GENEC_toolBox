@@ -2301,14 +2301,16 @@ class Model(Outputs):
         standard_columns()
 
         return header
-        
+
     def WindEject(self,spec):
         eject = integrate.cumtrapz(self.Variables[spec][0]*10.**(self.Variables["Mdot"][0]),self.Variables["t"][0])
         eject = np.hstack(([0.],eject))
-        label_eject = "$M_{X}\\,[\\mathrm{M}_\\odot]$"
+        anum = ''.join(x for x in spec if x.isdigit())
+        atom = spec[:spec.find(str(anum))]
+        label_eject = '$M_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
         type_eject = "winds"
         var_name = spec+"ejw"
-        
+
         self.Variables[var_name] = [eject,label_eject,type_eject]
         return
 
@@ -3912,7 +3914,7 @@ def Compute_EjWinds(spec,num_star):
     if MyDriver.modeplot != "evol":
         print('The computation of the wind ejectat composition can only be done in evol mode.')
         return
-    
+
     MyDriver.Model_list[num_star].WindEject(spec)
     return
 
