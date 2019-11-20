@@ -109,7 +109,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.3.2'
+    GtB_version = '8.3.4'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -2302,20 +2302,18 @@ class Model(Outputs):
 
         return header
 
-    def WindEject(self,spec):
+    def WindEject(self,spec,anum,atom):
         eject = integrate.cumtrapz(self.Variables[spec][0]*10.**(self.Variables["Mdot"][0]),self.Variables["t"][0])
         eject = np.hstack(([0.],eject))
         mlost = self.Variables["M"][0]-self.Variables["M"][0][0]
         toremove = mlost*self.Variables[spec][0][0]
-        anum = ''.join(x for x in spec if x.isdigit())
-        atom = spec[:spec.find(str(anum))]
         label_eject = '$M_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
         type_eject = "winds"
-        var_name = spec+"ejw"
+        var_name = spec[:-1]+"ejw"
 
         self.Variables[var_name] = [eject,label_eject,type_eject]
-        
-        var_name = spec+"yw"
+
+        var_name = spec[:-1]+"yw"
         label_eject = '$\\mathrm{yields}_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
         self.Variables[var_name] = [eject+toremove,label_eject,type_eject]
         return
@@ -3920,11 +3918,20 @@ def Compute_EjWinds(spec,num_star):
     if MyDriver.modeplot != "evol":
         print('The computation of the wind ejecta composition can only be done in evol mode.')
         return
+    if spec[0].isalpha():
+      anum = ''.join(x for x in spec if x.isdigit())
+      atom = spec[:spec.find(str(anum))]
+      if spec[-1] != 's':
+        spec = spec+'s'
+    elif spec[0].isdigit():
+      anum = ''.join(x for x in spec if x.isdigit())
+      atom = spec[spec.find(str(anum))+len(anum):]
+      spec = atom+anum+'s'
     Aspec = ['N15s','F19s','Ne21s','Na23s','Mg24s','Mg25s','Mg26s','Al27s','Si28s','S32s','Ar36s','Ca40s','Ti44s','Cr48s','Fe52s','Ni56s']
     if spec in Aspec and not MyDriver.Model_list[num_star].Variables['options'][0][1]:
       print('This chemical species is only available from the .a file. Reload star '+str(num_star)+' with option "wa=True"')
       return
-    MyDriver.Model_list[num_star].WindEject(spec)
+    MyDriver.Model_list[num_star].WindEject(spec,anum,atom)
     return
 
 
