@@ -2317,7 +2317,7 @@ class Model(Outputs):
         
         var_name = spec+"yw"
         label_eject = '$\\mathrm{yields}_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
-        self.Variables[var_name] = [eject-toremove,label_eject,type_eject]
+        self.Variables[var_name] = [eject+toremove,label_eject,type_eject]
         return
 
 class Struc(Outputs):
