@@ -1612,7 +1612,7 @@ class Model(Outputs):
             return
         if self.Variables['FileName'][0][-3:] == '.wg':
             self.Variables['Llostwinds'] = [np.add.accumulate(self.Variables['dlelex'][0]),'$\int\ \dot{\mathscr{L}}\,\mathrm{d}t\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
-            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
+            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','rotation']
         return
     def Spec_var_tgrids(self):
         if self.Variables['format'][0][0] != 'tgrids':
@@ -2070,7 +2070,7 @@ class Model(Outputs):
         self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        self.Variables['FeH'] = [np.zeros((self.imax)),'Fe/H','abundances']
+        self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
         mask = self.Variables['H1s'][0]<=0.
         if format != "starevol":
             self.Variables['FeH'][0][mask] = -30.
@@ -3693,13 +3693,13 @@ def flatten(x):
             result.append(el)
     return result
 
-def reloadE(model_list):
+def reloadE(model_list,quiet=True):
     """Reloads the selected models."""
     try:
         for i in flatten([model_list]):
             loadE(MyDriver.Model_list_evol[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_evol[i].Variables['line_num'][0][0]-MyDriver.Model_list_evol[i].Variables['format'][0][1],\
                 num_fin=MyDriver.Model_list_evol[i].Variables['line_num'][0][1],format=MyDriver.Model_list_evol[i].Variables['format'][0][0],colour=MyDriver.Model_list_evol[i].Variables['options'][0][0],\
-                wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=True)
+                wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=quiet)
             print('Model {0} reloaded'.format(i))
     except KeyError:
         not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_evol.keys())]
