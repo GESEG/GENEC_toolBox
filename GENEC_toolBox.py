@@ -3450,6 +3450,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         MyDriver.SelectedModels.append(mynum_star)
                         if not mynum_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(mynum_star)
+                    mynum_star += 1
                 except IOError as IOerr:
                     print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
 
