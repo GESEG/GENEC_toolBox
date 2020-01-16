@@ -109,7 +109,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.3.4'
+    GtB_version = '8.4.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -1271,7 +1271,7 @@ class Driver():
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
         for Existing_Indexes in list(self.Model_list.keys()):
             if number == Existing_Indexes:
-                print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
+                print('This star number ({0}) is already attributed to model {1}'.format(number,self.Model_list[number].Variables['FileName'][0]))
                 answer = input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
                     print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
@@ -5882,7 +5882,7 @@ def dot_age(age,num_star=0,marker='o',colour='',age_print=False,precision=5,lege
     Xvar = MyDriver.lastXvar
     Yvar = MyDriver.lastYvar
     if not age_print:
-        print('Mark{0} at {1}:'.format(pluralise(age,'','s'),age_string))
+        print('Mark{0} at log(age):'.format(pluralise(age,'','s')))
         for j,a in enumerate(age):
             if log_age:
                 a_print = '{0:10.6g}'.format(np.log10(a))
@@ -6748,45 +6748,70 @@ def dist():
     else:
         print('dy/dx = infinity')
 
-def closest_line(Xvar='',Yvar='',printline=False):
-    """Finds the closest line from a cursor selection.
-       The optional parameter printline=True prints the whole line from the file,
-       otherwise only the number is returned (default behaviour)."""
-    if not Xvar:
-        Xvar = MyDriver.lastXvar
+def closest_index(num_star=0,Yvar=''):
+    """Finds the closest index in the data from a cursor selection.
+       Used by closest_line() and get_value()."""
+    Xvar = MyDriver.lastXvar
     if not Yvar:
         Yvar = MyDriver.lastYvar
     xclic,yclic = cursor()
-    distance_all = 9999999.
-    best_i = 0
-    line_i = {}
+    best_mod_i = []
+    closest_i = []
+    distance_i = []
     for i in MyDriver.SelectedModels:
         myX = Get_Var(Xvar,i)
         myY = Get_Var(Yvar,i)
-        myline = Get_Var('line',i)
         norm_x = (myX-min(myX))/(max(myX)-min(myX))
         norm_y = (myY-min(myY))/(max(myY)-min(myY))
         dist_x = (xclic-min(myX))/(max(myX)-min(myX))
         dist_y = (yclic-min(myY))/(max(myY)-min(myY))
         distance = (norm_x - dist_x)**2. + (norm_y - dist_y)**2.
-        closest = np.argmin(distance)
-        if np.min(distance) < distance_all:
-            distance_all = np.min(distance)
-            best_i = i
-        line_i[i] = myline[closest]
-    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
-        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
-    if not printline:
-      if len(MyDriver.SelectedModels) > 1:
-        print('closest model: {0}'.format(best_i))
-      return line_i[best_i]
+        closest_i.append(np.argmin(distance))
+        best_mod_i.append(i)
+        distance_i.append(np.min(distance))
+    if num_star != 0:
+        best_mod = num_star
+        arg = [i for i,mod in enumerate(best_mod_i) if mod == num_star][0]
+        closest = closest_i[best_mod_i == num_star]
+        if arg != np.argmin(distance_i):
+            print('Note that your click was closer from model {0}'.format(best_mod_i[np.argmin(distance_i)]))
     else:
-      with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+        arg = np.argmin(distance_i)
+        closest = closest_i[arg]
+        best_mod = best_mod_i[arg]
+    return closest,best_mod
+
+def closest_line(num_star=0,p=False,Yvar=''):
+    """Finds the closest line from a cursor selection.
+       The optional parameter printline=True prints the whole line from the file,
+       otherwise only the number is returned (default behaviour).
+       In case the click is done on a plot with two different y axes,
+       posibility to precise the y variable with optional parameter Yvar=''"""
+    closest,best_mod=closest_index(num_star,Yvar)
+    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
+        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
+    if not p:
+      if len(MyDriver.SelectedModels) > 1:
+        print('closest model: {0}'.format(best_mod))
+      return myline
+    else:
+      with open(MyDriver.Model_list[best_mod].Variables['FileName'][0],'r') as myfile:
         for file_line in myfile:
           current_model = int(file_line.split()[0])
-          if current_model == line_i[best_i]:
+          if current_model == myline:
             print(str(file_line))
-            return line_i[best_i]
+            return myline
+
+def get_value(var,num_star=0,Yvar=''):
+    """Finds the value of var at the location of the click.
+       Note that var is intended to be different than the x and y variables of the plot."""
+    closest,best_mod=closest_index(num_star,Yvar)
+    value = Get_Var(var,best_mod)[closest]
+    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
+        print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
+    print('line: {0}, {1}: {2}'.format(myline,var,value))
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
