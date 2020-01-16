@@ -47,6 +47,7 @@ import os
 import sys
 import glob
 from scipy import interpolate
+from scipy import integrate
 import math
 import numpy as np
 import matplotlib.ticker as mptick
@@ -71,18 +72,44 @@ rcParams['xtick.direction'] = 'in'
 rcParams['ytick.direction'] = 'in'
 
 def multiReplace(text,wordDict):
-    for key in sorted(wordDict.keys()):
+    for key in sorted(list(wordDict.keys())):
         text = text.replace(wordDict[key][0],wordDict[key][1])
     return text
 
 def pluralise(list,sing,plural):
-    if len(list) > 1:
+    if len(flatten([list])) > 1:
         return plural
     else:
         return sing
 
+def engineer_format(value,precision=5,units='yr'):
+    incPrefixes = {0:'',1:'k',2:'M',3:'G',4:'T',5:'P',6:'E',7:'Z',8:'Y'}
+    decPrefixes = {0:'',1:'m',2:'u',3:'n',4:'p',5:'f',6:'a',7:'z',8:'y'}
+    timeUnits = {0:[365.,'d  '],1:[24.,'hr  '],2:[60.,'m  '],3:[60.,'s  ']}
+    if value == 0.:
+        return '0 {0}'.format(units)
+    power = math.floor(np.log10(value))
+    digit = 10.**(np.log10(value) - power)
+    multiplier = power%3
+    prefix_key = abs((power - multiplier) // 3)
+    digit = digit * 10.**multiplier
+    digit_string = '{1:6.{0}f}'.format(precision,digit)
+    if power >= 0:
+        prefix = incPrefixes[prefix_key]
+    else:
+        if units != 'yr':
+            prefix = decPrefixes[prefix_key]
+        else:
+            down_value = value
+            for i in list(timeUnits.keys()):
+                down_value = down_value*timeUnits[i][0]
+                if math.floor(np.log10(down_value)) >= 0 or i == 3:
+                    return '{1:6.{0}f} {2}'.format(precision,down_value,timeUnits[i][1])
+
+    return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
+
 class GtB_version():
-    GtB_version = '8.3.0'
+    GtB_version = '8.4.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -153,7 +180,7 @@ class readList():
                     ['Ne20c',30],['Ne22c',31],['Al26c',43],['Vsurf',57],['Vcrit1',55],['Vcrit2',56],['OOc',38],['Omega_surf',39],\
                     ['Omega_cen',40],['oblat',41],['rot_corr',44],['jspe3',48],['jspe5',49],['GammaOmega',58],['Ltotint',64],\
                     ['Ltot',109],['mominert',63],['Mdot',18],['dMmech',60],['Mdot_mech',61],['dlelex',62],['Erot',65],\
-                    ['Epot',66],['Egaz',67],['Erad',68]],\
+                    ['Epot',66],['Egaz',67],['Erad',68],['snube7',36],['snub8',37]],\
                     'unitsList':['model num','t [yr]','$M\ [M_\odot]$','$\log(L/L_\odot)$','$\log(T_\mathrm{eff}\ [\mathrm{K}])$',\
                     '$\log(T_\mathrm{eff}\ [\mathrm{K}])$','$\Gamma_\mathrm{Edd}$','$M_\mathrm{cc}/M_\mathrm{tot}$',\
                     r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$','$\log(T_\mathrm{c}\ [K])$',\
@@ -179,14 +206,14 @@ class readList():
                     '$(\log(\dot{M})_\mathrm{mech}\ [M_\odot\,\mathrm{yr}^{-1}])$',\
                     '$\Delta\,\mathscr{L}_\mathrm{rad+aniso+mech}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$',\
                     '$E_\mathrm{rot}\ [E_{51}]$','$E_\mathrm{pot}\ [E_{51}]$','$E_\mathrm{th,gaz}\ [E_{51}]$',\
-                    '$E_\mathrm{rad}\ [E_{51}]$'],\
+                    '$E_\mathrm{rad}\ [E_{51}]$',r'$F_\nu(^7\mathrm{Be})\ [\mathrm{SNU}]$',r'$F_\nu(^8\mathrm{B})\ [\mathrm{SNU}]$'],\
                     'catList':['model','model','model','surface','surface','surface','surface','centre','centre','centre',
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation','rotation',\
                     'rotation','rotation','rotation','rotation','rotation','rotation','rotation','winds','winds','winds','winds',\
-                    'energetics','energetics','energetics','energetics'],'header':0,'column_number':110}
+                    'energetics','energetics','energetics','energetics','energetics','energetics'],'header':0,'column_number':110}
     Evol_formats['tgrids'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',40],['Mccrel',16],['rhoc',19],['Tc',20],\
                     ['H1s',5],['He4s',6],['C12s',7],['C13s',8],['N14s',9],['O16s',10],['O17s',11],['O18s',12],['Ne20s',13],['Ne22s',14],['Al26s',15],\
                     ['H1c',21],['He4c',22],['C12c',23],['C13c',24],['N14c',25],['O16c',26],['O17c',27],['O18c',28],['Ne20c',29],['Ne22c',30],['Al26c',31],\
@@ -463,7 +490,7 @@ class readList():
                      'catList':['model','model','model','model','model','model','model','model','model','model','model','model'],
                      'header':7,'column_number':12}
     Evol_formats['starevol_tc2'] = {'varList':[['line',0],['tc_cc',1],['rc_cc',2],['tc_hp_cc',3],['rc_hp_cc',4],['tc_r_cc',5],\
-                     ['rc_r_cc',6],['tc_m_cc',7],['rc_m_cc',8],['tc_max_cc',9],['rc_max_cc',10],['tg_cc',11],['omegac',12]],\
+                     ['rc_r_cc',6],['tc_m_cc',7],['rc_m_cc',8],['tc_max_cc',9],['rc_max_cc',10],['tg_cc',11],['Omega_cen',12]],\
                      'unitsList':['model num','$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$',\
                      '$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$',\
                      '$R_\mathrm{conv}\ [R_\odot]$','$t_\mathrm{TO}\ [\mathrm{yr}]$','$R_\mathrm{conv}\ [R_\odot]$',\
@@ -473,7 +500,7 @@ class readList():
                      'model','rotation'],
                      'header':7,'column_number':13}
     Evol_formats['starevol_v1'] = {'varList':[['line',0],['Tc',1],['Tmax',2],['MrTmax',3],['rhoc',4],['rhoTmax',5],\
-                     ['Pc',6],['betac',7],['etac',8],['degpec',9],['epsnu',10],['eps_nuc',11],['epsgrav',12]],\
+                     ['Pc',6],['betac',7],['etac',8],['degpec',9],['eps_nu',10],['eps_nuc',11],['eps_grav',12]],\
                      'unitsList':['model num','$\log(T_\mathrm{c}\ [K])$','$\log(T_\mathrm{max}\ [K])$',\
                      '$M_r(T_\\mathrm{max})\ [M_\odot]$',r'$\log(\rho_\mathrm{c}\ [\mathrm{g\,cm}^{-3}])$',\
                      r'$\log(\rho(T_\mathrm{max})\ [\mathrm{g\,cm}^{-3}])$',\
@@ -1184,6 +1211,11 @@ class Driver():
         self.tickwidth = 1
         self.subplotSep = 0.2
         self.logScale = [False,False]
+        self.plotgrid = False
+        self.grid_ax = 'both'
+        self.gridls = '-'
+        self.gridlw = 0.2
+        self.gridlc = '0.80'
         self.minorLoc = 0
 
         self.LatexEnabled = False
@@ -1239,7 +1271,7 @@ class Driver():
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
         for Existing_Indexes in list(self.Model_list.keys()):
             if number == Existing_Indexes:
-                print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
+                print('This star number ({0}) is already attributed to model {1}'.format(number,self.Model_list[number].Variables['FileName'][0]))
                 answer = input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
                     print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
@@ -1468,6 +1500,7 @@ class Model(Outputs):
         self.Variables['M_G'] = [np.zeros((imax)),'M$_\mathrm{G}','colours']
         self.Variables['M_Gbp'] = [np.zeros((imax)),'M$_\mathrm{Gbp}','colours']
         self.Variables['M_Grp'] = [np.zeros((imax)),'M$_\mathrm{Grp}','colours']
+        self.Variables['Gbp-Grp'] = [np.zeros((imax)),'Gbp-Grp','colours']
 
         for i in range(self.imax):
             self.Colours.Colours_Conversion(self.Variables['FeH'][0][i],self.Variables['gpol'][0][i],10.**self.Variables['Teff'][0][i])
@@ -1494,15 +1527,64 @@ class Model(Outputs):
                                     - 0.281000*self.Variables['V-I'][0]**2. \
                                     + 0.036550*self.Variables['V-I'][0]**3.
         self.Variables['Gbp-V'][0] = -0.05204 + 0.483000*self.Variables['V-I'][0] \
-                                     - 0.200100*self.Variables['V-I'][0]**2.
+                                     - 0.200100*self.Variables['V-I'][0]**2. \
+                                     + 0.02186*self.Variables['V-I'][0]**3.
         self.Variables['Grp-V'][0] = 0.00024280 - 0.867500*self.Variables['V-I'][0] \
                                      - 0.028660*self.Variables['V-I'][0]**2.
-        self.Variables['GFlag'][0][np.where(np.logical_and(self.Variables['V-I'][0]<-0.3,self.Variables['V-I'][0]>2.7))] = 1
+        self.Variables['GFlag'][0][np.where(np.logical_or(self.Variables['V-I'][0]<-0.3,self.Variables['V-I'][0]>2.7))] = 1
         self.Variables['M_G'][0] = self.Variables['G-V'][0]+self.Variables['M_V'][0]
         self.Variables['M_Gbp'][0] = self.Variables['Gbp-V'][0]+self.Variables['M_V'][0]
         self.Variables['M_Grp'][0] = self.Variables['Grp-V'][0]+self.Variables['M_V'][0]
+        self.Variables['Gbp-Grp'][0] = self.Variables['Gbp-V'][0]-self.Variables['Grp-V'][0]
 
         return
+
+    def Star_flag(self):
+        O_type_Limit = 4.47712
+        B_type_Limit = 3.99078
+        A_type_Limit = 3.86332
+        F_type_Limit = 3.77379
+        G_type_Limit = 3.71181
+        K_type_Limit = 3.58433
+        RSG_Temp = 3.66
+        YSG_Temp = 3.9
+        BSG_Temp = 4.4
+        SG_L = 4.0
+        WR_temp = 4.
+        WR_H = 0.3
+        WNL_H = 1.e-5
+
+        lum = self.Variables['L'][0]
+        teff = self.Variables['Teff'][0]
+        phase = self.Variables['phase'][0]
+        H = self.Variables['H1s'][0]
+        C = self.Variables['C12s'][0]
+        N = self.Variables['N14s'][0]
+
+        star_flag = np.empty(self.imax,dtype='<U6')
+
+        star_flag[teff>O_type_Limit] = 'O-type'
+        star_flag[np.logical_and(teff<=O_type_Limit,teff>B_type_Limit)] = 'B-type'
+        star_flag[np.logical_and(teff<=B_type_Limit,teff>A_type_Limit)] = 'A-type'
+        star_flag[np.logical_and(teff<=A_type_Limit,teff>F_type_Limit)] = 'F-type'
+        star_flag[np.logical_and(teff<=F_type_Limit,teff>G_type_Limit)] = 'G-type'
+        star_flag[np.logical_and(teff<=G_type_Limit,teff>K_type_Limit)] = 'K-type'
+        star_flag[teff<=K_type_Limit] = 'M-type'
+
+        not_MS = phase != 'H'
+        star_flag[np.logical_and(not_MS,np.logical_and(teff>=A_type_Limit,lum>=SG_L))] = 'BSG'
+        star_flag[np.logical_and(not_MS,np.logical_and(teff<=RSG_Temp,lum>=SG_L))] = 'RSG'
+        star_flag[np.logical_and(not_MS,np.logical_and(np.logical_and(teff>RSG_Temp,teff<=YSG_Temp),lum>=SG_L))] = 'YSG'
+
+        is_a_WR = np.logical_and(teff>=WR_temp,H<=WR_H)
+        star_flag[np.logical_and(is_a_WR,H>WNL_H)] = 'WNL'
+        star_flag[np.logical_and(is_a_WR,np.logical_and(H<=WNL_H,C<=N))] = 'WNE'
+        is_a_WCO = np.logical_and(is_a_WR,np.logical_and(H<=WNL_H,C>N))
+        is_a_WO = np.logical_and(is_a_WCO,teff>5.25)
+        star_flag[np.logical_and(is_a_WCO,np.logical_not(is_a_WO))] = 'WC'
+        star_flag[np.logical_and(is_a_WCO,is_a_WO)] = 'WO'
+
+        self.Variables['star_flag'] = [star_flag,'star type','model']
 
     def Spec_var_o2013(self):
         if self.Variables['format'][0][0] != 'o2013':
@@ -1530,7 +1612,7 @@ class Model(Outputs):
             return
         if self.Variables['FileName'][0][-3:] == '.wg':
             self.Variables['Llostwinds'] = [np.add.accumulate(self.Variables['dlelex'][0]),'$\int\ \dot{\mathscr{L}}\,\mathrm{d}t\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
-            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
+            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','rotation']
         return
     def Spec_var_tgrids(self):
         if self.Variables['format'][0][0] != 'tgrids':
@@ -1716,8 +1798,6 @@ class Model(Outputs):
         self.Variables['Pc'][0] = np.log10(self.Variables['Pc'][0])
 
         self.Variables['GammaEdd'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Gamma_\mathrm{Edd}$','surface']
-        # no centre angular velocity in starevol, set to 0.
-        self.Variables['Omega_cen'] = [np.zeros(np.size(self.Variables['Mdot'][0])),'$\Omega_\mathrm{cen}\ [\mathrm{s}^{-1}]$','rotation']
         # no mass-loss correction for rotation in starevol, set to 1.
         self.Variables['rot_corr'] = [np.zeros(np.size(self.Variables['Mdot'][0]))+1.,'$F_\Omega$','rotation']
         self.Variables['Ltot'][0] = self.Variables['Ltot'][0]/1.e53
@@ -1752,6 +1832,49 @@ class Model(Outputs):
         mask = self.Variables['Iradmax'][0]<=0.
         self.Variables['Iradmax'][0][mask] = 0.
         self.Variables['Iradmax'][0][np.logical_not(mask)] = np.log10(self.Variables['Iradmax'][0][np.logical_not(mask)])
+
+        # We add the period:
+        mask = self.Variables['Omega_surf'][0]==0.
+        self.Variables['Prot'] = [np.zeros(np.size(self.Variables['line'][0])),'$P\,[\\mathrm{day}]$','rotation']
+        self.Variables['Prot'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['Omega_surf'][0][np.logical_not(mask)]*3600.*24.)
+        # Computation of some Rossby numbers.
+        mask = self.Variables['tc_max'][0]*self.Variables['Omega_surf'][0]==0.
+        self.Variables['Ro_max'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{max}$','rotation']
+        self.Variables['Ro_max'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_max'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tg'][0]*self.Variables['Omega_surf'][0]==0.
+        self.Variables['Ro_g'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{glob.}$','rotation']
+        self.Variables['Ro_g'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tg'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc'][0]*self.Variables['Omega_surf'][0]==0.
+        self.Variables['Ro_c'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{1/2H}_\\mathrm{P}}$','rotation']
+        self.Variables['Ro_c'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_hp'][0]*self.Variables['Omega_surf'][0]==0.
+        self.Variables['Ro_Hp'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{H}_\\mathrm{P}}$','rotation']
+        self.Variables['Ro_Hp'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_hp'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_r'][0]*self.Variables['Omega_surf'][0]==0.
+        self.Variables['Ro_r'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{R/2}$','rotation']
+        self.Variables['Ro_r'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_r'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_m'][0]*self.Variables['Omega_surf'][0]==0.
+        self.Variables['Ro_m'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{M/2}$','rotation']
+        self.Variables['Ro_m'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_m'][0][np.logical_not(mask)]*self.Variables['Omega_surf'][0][np.logical_not(mask)]*365.*24.*3600.)
+        # Computation of some Rossby numbers for the central parts.
+        mask = self.Variables['tc_max_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_max_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{max, cen}$','rotation']
+        self.Variables['Ro_max_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_max_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tg_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_g_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{glob., cen}$','rotation']
+        self.Variables['Ro_g_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tg_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_c_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{1/2H}_\\mathrm{P}, cen}$','rotation']
+        self.Variables['Ro_c_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_hp_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_Hp_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_{\\mathrm{H}_\\mathrm{P}, cen}$','rotation']
+        self.Variables['Ro_Hp_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_hp_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_r_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_r_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{R/2, cen}$','rotation']
+        self.Variables['Ro_r_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_r_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
+        mask = self.Variables['tc_m_cc'][0]*self.Variables['Omega_cen'][0]==0.
+        self.Variables['Ro_m_cc'] = [np.zeros(np.size(self.Variables['line'][0])),'$\\mathrm{Ro}_\\mathrm{M/2, cen}$','rotation']
+        self.Variables['Ro_m_cc'][0][np.logical_not(mask)] = 2.*math.pi/(self.Variables['tc_m_cc'][0][np.logical_not(mask)]*self.Variables['Omega_cen'][0][np.logical_not(mask)]*365.*24.*3600.)
         return
 
     def SpecificVariables(self,fmt):
@@ -1947,7 +2070,7 @@ class Model(Outputs):
         self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        self.Variables['FeH'] = [np.zeros((self.imax)),'Fe/H','abundances']
+        self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
         mask = self.Variables['H1s'][0]<=0.
         if format != "starevol":
             self.Variables['FeH'][0][mask] = -30.
@@ -1975,6 +2098,7 @@ class Model(Outputs):
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
+        self.Star_flag()
         if colour:
             self.ColoursCalc()
         self.Variables['ageadv'][0] = np.log10(self.Variables['ageadv'][0])
@@ -2024,10 +2148,20 @@ class Model(Outputs):
                 return
 
         wafile = open(FileName,'r')
-        BigArray = np.genfromtxt(wafile,skip_header=num_deb,comments=None)
+        if not os.path.isfile(FileName):
+            raise IOError(1,'File does not exist, check name and path',FileName)
+            return
+        alastline = os.popen('tail -1 '+FileName).readline().replace('\n','')
+        afile_cols = len(alastline.split())
+
+        converters = {}
+        for i in range(afile_cols):
+            converters[i] = lambda s: self.TestFloat(s)
+
+        BigArray = np.loadtxt(wafile,skiprows=num_deb,converters=converters)
         if num_fin == -1:
           num_fin = BigArray.shape[0]
-        el_num = (BigArray.shape[1]-3)/2
+        el_num = int((BigArray.shape[1]-3)/2)
         print(str(el_num)+' isotopes read in .wa file')
         for i,A,el in zip(list(range(el_num)),readList.Abund['AList'],readList.Abund['ZList']):
             self.Variables[str(el)+str(A)+'s'] = [BigArray[:num_fin,i+3],'$^{'+str(A)+'}$'+str(el)+' [surf. mass frac.]','abundances']
@@ -2043,7 +2177,7 @@ class Model(Outputs):
             BurnFile.close()
         except IOError as err:
             print('File error:' + str(err))
-            MyBurnFile2 = input('File '+MyBurnFile+' not found. Enter a valid path+name:')
+            MyBurnFile2 = input('File '+MyBurnFile+' not found. Enter a valid path+name: ')
             try:
                 MyBurnFile = open(MyBurnFile2,'r')
                 print('.burn file found: '+MyBurnFile2)
@@ -2168,6 +2302,22 @@ class Model(Outputs):
 
         return header
 
+    def WindEject(self,spec,anum,atom):
+        eject = integrate.cumtrapz(self.Variables[spec][0]*10.**(self.Variables["Mdot"][0]),self.Variables["t"][0])
+        eject = np.hstack(([0.],eject))
+        mlost = self.Variables["M"][0]-self.Variables["M"][0][0]
+        toremove = mlost*self.Variables[spec][0][0]
+        label_eject = '$M_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
+        type_eject = "winds"
+        var_name = spec[:-1]+"ejw"
+
+        self.Variables[var_name] = [eject,label_eject,type_eject]
+
+        var_name = spec[:-1]+"yw"
+        label_eject = '$\\mathrm{yields}_{^{'+anum+'}'+atom+'}\\,[\\mathrm{M}_\\odot]$'
+        self.Variables[var_name] = [eject+toremove,label_eject,type_eject]
+        return
+
 class Struc(Outputs):
     """Contains all the utilities to read and process the structure files.
        Note that it is not necessary to unzip the .v file before reading."""
@@ -2277,12 +2427,10 @@ class Struc(Outputs):
 
         self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
         self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
-        for i in range(len(self.Variables['Nabla_int'][0])):
-            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
-                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
-            else:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
+        self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
+                        + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
+        self.Variables['Nabla_int'][0][np.logical_not(nabla_mask)] = self.Variables['Nabad'][0][np.logical_not(nabla_mask)] - 2.*U[np.logical_not(nabla_mask)]**2.
         self.Variables['V_MLT'] = [np.zeros(len(self.Variables['delta'][0])),'$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
         vmlt = g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
                     -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])
@@ -2371,12 +2519,10 @@ class Struc(Outputs):
 
         self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
         self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
-        for i in range(len(self.Variables['Nabla_int'][0])):
-            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
-                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
-            else:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
+        self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
+                        + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
+        self.Variables['Nabla_int'][0][np.logical_not(nabla_mask)] = self.Variables['Nabad'][0][np.logical_not(nabla_mask)] - 2.*U[np.logical_not(nabla_mask)]**2.
         self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
                     -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
                     '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
@@ -2460,12 +2606,10 @@ class Struc(Outputs):
 
         self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
         self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
-        for i in range(len(self.Variables['Nabla_int'][0])):
-            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
-                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
-            else:
-                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
+        self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
+                        + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
+        self.Variables['Nabla_int'][0][np.logical_not(nabla_mask)] = self.Variables['Nabad'][0][np.logical_not(nabla_mask)] - 2.*U[np.logical_not(nabla_mask)]**2.
         self.Variables['V_MLT'] = [np.sqrt(g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
                     -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])), \
                     '$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
@@ -3306,6 +3450,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         MyDriver.SelectedModels.append(mynum_star)
                         if not mynum_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(mynum_star)
+                    mynum_star += 1
                 except IOError as IOerr:
                     print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
 
@@ -3549,13 +3694,13 @@ def flatten(x):
             result.append(el)
     return result
 
-def reloadE(model_list):
+def reloadE(model_list,quiet=True):
     """Reloads the selected models."""
     try:
         for i in flatten([model_list]):
             loadE(MyDriver.Model_list_evol[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_evol[i].Variables['line_num'][0][0]-MyDriver.Model_list_evol[i].Variables['format'][0][1],\
                 num_fin=MyDriver.Model_list_evol[i].Variables['line_num'][0][1],format=MyDriver.Model_list_evol[i].Variables['format'][0][0],colour=MyDriver.Model_list_evol[i].Variables['options'][0][0],\
-                wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=True)
+                wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=quiet)
             print('Model {0} reloaded'.format(i))
     except KeyError:
         not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_evol.keys())]
@@ -3724,7 +3869,7 @@ def Set_Var(var,var_name,num_star,**args):
         else:
             print('Bad argument for function Set_Var. Should be label="..." and category="..." .')
 
-    if var_name not in MyDriver.Model_list[num_star].Variables:
+    if var_name not in list(MyDriver.Model_list[num_star].Variables.keys()):
         MyDriver.Model_list[num_star].Variables[var_name] = [var,MyLabel,MyCat]
     else:
         print('The key '+var_name+' already exists in this dictionary.')
@@ -3769,6 +3914,27 @@ def Deriv(Var1,Var2,num_star=[]):
         dy=[val if val != 0. else dx_min/1.e30 for val in dy]
         Set_Var(dx/dy,'d'+Var1+'_d'+Var2,i,label='$\mathrm{d '+Var1+'}/\mathrm{d '+Var2+'}$')
     print('The derivative can be plotted under the name d{0}_d{1}'.format(Var1,Var2))
+
+def Compute_EjWinds(spec,num_star):
+    if MyDriver.modeplot != "evol":
+        print('The computation of the wind ejecta composition can only be done in evol mode.')
+        return
+    if spec[0].isalpha():
+      anum = ''.join(x for x in spec if x.isdigit())
+      atom = spec[:spec.find(str(anum))]
+      if spec[-1] != 's':
+        spec = spec+'s'
+    elif spec[0].isdigit():
+      anum = ''.join(x for x in spec if x.isdigit())
+      atom = spec[spec.find(str(anum))+len(anum):]
+      spec = atom+anum+'s'
+    Aspec = ['N15s','F19s','Ne21s','Na23s','Mg24s','Mg25s','Mg26s','Al27s','Si28s','S32s','Ar36s','Ca40s','Ti44s','Cr48s','Fe52s','Ni56s']
+    if spec in Aspec and not MyDriver.Model_list[num_star].Variables['options'][0][1]:
+      print('This chemical species is only available from the .a file. Reload star '+str(num_star)+' with option "wa=True"')
+      return
+    MyDriver.Model_list[num_star].WindEject(spec,anum,atom)
+    return
+
 
 def Vector_split(varName,num_star,quiet=False):
     """Splits a vector into its positive and negative components and adds both in the Variables dictionary.
@@ -3872,7 +4038,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
         if not masked:
             myMask = (np.zeros(len(MyDriver.Model_list[i].Variables[y][0])) == 0.)
         else:
-            myMask = BuildMask(plotif[0],plotif[1],i)
+            myMask = BuildMask(plotif,i)
             if all([v == False for v in myMask]):
                 print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
@@ -4009,6 +4175,9 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     if MyDriver.logScale[1] == False:
         New_Axes.ticklabel_format(style='sci',scilimits=(-3,4),axis='y')
 
+    if MyDriver.plotgrid:
+        plt.grid(which='both',axis=MyDriver.grid_ax,ls=MyDriver.gridls,lw=MyDriver.gridlw,color=MyDriver.gridlc)
+
     plt.show(block=False)
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
@@ -4075,7 +4244,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         if not masked:
             myMask = (np.zeros(len(MyDriver.Model_list[i].Variables[y][0])) == 0.)
         else:
-            myMask = BuildMask(plotif[0],plotif[1],i)
+            myMask = BuildMask(plotif,i)
             if all([v == False for v in myMask]):
                 print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
@@ -4113,7 +4282,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         if not masked:
             myMask = (np.zeros(len(MyDriver.Model_list[i].Variables[y][0])) == 0.)
         else:
-            myMask = BuildMask(plotif[0],plotif[1],i)
+            myMask = BuildMask(plotif,i)
             if all([v == False for v in myMask]):
                 print('Plotif: no points met the condition {0}{1} for star {2}'.format(plotif[0],plotif[1],i))
                 if len(Star_list) == 1:
@@ -4226,6 +4395,9 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
+
+    if MyDriver.plotgrid:
+        plt.grid(which='both',axis=MyDriver.grid_ax,ls=MyDriver.gridls,lw=MyDriver.gridlw,color=MyDriver.gridlc)
 
     plt.draw()
     plt.show(block=False)
@@ -4805,6 +4977,9 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
 
         plt.xlabel(MyDriver.Model_list[num_star].Variables[MyDriver.Xvar][1],fontsize = MyDriver.fontSize+4)
         plt.ylabel('$M_r\ [M_\odot]$',fontsize = MyDriver.fontSize+4)
+        if MyDriver.Xvar == 't_rel':
+            xline(1.)
+            xline(2.)
         if burn:
             Evol_file = MyDriver.Model_list[num_star].Variables['FileName'][0]
             i_ext = Evol_file.rfind('.')
@@ -5461,11 +5636,11 @@ def get_lifetimes(num_star=0):
     print('---------------------------------------------------------------------')
     print('LIFETIMES FOR MODEL ' + MyDriver.Model_list_evol[num_star].Variables['FileName'][0])
     print('---------------------------------------------------------------------')
-    print('     H-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0]).replace(',',"'"))
-    print('     He-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1]).replace(',',"'"))
-    print('     C-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2]).replace(',',"'"))
-    print('     Ne-b: {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3]).replace(',',"'"))
-    print('     O-b:  {0: 19,.6f} yr'.format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4]).replace(',',"'"))
+    print('     H-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][0])))
+    print('     He-b:  {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][1])))
+    print('     C-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2])))
+    print('     Ne-b:  {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3])))
+    print('     O-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4])))
     print('---------------------------------------------------------------------')
 
 def convZones(num_star,colour='0.80'):
@@ -5570,11 +5745,53 @@ def put_legend(loc=1,label=[],fontsize=''):
         fontsize = MyDriver.fontSize/1.5
     plt.legend(handles,labels,loc=loc,fontsize=fontsize)
 
-def BuildMask(var,cond,i):
+def BuildMask(plotif,i):
     """Needed by Plot() to limit the plotting to conditions."""
-    if not isinstance(var,list):
+    comp_double = ['==','!=','<=','>=']
+    comp_simple = ['=','<','>']
+    if isinstance(plotif,list):
+        if isinstance(plotif[0],list):
+            if plotif[0][1][0] in ['=','!','>','<']:
+                var = [v[0] for v in plotif[:]]
+                cond = [c[1] for c in plotif[:]]
+            else:
+                var = plotif[0]
+                cond = plotif[1]
+        else:
+            if any([c in plotif[0] for c in comp_simple]):
+                var = []
+                cond = []
+                for condition in plotif:
+                    comparator = ''
+                    for comp in comp_double:
+                        if comp in condition:
+                            comparator = comp
+                            break
+                    if comparator == '':
+                        for comp in comp_simple:
+                            if comp in condition:
+                                comparator = comp
+                                break
+                    v,c = condition.split(comparator)
+                    var.append(v)
+                    cond.append(comparator+c)
+            else:
+                var = [plotif[0]]
+                cond = [plotif[1]]
+    else:
+        comparator = ''
+        for comp in comp_double:
+            if comp in plotif:
+                comparator = comp
+                break
+        if comparator == '':
+            for comp in comp_simple:
+                if comp in plotif:
+                    comparator = comp
+                    break
+        var,cond = plotif.split(comparator)
         var = [var]
-        cond = [cond]
+        cond = [comparator+cond]
     Mask = (np.zeros(len(MyDriver.Model_list[i].Variables[var[0]][0])) == 0.)
     for myVar,myCond in zip(var,cond):
         cond_var = MyDriver.Model_list[i].Variables[myVar][0]
@@ -5628,6 +5845,79 @@ def timesteps(value=True):
         print('Boolean value expected')
         return
     MyDriver.steps = value
+
+def dot_age(age,num_star=0,marker='o',colour='',age_print=False,precision=5,legend_star=0):
+    single_colour = False
+    single_marker = False
+    log_age = False
+    age_string = 'age{0}'.format(pluralise(age,'','s'))
+    if all(a < 12. for a in flatten([age])):
+        log_age = True
+        age = [10.**a for a in flatten([age])]
+        age_string = 'log(age{0})'.format(pluralise(age,'','s'))
+    if num_star == 0:
+        num_star = list(MyDriver.Model_list.keys())
+    if not colour:
+        if MyDriver.colourFlag != 'cycle':
+            colour = MyDriver.colourFlag
+        else:
+            colour = 'k'
+    age_list_size = len(flatten([age]))
+    if age_list_size > 1:
+        if len(marker) > 1 and len(marker) != age_list_size:
+            print('markers number needs to be equal to ages number')
+            return
+        elif len(marker) == 1:
+            single_marker = True
+            marker = age_list_size * [marker]
+        if len(colour) > 1 and len(colour) != age_list_size:
+            print('colours number needs to be equal to ages number')
+            return
+        elif len(colour) == 1:
+            single_colour = True
+            colour = age_list_size * [colour]
+    else:
+        single_colour = True
+        single_marker = True
+    Xvar = MyDriver.lastXvar
+    Yvar = MyDriver.lastYvar
+    if not age_print:
+        print('Mark{0} at log(age):'.format(pluralise(age,'','s')))
+        for j,a in enumerate(age):
+            if log_age:
+                a_print = '{0:10.6g}'.format(np.log10(a))
+            else:
+                a_print = engineer_format(a)
+            if not single_colour and not single_marker:
+                print('  {0} {1} - {2}'.format(colour[j],marker[j],a_print))
+            elif single_colour and not single_marker:
+                print('  {0} - {1}'.format(marker[j],a_print))
+            elif single_marker and not single_colour:
+                print('  {0} - {1}'.format(colour[j],a_print))
+            else:
+                print('  {0} - {1}'.format(j+1,a_print))
+    for i in flatten([num_star]):
+        myAge = Get_Var('t',i)
+        applied_age = [a for a in age if a <= myAge[-1]]
+        if len(applied_age) != len(age):
+            #age_dead = list(set(age)-set(applied_age))[0]
+            print('Star {0} dies at {1} {2}'.format(i,'log(age)' if log_age else 'age',\
+                  np.log10(myAge[-1]) if log_age else engineer_format(myAge[-1])))
+        interp_AgeX = interpolate.interp1d(myAge,Get_Var(Xvar,i))
+        interp_AgeY = interpolate.interp1d(myAge,Get_Var(Yvar,i))
+        try:
+            x_list = interp_AgeX(applied_age)
+            y_list = interp_AgeY(applied_age)
+        except ValueError:
+            continue
+        for j,a in enumerate(applied_age):
+            if log_age:
+                a_print = '{0:10.6g}'.format(np.log10(a))
+            else:
+                a_print = engineer_format(a,precision=precision)
+            plt.scatter(x_list[j],y_list[j],c=colour[j],marker=marker[j])
+            if age_print and (legend_star==0 or legend_star==i):
+                plt.text(x_list[j],y_list[j],' {0}'.format(a_print))
 
 def DefNewLimits(CurrentLimits):
     """Needed by Plot."""
@@ -5956,30 +6246,28 @@ def no_log_Var(*args):
     """Retrocompatibility command"""
     no_logVar(*args)
 
-
-def logScale(*args):
+def logScale(ax='xy',grid=True,ls='-',lw=0.2,lc='0.80'):
     """Plots the variable on a log scale (ticks).
        Usage: logScale("axis") with axis = 'x', 'y', 'xy'."""
-    if not args:
-        print('You need to precise for wich axis you want the logarithmic scale: x, y, or both (xy)?')
-    else:
-        for arg in args:
-            if 'x' in arg.lower():
-                MyDriver.logScale[0] = True
-            if 'y' in arg.lower():
-                MyDriver.logScale[1] = True
+    if 'x' in ax.lower():
+        MyDriver.logScale[0] = True
+    if 'y' in ax.lower():
+        MyDriver.logScale[1] = True
+    if grid:
+        MyDriver.plotgrid = True
+        MyDriver.grid_ax = ax.replace('xy','both')
+        MyDriver.gridls = ls
+        MyDriver.gridlw = lw
+        MyDriver.gridlc = lc
 
-def no_logScale(*args):
+def no_logScale(ax='xy'):
     """Returns to plotting the variable in linear scale.
        Usage: no_logScale("axis") with axis = 'x', 'y', 'xy'."""
-    if not args:
-        MyDriver.logScale = [False,False]
-    else:
-        for arg in args:
-            if 'x' in arg.lower():
-                MyDriver.logScale[0] = False
-            if 'y' in arg.lower():
-                MyDriver.logScale[1] = False
+    if 'x' in ax.lower():
+        MyDriver.logScale[0] = False
+    if 'y' in ax.lower():
+        MyDriver.logScale[1] = False
+    MyDriver.plotgrid = False
 
 def configPlot():
     """Used by Plot() and Kippen().
@@ -6070,6 +6358,11 @@ def default_settings():
     MyDriver.minorLoc = 0
     MyDriver.subplotSep = 0.2
     MyDriver.logScale = [False,False]
+    MyDriver.plotgrid = False
+    MyDriver.grid_ax = 'both'
+    MyDriver.gridls = '-'
+    MyDriver.gridlw = 0.2
+    MyDriver.gridlc = '0.80'
     MyDriver.lineFlag = 'cycle_colour'
     MyDriver.lineWidth = 1
     MyDriver.colourFlag = 'cycle'
@@ -6394,6 +6687,16 @@ def top_label(string,**args):
             print('Argument {0} not valid'.format(arg))
     plt.suptitle(string,fontsize=myFontsize)
 
+def display_grid(value=True,ax='xy',ls='-',lw=0.25,lc='0.80'):
+    if value:
+        MyDriver.plotgrid = True
+        MyDriver.grid_ax = ax.replace('xy','both')
+        MyDriver.gridls = ls
+        MyDriver.gridlw = lw
+        MyDriver.gridlc = lc
+    else:
+        MyDriver.plotgrid = False
+
 def blabla(string):
     """Creates an svg file in the FigPath containing the string entered as input argument."""
     x = [0,1]
@@ -6445,45 +6748,70 @@ def dist():
     else:
         print('dy/dx = infinity')
 
-def closest_line(Xvar='',Yvar='',printline=False):
-    """Finds the closest line from a cursor selection.
-       The optional parameter printline=True prints the whole line from the file,
-       otherwise only the number is returned (default behaviour)."""
-    if not Xvar:
-        Xvar = MyDriver.lastXvar
+def closest_index(num_star=0,Yvar=''):
+    """Finds the closest index in the data from a cursor selection.
+       Used by closest_line() and get_value()."""
+    Xvar = MyDriver.lastXvar
     if not Yvar:
         Yvar = MyDriver.lastYvar
     xclic,yclic = cursor()
-    distance_all = 9999999.
-    best_i = 0
-    line_i = {}
+    best_mod_i = []
+    closest_i = []
+    distance_i = []
     for i in MyDriver.SelectedModels:
         myX = Get_Var(Xvar,i)
         myY = Get_Var(Yvar,i)
-        myline = Get_Var('line',i)
         norm_x = (myX-min(myX))/(max(myX)-min(myX))
         norm_y = (myY-min(myY))/(max(myY)-min(myY))
         dist_x = (xclic-min(myX))/(max(myX)-min(myX))
         dist_y = (yclic-min(myY))/(max(myY)-min(myY))
         distance = (norm_x - dist_x)**2. + (norm_y - dist_y)**2.
-        closest = np.argmin(distance)
-        if np.min(distance) < distance_all:
-            distance_all = np.min(distance)
-            best_i = i
-        line_i[i] = myline[closest]
-    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
-        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
-    if not printline:
-      if len(MyDriver.SelectedModels) > 1:
-        print('closest model: {0}'.format(best_i))
-      return line_i[best_i]
+        closest_i.append(np.argmin(distance))
+        best_mod_i.append(i)
+        distance_i.append(np.min(distance))
+    if num_star != 0:
+        best_mod = num_star
+        arg = [i for i,mod in enumerate(best_mod_i) if mod == num_star][0]
+        closest = closest_i[best_mod_i == num_star]
+        if arg != np.argmin(distance_i):
+            print('Note that your click was closer from model {0}'.format(best_mod_i[np.argmin(distance_i)]))
     else:
-      with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+        arg = np.argmin(distance_i)
+        closest = closest_i[arg]
+        best_mod = best_mod_i[arg]
+    return closest,best_mod
+
+def closest_line(num_star=0,p=False,Yvar=''):
+    """Finds the closest line from a cursor selection.
+       The optional parameter printline=True prints the whole line from the file,
+       otherwise only the number is returned (default behaviour).
+       In case the click is done on a plot with two different y axes,
+       posibility to precise the y variable with optional parameter Yvar=''"""
+    closest,best_mod=closest_index(num_star,Yvar)
+    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
+        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
+    if not p:
+      if len(MyDriver.SelectedModels) > 1:
+        print('closest model: {0}'.format(best_mod))
+      return myline
+    else:
+      with open(MyDriver.Model_list[best_mod].Variables['FileName'][0],'r') as myfile:
         for file_line in myfile:
           current_model = int(file_line.split()[0])
-          if current_model == line_i[best_i]:
+          if current_model == myline:
             print(str(file_line))
-            return line_i[best_i]
+            return myline
+
+def get_value(var,num_star=0,Yvar=''):
+    """Finds the value of var at the location of the click.
+       Note that var is intended to be different than the x and y variables of the plot."""
+    closest,best_mod=closest_index(num_star,Yvar)
+    value = Get_Var(var,best_mod)[closest]
+    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
+        print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
+    print('line: {0}, {1}: {2}'.format(myline,var,value))
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
