@@ -1994,6 +1994,9 @@ class Model(Outputs):
             tauH = self.Variables['t'][0][ind_endH]
             ttauH = self.Variables['t'][0]/tauH
             self.Variables['t_rel'][0][0:ind_endH+1] = ttauH[0:ind_endH+1]
+        else:
+            t_max = self.Variables['t'][0][-1]
+            self.Variables['t_rel'][0] = 0.5*self.Variables['t'][0]/t_max
         if ind_begHe != -1:
             self.Variables['phase'][0][ind_begHe:ind_endHe] = 'He'
         if ind_endHe != -1:
@@ -2001,11 +2004,19 @@ class Model(Outputs):
             tauHe = self.Variables['t'][0][ind_endHe]
             ttauHe = (self.Variables['t'][0]-tauH)/(tauHe-tauH)
             self.Variables['t_rel'][0][ind_endH+1:ind_endHe+1] = 1. + ttauHe[ind_endH+1:ind_endHe+1]
+        else:
+            if self.Variables['t_rel'][0][-1] == 0.:
+                t_max = self.Variables['t'][0][-1]
+                self.Variables['t_rel'][0][ind_endH+1:] = 1.5*self.Variables['t'][0][ind_endH+1:]/t_max
         if ind_begC != -1:
             self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
             tauadv = self.Variables['t'][0][-1]
             ttauadv = (self.Variables['t'][0]-tauHe)/(tauadv-tauHe)
             self.Variables['t_rel'][0][ind_endHe+1:] = 2. + ttauadv[ind_endHe+1:]
+        else:
+            if self.Variables['t_rel'][0][-1] == 0.:
+                t_max = self.Variables['t'][0][-1]
+                self.Variables['t_rel'][0][ind_endHe+1:] = 2.25*self.Variables['t'][0][ind_endHe+1:]/t_max
         if ind_endC != -1:
             self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
         if ind_begNe != -1:
@@ -5029,6 +5040,9 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         KippenSub.axes.yaxis.set_tick_params(which='major',length=MyDriver.ticklength,width=MyDriver.tickwidth)
         KippenSub.axes.yaxis.set_tick_params(which='minor',length=MyDriver.ticklength/2,width=MyDriver.tickwidth)
         KippenSub.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+        if MyDriver.Xvar == 't_rel':
+            xline(1.)
+            xline(2.)
 
         plt.show(block=False)
 
