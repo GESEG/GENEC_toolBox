@@ -3148,9 +3148,9 @@ class Kippenhahn():
             if time%time_jump != 0 and time != np.size(Model.CZ_array[0,0,:])-1:
                 self.time_mask.append(False)
                 continue
-            if MyDriver.axisLimits[3] != 0. and (time_array[time] < MyDriver.axisLimits[0] or time_array[time] > MyDriver.axisLimits[1]):
-                self.time_mask.append(False)
-                continue
+            #if MyDriver.axisLimits[3] != 0. and (time_array[time] < MyDriver.axisLimits[0] or time_array[time] > MyDriver.axisLimits[1]):
+            #    self.time_mask.append(False)
+            #    continue
             if time%5000 == 0:
                 print('Computing time step no: '+str(time))
             current_vector = np.zeros((self.mass_step))
@@ -5033,6 +5033,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         plt.show(block=False)
 
         MyDriver.Xvar = Xvar_save
+        MyDriver.axisInv[0] = True
 
 def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
     """Plots the ratio between variable_1 and variable_2.
@@ -6804,7 +6805,7 @@ def closest_line(num_star=0,p=False,Yvar=''):
             return myline
 
 def get_value(var,num_star=0,Yvar=''):
-    """Finds the value of var at the location of the click.
+    """Finds the value of var at the location of a cursor selection.
        Note that var is intended to be different than the x and y variables of the plot."""
     closest,best_mod=closest_index(num_star,Yvar)
     value = Get_Var(var,best_mod)[closest]
