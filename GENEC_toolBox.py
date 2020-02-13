@@ -1942,7 +1942,10 @@ class Model(Outputs):
         self.Variables['line_num'] = [[num_deb,num_fin_stored],'boundary lines','reading']
         self.Variables['options'] = [[colour,wa],'options colour and wa','reading']
         self.Variables['line'][0] = self.Variables['line'][0].astype(int)
-        massini = self.Variables['M'][0][0]
+        if format == 'preMS':
+          massini = np.max(self.Variables['M'][0])
+        else:
+          massini = self.Variables['M'][0][0]
         self.Variables['Mini'] = [massini,'$M_\mathrm{ini}\ [M_\odot]$','model']
         self.imax = np.size(self.Variables['line'][0])
         if not quiet:
@@ -2209,6 +2212,7 @@ class Model(Outputs):
         BurnFile = open(MyBurnFile,'r')
         lastline = os.popen('tail -1 '+MyBurnFile).readline().replace('\n','')
         adv_burn = len(lastline.split()) > 12
+        D_burn = len(lastline.split()) > 21
         BigArray = np.genfromtxt(MyBurnFile,comments=None)
         lineB = BigArray[:,0]
         ageB = BigArray[:,1]
@@ -2224,7 +2228,11 @@ class Model(Outputs):
             epsNe = np.zeros((3,len(lineB)))
             epsO = np.zeros((3,len(lineB)))
             epsSi = np.zeros((3,len(lineB)))
-        return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
+        if D_burn:
+            epsD = np.array((BigArray[:,22],BigArray[:,21],BigArray[:,23]))
+        else:
+            epsD = np.zeros((3,len(lineB)))
+        return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi,epsD
 
     def ReadBlock(self,format,FileName,file_cols,num_deb,num_fin,quiet):
         if format == 'preMS':
@@ -2238,6 +2246,7 @@ class Model(Outputs):
             Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
             Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
             col_num = readList.Evol_formats[format]['column_number']
+            format_ext = format
         else:
             if format == "starevol":
                 current_ext = FileName[FileName.rfind(".")+1:]
@@ -3022,7 +3031,7 @@ class Analysis():
             mode = ['list','grids']
         else:
             self.mode = mode
-        Mini = Star.Variables['M'][0][0]
+        Mini = Star.Variables['Mini'][0]
         Oini = Star.Variables['OOc'][0][0]
         Zini = 1.-Star.Variables['H1s'][0][0]-Star.Variables['He4s'][0][0]
         dist_min = 1.e9
@@ -3286,8 +3295,8 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
                 MyDriver.SelectedModels.append(num_star)
             if not num_star in MyDriver.SelectedModels_evol:
                 MyDriver.SelectedModels_evol.append(num_star)
-            MyData.lifetime(num_star,mode=['free','free'],quiet=True)
-            Mini = round(MyDriver.Model_list[num_star].Variables['M'][0][0],2)
+            MyData.lifetime(num_star,mode=['free','free'],quiet=False)
+            Mini = round(MyDriver.Model_list[num_star].Variables['Mini'][0],2)
             Oini = round(MyDriver.Model_list[num_star].Variables['OOc'][0][0],2)
             Zini = 1.-MyDriver.Model_list[num_star].Variables['H1s'][0][0]-MyDriver.Model_list[num_star].Variables['He4s'][0][0]
             tauH = MyData.Data[(Mini,Oini,Zini)]['tauMS']
@@ -4942,7 +4951,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi','preMS']:
         print('This format does not contain informations on convective zones.')
         return
     else:
@@ -4968,7 +4977,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         if hatch=='' and noshade:
             hatch='///'
         MyFig = Kippenhahn()
-        MyFig.init_Kipp(MyDriver.Model_list[num_star].Variables['M'][0][0])
+        MyFig.init_Kipp(MyDriver.Model_list[num_star].Variables['Mini'][0])
         MyFig.findCZ(MyDriver.Model_list[num_star],MyDriver.Model_list[num_star].Variables[MyDriver.Xvar][0],shift)
         MyFig.plot_Kippen(KippenSub,MyDriver.Model_list[num_star].Variables[MyDriver.Xvar][0],hatch,noshade)
         MyDriver.Model_list[num_star].Plot(MyDriver.Xvar,'M',myMask,'Red','-',myLegend1,[])
@@ -4995,7 +5004,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
             Evol_file = MyDriver.Model_list[num_star].Variables['FileName'][0]
             i_ext = Evol_file.rfind('.')
             rootName = Evol_file[:i_ext]
-            lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
+            lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi,epsD = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
             marine = (0,0,0.4)
             if not isinstance(lineB,float):
                 if MyDriver.Xvar == 't6':
@@ -5029,6 +5038,10 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
                     plt.plot(ageBplot,epsSi[0],c='orange',ls='-')
                     plt.plot(ageBplot,epsSi[1],c='orange',ls='--')
                     plt.plot(ageBplot,epsSi[2],c='orange',ls='--')
+                if not all(epsD[1]==0.):
+                    plt.plot(ageBplot,epsD[0],c='orange',ls='-')
+                    plt.plot(ageBplot,epsD[1],c='orange',ls='--')
+                    plt.plot(ageBplot,epsD[2],c='orange',ls='--')
 
         KippenSub.tick_params(axis='x', labelsize = MyDriver.fontSize)
         KippenSub.tick_params(axis='y', labelsize = MyDriver.fontSize)
@@ -5047,7 +5060,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         plt.show(block=False)
 
         MyDriver.Xvar = Xvar_save
-        MyDriver.axisInv[0] = True
+        MyDriver.axisInv[0] = False
 
 def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
     """Plots the ratio between variable_1 and variable_2.
