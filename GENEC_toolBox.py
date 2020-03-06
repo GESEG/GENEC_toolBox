@@ -3295,7 +3295,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
                 MyDriver.SelectedModels.append(num_star)
             if not num_star in MyDriver.SelectedModels_evol:
                 MyDriver.SelectedModels_evol.append(num_star)
-            MyData.lifetime(num_star,mode=['free','free'],quiet=False)
+            MyData.lifetime(num_star,mode=['free','free'],quiet=True)
             Mini = round(MyDriver.Model_list[num_star].Variables['Mini'][0],2)
             Oini = round(MyDriver.Model_list[num_star].Variables['OOc'][0][0],2)
             Zini = 1.-MyDriver.Model_list[num_star].Variables['H1s'][0][0]-MyDriver.Model_list[num_star].Variables['He4s'][0][0]
@@ -4410,7 +4410,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
     else:
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
-    MyDriver.get_CBlimits = MyCB.get_clim()
+    MyDriver.get_CBlimits = plt.cm.ScalarMappable.get_clim(MyCB)
     print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
