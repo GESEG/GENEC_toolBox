@@ -5575,12 +5575,12 @@ def Cepheid_strip(Zzone=''):
         if test_multiZ:
             print('Cepheid strip not drawn, more than one metallicity detected.')
 
-def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
+def mark_phase(fuel='',marker=['o','^'],colour='k',quiet=False):
     """Marks the beginning and end of a given burning phase in the current plot.
        The x and y variables have to be entered (Teff and L by default).
-       The default markers are ['o','x'], but they can be modified by the optional argument marker=['',''].
+       The default markers are ['o','^'], but they can be modified by the optional argument marker=['',''].
        Other optional parameters are:
-        - marker=['',''] to modify the default markers (['o','x']);
+        - marker=['',''] to modify the default markers (['o','^']);
         - colour='', to modify the default colour (black)."""
     if MyDriver.modeplot != 'evol':
         print('Possible only in evol mode.')
@@ -6030,10 +6030,10 @@ def noLimits(*args):
             if arg not in authorised:
                 print('Bad argument for function noLimits. Should be "x", "y", or "xy".')
 
-def keep_limits(choice=None):
+def keep_limits(choice=None,quiet=False):
     """Fixes the limits to the actual ones if set to True."""
     if choice == True or choice == None:
-        [xmin,xmax,ymin,ymax] = get_limits()
+        [xmin,xmax,ymin,ymax] = get_limits(quiet)
         Limits(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     elif choice == False:
         noLimits()
