@@ -1276,12 +1276,12 @@ class Driver():
                 if answer == 'n':
                     print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
                         pluralise(list(self.Model_list.keys()),'','s'),pluralise(list(self.Model_list.keys()),'is','are')))
-                    new_num = input('Enter new number (0 to abort loading): '))
+                    new_num = input('Enter new number (0 to abort loading): ')
                     try:
                         new_num = int(new_num)
                     except ValueError:
                         if new_num == 'y':
-                            new_num = int('Enter new number: ')
+                            new_num = int(input('Enter new number: '))
                         elif new_num == 'n':
                             new_num = 0
                         else:
