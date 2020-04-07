@@ -1276,16 +1276,14 @@ class Driver():
                 if answer == 'n':
                     print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
                         pluralise(list(self.Model_list.keys()),'','s'),pluralise(list(self.Model_list.keys()),'is','are')))
-                    answer = input('Would you like to attribute a new number ? y/n ')
-                    if answer == 'n':
+                    new_num = int(input('Enter new number (0 to abort loading): '))
+                    if new_num == 0:
+                        return False, number
+                    if new_num in list(self.Model_list.keys()):
+                        print('Again, this number already exists.')
                         return False, number
                     else:
-                        new_num = int(input('Enter new number: '))
-                        if new_num in list(self.Model_list.keys()):
-                            print('Again, this number already exists.')
-                            return False, number
-                        else:
-                            return True, new_num
+                        return True, new_num
                 else :
                     return True, number
         return True, number
