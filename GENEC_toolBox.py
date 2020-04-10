@@ -6808,7 +6808,7 @@ def closest_index(num_star=0,Yvar=''):
     if num_star != 0:
         best_mod = num_star
         arg = [i for i,mod in enumerate(best_mod_i) if mod == num_star][0]
-        closest = closest_i[best_mod_i == num_star]
+        closest = closest_i[arg]
         if arg != np.argmin(distance_i):
             print('Note that your click was closer from model {0}'.format(best_mod_i[np.argmin(distance_i)]))
     else:
