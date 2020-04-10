@@ -6849,6 +6849,24 @@ def get_value(var,num_star=0,Yvar=''):
         print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
     print('line: {0}, {1}: {2}'.format(myline,var,value))
 
+def show_where(var,value,num_star=0,c='0.80'):
+    Xvar = MyDriver.lastXvar
+    Yvar = MyDriver.lastYvar
+    wherex = []
+    wherey = []
+    for i in MyDriver.SelectedModels:
+        myVar = Get_Var(var,i)
+        myX = Get_Var(Xvar,i)
+        myY = Get_Var(Yvar,i)
+        myind = np.argmin(abs(myVar-value))
+        interpX = interpolate.interp1d(myVar[myind-2:myind+2],myX[myind-2:myind+2])
+        interpY = interpolate.interp1d(myVar[myind-2:myind+2],myY[myind-2:myind+2])
+        if num_star == 0 or num_star == i:
+            wherex.append(interpX(value))
+            wherey.append(interpY(value))
+    print(wherex,wherey)
+    plt.scatter(wherex,wherey,c=c,marker='o',edgecolors='k')
+
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
     p = subprocess.Popen(['wc', '-l',fname],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
