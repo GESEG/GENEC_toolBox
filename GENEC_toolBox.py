@@ -109,7 +109,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.4.0'
+    GtB_version = '8.4.1'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -155,6 +155,8 @@ class Rendering():
                                ['black','red','green','blue','cyan','magenta','orange','olive','pink','brown','grey']]
     Colours_list['iris'] = [[(0.,0.,0.),(0.,0.,1.),(0.,0.8,1.),(0.,0.8,0.),(1.,0.8,0.),(1.,0.4,0.),(1.,0.,0.),(1.,0.,1.),(0.6,0.,0.8),(0.6,0.6,0.6)], \
                            ['black','blue','cyan','green','yellow','orange','red','magenta','purple','grey']]
+    Colours_list['safe'] = [[(0.,0.,0.),(0.917,0.839,0.266),(0.,0.352,0.784),(0.667,0.039,0.235),(0.980,0.470,0.980),(1.,0.509,0.372),(0.,0.431,0.509),(0.078,0.823,0.862),(0.039,0.607,0.294),(0.,0.352,0.784),(27)], \
+                            ['black','yellow','blue','raspberry','pink','vermillion','teal blue','aqua','green','blue','purple']]
     Line_list = ['-', (0,(8,1)), '--', ':',(0,(1,1,3,1)),(0,(1,1,8,1))]
     Point_list = ['o','^','*','s','p','v','d','>','<']
     Authorised_LineStyle=['cycle_colour','cycle_all']+Line_list
@@ -2093,7 +2095,7 @@ class Model(Outputs):
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
-        mask = self.Variables['H1s'][0]<=0.
+        mask = self.Variables['H1s'][0]<=1.e-15
         if format != "starevol":
             self.Variables['FeH'][0][mask] = -30.
             self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
@@ -4699,38 +4701,29 @@ def Abund(where='x'):
         MyDriver.lineFlag = 'cycle_all'
         if MyDriver.modeplot not in ['evol','cluster']:
             switch('evol')
+        var_list = ['H1','He4','C12','N14','O16','Ne20']
+        colour_list_c = ['Black','Gray','Red','ForestGreen','Blue','Turquoise']
+        colour_list_s = ['Black','Gray','xkcd:Raspberry','Green','Blue','DarkTurquoise']
+        if MyDriver.colourSequence == 'safe':
+            colour_list = colour_list_s
+        else:
+            colour_list = colour_list_c
         if where in 'sS':
             MyDriver.axisLabel[1] = 'Surface abund. [mass frac.]'
-            set_colourFlag('Black')
-            Plot('H1s')
-            keep_plot(True)
-            set_colourFlag('Gray')
-            Plot('He4s')
-            set_colourFlag('Red')
-            Plot('C12s')
-            set_colourFlag('ForestGreen')
-            Plot('N14s')
-            set_colourFlag('Blue')
-            Plot('O16s')
-            set_colourFlag('Turquoise')
-            Plot('Ne20s')
+            for var,col in zip(var_list,colour_list):
+                set_colourFlag(col)
+                Plot(var+'s')
+                keep_plot(True)
+            keep_plot(False)
         elif where in 'cC':
             MyDriver.axisLabel[1] = 'Central abund. [mass frac.]'
-            set_colourFlag('Black')
-            Plot('H1c')
-            keep_plot(True)
-            set_colourFlag('Gray')
-            Plot('He4c')
-            set_colourFlag('Red')
-            Plot('C12c')
-            set_colourFlag('ForestGreen')
-            Plot('N14c')
-            set_colourFlag('Blue')
-            Plot('O16c')
-            set_colourFlag('Turquoise')
-            Plot('Ne20c')
+            for var,col in zip(var_list,colour_list):
+                set_colourFlag(col)
+                Plot(var+'c')
+                keep_plot(True)
             set_colourFlag('Orange')
             Plot('Si28c',var_error_print=False)
+            keep_plot(False)
         elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],\
                  6:['Ne20','cyan'],7:['Si28','orange (NB: available only for stars loaded with wa=True)']}
         for key in sorted(elDic.keys()):
@@ -6075,6 +6068,10 @@ def setLine_style(NewValue,width=1):
     """Retrocompatibility command"""
     set_lineStyle(NewValue,width=1)
 
+def set_lineWidth(width):
+    """Sets the width of the lines."""
+    MyDriver.lineWidth = width
+
 def set_pointStyle(NewValue):
     """Sets the point style for plotting.
        The allowed values are the following:
@@ -6144,6 +6141,9 @@ def set_colourSequence(NewValue):
         MyDriver.colourSequence = 'contrast'
     elif NewValue == 'i':
         MyDriver.colourSequence = 'iris'
+    elif NewValue == 's':
+        MyDriver.colourSequence = 'safe'
+        print('colour sequence set to '+MyDriver.colourSequence)
     elif NewValue == 'p':
         print('Personnalised colour sequence')
         cseq_key = input('Enter new sequence name: ')
@@ -6170,7 +6170,9 @@ def set_colourFlag(NewValue):
            or a float for shades of grey
            or a triplet for RGB definition."""
     if isinstance(NewValue,str):
-        if NewValue.lower() in Rendering.Authorised_Colours:
+        if NewValue[0] == '#' or 'xkcd:' in NewValue:
+            MyDriver.colourFlag = NewValue
+        elif NewValue.lower() in Rendering.Authorised_Colours:
             MyDriver.colourFlag = NewValue
         else:
             print('The name you entered does not exist. Check and try again')
