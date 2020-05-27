@@ -1838,7 +1838,6 @@ class Model(Outputs):
         if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0]:
             ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
         try:
-            print('test1')
             ind_midH = np.where(self.Variables['H1c'][0]<(np.max(self.Variables['H1c'][0])/2.))[0][0]
             ind_endH = np.where(self.Variables['H1c'][0]<1.e-5)[0][0]
             ind_begHe = ind_endH + np.where(self.Variables['He4c'][0][ind_endH:]<np.max(self.Variables['He4c'][0])-3.e-3)[0][0]
@@ -1848,7 +1847,7 @@ class Model(Outputs):
                 ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-3.e-3)[0][0]
                 if ind_begC != -1:
                     ind_midC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<(self.Variables['C12c'][0][ind_endHe]/2.))[0][0]
-                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-4)[0][0]
+                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-5)[0][0]
             if ind_endC != -1:
                 ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<np.max(self.Variables['Ne20c'][0])-3.e-3)[0][0]
                 if ind_begNe != -1:
@@ -1871,13 +1870,13 @@ class Model(Outputs):
         self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\mathrm{H}+t/\tau_\mathrm{He}+t/\tau_\mathrm{adv}$','model']
         if not quiet:
             print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
-            print('test middle of MS: index= '+str(ind_midH)+', Xmax= '+str(np.max(self.Variables['H1c'][0]))+', X-middle= '+str(self.Variables['H1c'][0][ind_midH]))
-            print('test middle of He: index= '+str(ind_midHe)+', Xmax= '+str(np.max(self.Variables['He4c'][0]))+', X-middle= '+str(self.Variables['He4c'][0][ind_midHe]))
-            print('test middle of  C: index= '+str(ind_midC) +', Xmax= '+str(self.Variables['C12c'][0][ind_endHe])+', X-middle= '+str(self.Variables['C12c'][0][ind_midC]))
-            print('test middle of Ne: index= '+str(ind_midNe)+', Xmax= '+str(np.max(self.Variables['Ne20c'][0]))+', X-middle= '+str(self.Variables['Ne20c'][0][ind_midNe]))
-            print('test middle of O: index= '+str(ind_midO)+', Xmax= '+str(np.max(self.Variables['O16c'][0]))+', X-middle= '+str(self.Variables['O16c'][0][ind_midO]))
-#            print('test middle of Si: index= '+str(ind_midSi)+', Xmax= '+str(np.max(self.Variables['Si28c'][0]))+', X-middle= '+str(self.Variables['Si28c'][0][ind_midSi]))
-            print('test middle of Si: index= '+str(ind_midSi))
+#            print('test middle of MS: index= '+str(ind_midH)+', Xmax= '+str(np.max(self.Variables['H1c'][0]))+', X-middle= '+str(self.Variables['H1c'][0][ind_midH]))
+#            print('test middle of He: index= '+str(ind_midHe)+', Xmax= '+str(np.max(self.Variables['He4c'][0]))+', X-middle= '+str(self.Variables['He4c'][0][ind_midHe]))
+#            print('test middle of  C: index= '+str(ind_midC) +', Xmax= '+str(self.Variables['C12c'][0][ind_endHe])+', X-middle= '+str(self.Variables['C12c'][0][ind_midC]))
+#            print('test middle of Ne: index= '+str(ind_midNe)+', Xmax= '+str(np.max(self.Variables['Ne20c'][0]))+', X-middle= '+str(self.Variables['Ne20c'][0][ind_midNe]))
+#            print('test middle of O: index= '+str(ind_midO)+', Xmax= '+str(np.max(self.Variables['O16c'][0]))+', X-middle= '+str(self.Variables['O16c'][0][ind_midO]))
+##            print('test middle of Si: index= '+str(ind_midSi)+', Xmax= '+str(np.max(self.Variables['Si28c'][0]))+', X-middle= '+str(self.Variables['Si28c'][0][ind_midSi]))
+#            print('test middle of Si: index= '+str(ind_midSi))
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
