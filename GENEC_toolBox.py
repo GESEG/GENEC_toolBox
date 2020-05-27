@@ -1398,13 +1398,13 @@ class Outputs():
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     else:
-                        plotSettings={'c':iColour,'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
+                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     one_legend = False
                 else:
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize}
                     else:
-                        plotSettings={'c':iColour,'marker':iStyle,'s':MyDriver.pointSize}
+                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize}
                 if iStyle not in Rendering.Point_list or MyDriver.emptyPoint:
                     plotSettings['linewidths'] = 2.
                 else:
@@ -3157,6 +3157,7 @@ class Analysis():
             print('C-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauCb']))
             print('Ne-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauNeb']))
             print('O-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauOb']))
+            print('total lifetime: '+str(MyStar.Variables['t'][0][-1]))
             print('----------------------------------------------------------------')
 
 class Kippenhahn():
@@ -6055,11 +6056,15 @@ def emptyPoints(choice):
     else:
         print('Wrong value: should be True or False.')
 
-def set_lineStyle(NewValue,width=1):
+def set_lineStyle(NewValue='default',width=1):
     """Sets the line style for plotting.
-       The allowed values are the following: 'cycle_all', 'cycle_colour', '-', '--', ':', '-.' """
+       The allowed values are the following: 'cycle_all', 'cycle_colour', '-', '--', ':', '-.'
+       Alternatively, a tuple can be entered with the offset and length of on and off line:
+           (offset,(on,off,on,off,...)) """
     MyDriver.lineWidth = width
-    if NewValue in Rendering.Authorised_LineStyle:
+    if NewValue == 'default':
+            MyDriver.lieFlag = 'cycle_colour'
+    elif NewValue in Rendering.Authorised_LineStyle or isinstance(NewValue,tuple):
         MyDriver.lineFlag = NewValue
     else:
         print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_LineStyle[:]))
@@ -6068,9 +6073,15 @@ def setLine_style(NewValue,width=1):
     """Retrocompatibility command"""
     set_lineStyle(NewValue,width=1)
 
-def set_lineWidth(width):
+def set_lineWidth(width='default'):
     """Sets the width of the lines."""
-    MyDriver.lineWidth = width
+    if isinstance(width,str):
+        if width == 'default':
+            MyDriver.lineWidth = 1
+        else:
+            print('The argument should be "default" or an integer for the width of the line.')
+    elif isinstance(width,int) or isinstance(width,float):
+        MyDriver.lineWidth = width
 
 def set_pointStyle(NewValue):
     """Sets the point style for plotting.
@@ -6104,6 +6115,7 @@ def set_pointSize(NewValue=0,f=1.):
         elif isinstance(NewValue,int) or isinstance(NewValue,float):
             MyDriver.pointSize = NewValue
     else:
+        MyDriver.pointSize = 24
         MyDriver.pointSize = f*MyDriver.pointSize
 
 def setPoint_size(NewValue=0,f=1.):
