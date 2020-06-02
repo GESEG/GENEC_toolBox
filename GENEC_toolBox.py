@@ -1822,6 +1822,7 @@ class Model(Outputs):
         massini = self.Variables['M'][0][0]
         self.Variables['Mini'] = [massini,'$M_\mathrm{ini}\ [M_\odot]$','model']
         self.imax = np.size(self.Variables['line'][0])
+#        print(StarName, FileName)
         if not quiet:
             print('File read, {0} lines.'.format(self.imax))
 
@@ -1849,14 +1850,14 @@ class Model(Outputs):
                     ind_midC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<(self.Variables['C12c'][0][ind_endHe]/2.))[0][0]
                     ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-5)[0][0]
             if ind_endC != -1:
-                ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<np.max(self.Variables['Ne20c'][0])-3.e-3)[0][0]
+                ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<self.Variables['Ne20c'][0][ind_endC]-3.e-3)[0][0]
                 if ind_begNe != -1:
-                    ind_midNe = ind_begNe + np.where(self.Variables['Ne20c'][0][ind_begNe:]<(np.max(self.Variables['Ne20c'][0])/2.))[0][0]
+                    ind_midNe = ind_begNe + np.where(self.Variables['Ne20c'][0][ind_begNe:]<(self.Variables['Ne20c'][0][ind_endC]/2.))[0][0]
                     ind_endNe = ind_begNe + np.where(self.Variables['Ne20c'][0][ind_begNe:]<1.e-3)[0][0]
             if ind_endNe != -1:
-                ind_begO = ind_endNe + np.where(self.Variables['O16c'][0][ind_endNe:]<np.max(self.Variables['O16c'][0])-3.e-3)[0][0]
+                ind_begO = ind_endNe + np.where(self.Variables['O16c'][0][ind_endNe:]<self.Variables['O16c'][0][ind_endNe]-3.e-3)[0][0]
                 if ind_begO != -1:
-                    ind_midO = ind_begO + np.where(self.Variables['O16c'][0][ind_begO:]<(np.max(self.Variables['O16c'][0])/2.))[0][0]
+                    ind_midO = ind_begO + np.where(self.Variables['O16c'][0][ind_begO:]<(self.Variables['O16c'][0][ind_endNe]/2.))[0][0]
                     ind_endO = ind_begO + np.where(self.Variables['O16c'][0][ind_begO:]<1.e-3)[0][0]
             if ind_endO != -1:
                 ind_begSi = ind_endO + np.where(self.Variables['Si28c'][0][ind_endO:]<np.max(self.Variables['Si28c'][0])-3.e-3)[0][0]
@@ -1865,18 +1866,40 @@ class Model(Outputs):
                     ind_endSi = ind_begSi + np.where(self.Variables['Si28c'][0][ind_begSi:]<1.e-3)[0][0]
         except:
             pass
+        lastv=False
+        if lastv:
+          index_lastv = np.max([ind_endC,ind_endHe,ind_endH])
+          if index_lastv != ind_endC:
+            index_lastv = self.imax
+         
+          print index_lastv,ind_endC,ind_endHe,ind_endH, self.imax
+          if np.mod(index_lastv,10) >0:
+            ind_lastv=index_lastv-np.mod(index_lastv,10)+1
+          else :
+            ind_lastv=index_lastv-9
+          vfile='full_models/'+StarName+'/'+StarName+'.v'+"%07d"%(ind_lastv)
+          # try:
+          os.system('ls '+vfile+'.gz')
+          #os.system('cp '+vfile+'.gz'+' lastv/')
+          # except:
+          #   os.system('cp '+vfile+' lastv/')
+          print('lastv: '+vfile+'.gz')
+
+
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_midH,ind_endH,ind_begHe,ind_midHe,ind_endHe,ind_begC,ind_midC,ind_endC,ind_begNe,ind_midNe,ind_endNe,ind_begO, \
                                                 ind_midO,ind_endO,ind_begSi,ind_midSi,ind_endSi],'phases limits','reading']
         self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\mathrm{H}+t/\tau_\mathrm{He}+t/\tau_\mathrm{adv}$','model']
         if not quiet:
-            print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
-#            print('test middle of MS: index= '+str(ind_midH)+', Xmax= '+str(np.max(self.Variables['H1c'][0]))+', X-middle= '+str(self.Variables['H1c'][0][ind_midH]))
-#            print('test middle of He: index= '+str(ind_midHe)+', Xmax= '+str(np.max(self.Variables['He4c'][0]))+', X-middle= '+str(self.Variables['He4c'][0][ind_midHe]))
-#            print('test middle of  C: index= '+str(ind_midC) +', Xmax= '+str(self.Variables['C12c'][0][ind_endHe])+', X-middle= '+str(self.Variables['C12c'][0][ind_midC]))
-#            print('test middle of Ne: index= '+str(ind_midNe)+', Xmax= '+str(np.max(self.Variables['Ne20c'][0]))+', X-middle= '+str(self.Variables['Ne20c'][0][ind_midNe]))
-#            print('test middle of O: index= '+str(ind_midO)+', Xmax= '+str(np.max(self.Variables['O16c'][0]))+', X-middle= '+str(self.Variables['O16c'][0][ind_midO]))
-##            print('test middle of Si: index= '+str(ind_midSi)+', Xmax= '+str(np.max(self.Variables['Si28c'][0]))+', X-middle= '+str(self.Variables['Si28c'][0][ind_midSi]))
-#            print('test middle of Si: index= '+str(ind_midSi))
+            #print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
+            #print('test middle of MS: index= '+str(ind_midH)+', Xmax= '+str(np.max(self.Variables['H1c'][0]))+', X-middle= '+str(self.Variables['H1c'][0][ind_midH]))
+            #print('test middle of He: index= '+str(ind_midHe)+', Xmax= '+str(np.max(self.Variables['He4c'][0]))+', X-middle= '+str(self.Variables['He4c'][0][ind_midHe]))
+            #print('test middle of  C: index= '+str(ind_midC) +', Xmax= '+str(self.Variables['C12c'][0][ind_endHe])+', X-middle= '+str(self.Variables['C12c'][0][ind_midC]))
+            #print('test middle of Ne: index= '+str(ind_midNe)+', Xmax= '+str(np.max(self.Variables['Ne20c'][0]))+', X_endC= '+str(self.Variables['Ne20c'][0][ind_endC])+', X-middle= '+str(self.Variables['Ne20c'][0][ind_midNe]))
+            #print('test middle of O: index= '+str(ind_midO)+', Xmax= '+str(np.max(self.Variables['O16c'][0]))+', X_endNe= '+str(self.Variables['O16c'][0][ind_endNe])+', X-middle= '+str(self.Variables['O16c'][0][ind_midO]))
+#            print('test middle of Si: index= '+str(ind_midSi)+', Xmax= '+str(np.max(self.Variables['Si28c'][0]))+', X-middle= '+str(self.Variables['Si28c'][0][ind_midSi]))
+            #print('test middle of Si: index= '+str(ind_midSi))
+
+
         if ind_begH != 0:
             self.Variables['phase'][0][:ind_begH] = 'preH'
         self.Variables['phase'][0][ind_begH:ind_endH] = 'H'
