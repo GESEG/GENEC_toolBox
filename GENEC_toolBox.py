@@ -1890,7 +1890,7 @@ class Model(Outputs):
                                                 ind_midO,ind_endO,ind_begSi,ind_midSi,ind_endSi],'phases limits','reading']
         self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\mathrm{H}+t/\tau_\mathrm{He}+t/\tau_\mathrm{adv}$','model']
         if not quiet:
-            #print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
+            print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
             #print('test middle of MS: index= '+str(ind_midH)+', Xmax= '+str(np.max(self.Variables['H1c'][0]))+', X-middle= '+str(self.Variables['H1c'][0][ind_midH]))
             #print('test middle of He: index= '+str(ind_midHe)+', Xmax= '+str(np.max(self.Variables['He4c'][0]))+', X-middle= '+str(self.Variables['He4c'][0][ind_midHe]))
             #print('test middle of  C: index= '+str(ind_midC) +', Xmax= '+str(self.Variables['C12c'][0][ind_endHe])+', X-middle= '+str(self.Variables['C12c'][0][ind_midC]))
