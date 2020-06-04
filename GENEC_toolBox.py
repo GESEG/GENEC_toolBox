@@ -3601,7 +3601,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
         print('')
         Loaded('evol')
     else:
-        print('{0} file{1} loaded. Details can be displayed with Loaded().'.format(num_files,pluralise(num_files,'','s')))
+        print('{0} file{1} loaded. Details can be displayed with Loaded().'.format(num_files,'s' if num_files>1 else ''))
 
 def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False,quiet=False):
     """Loads all structures (.v or StrucData) in the directory given in argument.
@@ -4213,7 +4213,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
 
-def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
+def Plot_colour(y,z,binz=0,extend='neither',s='',logs=False,plotif=['',''],ticks=[]):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name),
           and colour-coded as a function of the input variable z.
        By default, the colour map is 'gist_rainbow', but it can be modified
@@ -4414,14 +4414,14 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         CBticks = np.linspace(MinMap,MaxMap,MyDriver.CBticksN)
     else:
         CBticks = ticks
-    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks)
+    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
     if MyDriver.ilog[2]:
         MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
     else:
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
-    MyDriver.get_CBlimits = plt.cm.ScalarMappable.get_clim(MyCB)
+    MyDriver.get_CBlimits = MyCB.mappable.get_clim()
     print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
@@ -4509,7 +4509,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4543,7 +4543,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plot
     else:
         yvar = 'L_lgd'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,extend=extend,plotif=plotif,ticks=ticks)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line)
     if ceph and not spectro:
@@ -4551,7 +4551,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plot
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
-def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=False):
+def CMD(c='',zcol='',binz=256,extend='neither',noised='',plotif=['',''],ticks=[],forced_line=False):
     """Plots a CMD for the colours entered in parameters. If called without argument, M_V versus B-V is plotted.
        Usage: CMD(), or CMD('VBV')"""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
@@ -4585,7 +4585,7 @@ def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=Fals
 
     MyDriver.Xvar = Xvar_save
 
-def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False,*args):
+def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False,*args):
     """Plots a T-rho diagram if in structure mode or a T_c-rho_c diagram if in evolution mode.
        Called with deg=True, it draws the limits between perfect gaz and degenerate gaz.
        Called with PISN=True, show the approximate region where pair instability occurs.
@@ -4615,7 +4615,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line
         no_logVar()
     MyDriver.Xvar = Xvar_save
 
-def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of g as a function of Teff."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -4649,7 +4649,7 @@ def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256
     no_axis_inv()
     MyDriver.Xvar = Xvar_save
 
-def YTeff(corr=False,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def YTeff(corr=False,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of Teff as a function of the central He abundance."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
