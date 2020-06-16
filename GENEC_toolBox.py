@@ -1772,7 +1772,7 @@ class Model(Outputs):
 
         return switcher.get(fmt,'Unknown format')
 
-    def read(self,FileName,num_deb,num_fin,format,colour,wa,quiet):
+    def read(self,FileName,num_deb,num_fin,format,colour,wa,quiet,key_structures):
         if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
             format = "starevol"
             file_cols = 0
@@ -1848,7 +1848,7 @@ class Model(Outputs):
                 ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-3.e-3)[0][0]
                 if ind_begC != -1:
                     ind_midC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<(self.Variables['C12c'][0][ind_endHe]/2.))[0][0]
-                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-5)[0][0]
+                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-5)[0][0] # check and maybe keep 1.e-3?
             if ind_endC != -1:
                 ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<self.Variables['Ne20c'][0][ind_endC]-3.e-3)[0][0]
                 if ind_begNe != -1:
@@ -1866,24 +1866,63 @@ class Model(Outputs):
                     ind_endSi = ind_begSi + np.where(self.Variables['Si28c'][0][ind_begSi:]<1.e-3)[0][0]
         except:
             pass
-        lastv=False
-        if lastv:
+        #lastv=True#False
+        if key_structures:
+          Grids_dir='/obs/evol9/Grids2010/' 
+          Grids_dir='/home/data/Grids2010/' 
+          Z_code=StarName[-4:-2]
+          if Z_code  == 'm4':
+            Z_dir = 'Z0004/'
+          else :
+            Z_dir = 'Z0'+Z_code+'/'
+#          print Grids_dir,Z_dir
+
           index_lastv = np.max([ind_endC,ind_endHe,ind_endH])
           if index_lastv != ind_endC:
             index_lastv = self.imax
          
           print index_lastv,ind_endC,ind_endHe,ind_endH, self.imax
+
           if np.mod(index_lastv,10) >0:
-            ind_lastv=index_lastv-np.mod(index_lastv,10)+1
+            ind_vfile=index_lastv-np.mod(index_lastv,10)+1
           else :
-            ind_lastv=index_lastv-9
-          vfile='full_models/'+StarName+'/'+StarName+'.v'+"%07d"%(ind_lastv)
-          # try:
-          os.system('ls '+vfile+'.gz')
-          #os.system('cp '+vfile+'.gz'+' lastv/')
-          # except:
-          #   os.system('cp '+vfile+' lastv/')
-          print('lastv: '+vfile+'.gz')
+            ind_vfile=index_lastv-9
+          vfile=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(ind_vfile)
+          v_dir=Grids_dir+'key_structures/lastv/'
+          if os.path.isfile(vfile+'.gz'):
+#          try:
+            print('cp '+vfile+'.gz '+v_dir)
+            os.system('cp -p '+vfile+'.gz '+v_dir)
+          else:
+            print('cp '+vfile+' '+v_dir)
+            os.system('cp -p '+vfile+' '+v_dir)
+
+          try:
+            index = ind_begH
+            v_dir=Grids_dir+'key_structures/ZAMS/'
+            if np.mod(index,10) >0:
+              ind_vfile=index-np.mod(index,10)+1
+            else :
+              ind_vfile=index-9
+            vfile=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(ind_vfile)
+            if os.path.isfile(vfile+'.gz'):
+              print('cp '+vfile+'.gz'+v_dir)
+              os.system('cp -p '+vfile+'.gz '+v_dir)
+            else:
+              print('test RH')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+
+#            if ind_endHe != -1:
+#              if ind_begC != -1:
+#            if ind_endC != -1:
+#              if ind_begNe != -1:
+#            if ind_endNe != -1:
+#              if ind_begO != -1:
+#            if ind_endO != -1:
+#              if ind_begSi != -1:
+          except:
+            pass
 
 
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_midH,ind_endH,ind_begHe,ind_midHe,ind_endHe,ind_begC,ind_midC,ind_endC,ind_begNe,ind_midNe,ind_endNe,ind_begO, \
@@ -3121,7 +3160,7 @@ def standard_columns():
     """Removes the columns added by add_column()."""
     MyDriver.added_columns = {'varList':[],'unitsList':[],'catList':[]}
 
-def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced=False,wa=False,quiet=False):
+def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced=False,wa=False,quiet=False,key_structures=False):
     """Loads a new evolution file in the database.
        Usage: loadE(FileName,num_star[,num_deb,num_fin,format=tgrids])
        Optional arguments are:
@@ -3131,7 +3170,8 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
           colour (False by default, colours computation if True)
           forced (False by default, True to avoid the checking of the star number)
           wa (False by default, True to read the abundances in the wa file)
-          quiet (False by default, True to avoid all the babbling)."""
+          quiet (False by default, True to avoid all the babbling).
+          key_structures (False by default, True to copy vfile at key stages into the relevant Grids directories)"""
     MyModel = Model()
     if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
         format = "starevol"
@@ -3162,7 +3202,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
         Checked, num_star = Driver.checknumber(MyDriver,num_star)
     if Checked or forced:
         try:
-            MyModel.read(MyEFile,num_deb,num_fin,format,colour,wa,quiet)
+            MyModel.read(MyEFile,num_deb,num_fin,format,colour,wa,quiet,key_structures)
             MyDriver.store_model(MyModel,num_star)
             if not num_star in MyDriver.SelectedModels:
                 MyDriver.SelectedModels.append(num_star)
