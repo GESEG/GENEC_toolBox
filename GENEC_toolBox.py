@@ -1868,8 +1868,8 @@ class Model(Outputs):
             pass
         #lastv=True#False
         if key_structures:
-          Grids_dir='/obs/evol9/Grids2010/' 
-          Grids_dir='/home/data/Grids2010/' 
+          Grids_dir='/obs/evol9/Grids2010/'
+          Grids_dir='/home/data/Grids2010/'
           Z_code=StarName[-4:-2]
           if Z_code  == 'm4':
             Z_dir = 'Z0004/'
@@ -1880,8 +1880,8 @@ class Model(Outputs):
           index_lastv = np.max([ind_endC,ind_endHe,ind_endH])
           if index_lastv != ind_endC:
             index_lastv = self.imax
-         
-          print index_lastv,ind_endC,ind_endHe,ind_endH, self.imax
+
+          print(index_lastv,ind_endC,ind_endHe,ind_endH, self.imax)
 
           if np.mod(index_lastv,10) >0:
             ind_vfile=index_lastv-np.mod(index_lastv,10)+1
