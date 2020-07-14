@@ -109,7 +109,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.4.1'
+    GtB_version = '8.4.2'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -1218,7 +1218,7 @@ class Driver():
         self.gridls = '-'
         self.gridlw = 0.2
         self.gridlc = '0.80'
-        self.minorLoc = 0
+        self.minorLoc = [0,0]
 
         self.LatexEnabled = False
         self.lineFlag = 'cycle_colour'
@@ -4186,14 +4186,16 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     New_Axes.set_ylabel(Ylabel,fontsize = MyDriver.fontSize+4)
     New_Axes.tick_params(axis='x', labelsize = MyDriver.fontSize)
     New_Axes.tick_params(axis='y', labelsize = MyDriver.fontSize)
-    if MyDriver.minorLoc != 0:
+    if MyDriver.minorLoc[0] != 0:
         if MyDriver.logScale[0] == False:
-            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc))
-        if MyDriver.logScale[1] == False:
-            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc))
+            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[0]))
     else:
         if MyDriver.logScale[0] == False:
             New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator())
+    if MyDriver.minorLoc[1] != 0:
+        if MyDriver.logScale[1] == False:
+            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[1]))
+    else:
         if MyDriver.logScale[1] == False:
             New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator())
 
@@ -4213,7 +4215,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
 
-def Plot_colour(y,z,binz=0,extend='neither',s='',logs=False,plotif=['',''],ticks=[]):
+def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[]):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name),
           and colour-coded as a function of the input variable z.
        By default, the colour map is 'gist_rainbow', but it can be modified
@@ -4351,6 +4353,10 @@ def Plot_colour(y,z,binz=0,extend='neither',s='',logs=False,plotif=['',''],ticks
                     MyDriver.axisLimits[3] = np.nanmax(MyDriver.Model_list[i].Variables[y][0][myMask])
 
         cmap=cm.get_cmap(MyDriver.colourMap)
+        if extend=='both' or extend=='min' and under!=None:
+            cmap.set_under(under)
+        if extend=='both' or extend=='max' and over!=None:
+            cmap.set_over(over)
         if binz != 0:
             bounds = np.linspace(MinMap,MaxMap,binz+1)
         else:
@@ -4400,8 +4406,18 @@ def Plot_colour(y,z,binz=0,extend='neither',s='',logs=False,plotif=['',''],ticks
     New_Axes.set_ylabel(Ylabel,fontsize = MyDriver.fontSize+4)
     New_Axes.tick_params(axis='x', labelsize = MyDriver.fontSize)
     New_Axes.tick_params(axis='y', labelsize = MyDriver.fontSize)
-    New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(4))
-    New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(4))
+    if MyDriver.minorLoc[0] != 0:
+        if MyDriver.logScale[0] == False:
+            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[0]))
+    else:
+        if MyDriver.logScale[0] == False:
+            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator())
+    if MyDriver.minorLoc[1] != 0:
+        if MyDriver.logScale[1] == False:
+            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[1]))
+    else:
+        if MyDriver.logScale[1] == False:
+            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator())
 
     New_Axes.axes.xaxis.set_tick_params(which='major',length=MyDriver.ticklength,width=MyDriver.tickwidth)
     New_Axes.axes.xaxis.set_tick_params(which='minor',length=MyDriver.ticklength/2,width=MyDriver.tickwidth)
@@ -4509,7 +4525,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4543,7 +4559,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     else:
         yvar = 'L_lgd'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,extend=extend,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line)
     if ceph and not spectro:
@@ -4551,7 +4567,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
-def CMD(c='',zcol='',binz=256,extend='neither',noised='',plotif=['',''],ticks=[],forced_line=False):
+def CMD(c='',zcol='',binz=256,extend='neither',under=None,over=None,noised='',plotif=['',''],ticks=[],forced_line=False):
     """Plots a CMD for the colours entered in parameters. If called without argument, M_V versus B-V is plotted.
        Usage: CMD(), or CMD('VBV')"""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
@@ -4578,14 +4594,14 @@ def CMD(c='',zcol='',binz=256,extend='neither',noised='',plotif=['',''],ticks=[]
     defX(varx)
     axis_inv('y')
     if zcol:
-        Plot_colour(vary,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(vary,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks)
     else:
         Plot(vary,plotif=plotif,forced_line=forced_line)
     no_axis_inv()
 
     MyDriver.Xvar = Xvar_save
 
-def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False,*args):
+def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,*args):
     """Plots a T-rho diagram if in structure mode or a T_c-rho_c diagram if in evolution mode.
        Called with deg=True, it draws the limits between perfect gaz and degenerate gaz.
        Called with PISN=True, show the approximate region where pair instability occurs.
@@ -4601,7 +4617,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',plotif=['',''],tic
         yVar = 'T'
         logVar('xy')
     if zcol:
-        Plot_colour(yVar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yVar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
     else:
         Plot(yVar,plotif=plotif,forced_line=forced_line)
     if deg:
@@ -4615,7 +4631,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',plotif=['',''],tic
         no_logVar()
     MyDriver.Xvar = Xvar_save
 
-def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False):
+def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of g as a function of Teff."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -4643,13 +4659,13 @@ def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256
         yvar = yvar+'_noised'
     axis_inv('y')
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line)
     no_axis_inv()
     MyDriver.Xvar = Xvar_save
 
-def YTeff(corr=False,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],forced_line=False):
+def YTeff(corr=False,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of Teff as a function of the central He abundance."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -4660,7 +4676,7 @@ def YTeff(corr=False,zcol='',binz=256,extend='neither',plotif=['',''],ticks=[],f
     else:
         yvar = 'Teff'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line)
     MyDriver.Xvar = Xvar_save
@@ -6405,7 +6421,7 @@ def default_settings():
     MyDriver.fontSize = 24
     MyDriver.ticklength = 8
     MyDriver.tickwidth = 1
-    MyDriver.minorLoc = 0
+    MyDriver.minorLoc = [0,0]
     MyDriver.subplotSep = 0.2
     MyDriver.logScale = [False,False]
     MyDriver.plotgrid = False
@@ -6645,11 +6661,14 @@ def ChangeTickSize(length=2,width=1):
     """Retrocompatibility command"""
     set_tickSize(length=2,width=1)
 
-def set_tickNumber(tick=5):
+def set_tickNumber(tick=5,axis='xy'):
     """Allows to change the number of the minor ticks on the axes.
        Usage: set_tickNumber(num)
        By default: num=5 (automatic behaviour: num=0)"""
-    MyDriver.minorLoc = tick
+    if 'x' in axis:
+        MyDriver.minorLoc[0] = tick
+    if 'y' in axis:
+        MyDriver.minorLoc[1] = tick
 
 def Margins(top=0.1,right=0.1,bottom=0.2,left=0.2):
     """Allows to modify the margins of a plot.
@@ -6712,6 +6731,7 @@ def add_label(x,y,string,**args):
     myHAlignment = "left"
     myVAlignment = "bottom"
     colour='k'
+    myAngle=0
     for arg in list(args.keys()):
         if arg == 'colour':
             colour = args[arg]
@@ -6721,9 +6741,11 @@ def add_label(x,y,string,**args):
             myHAlignment = args[arg]
         elif arg == 'va':
             myVAlignment = args[arg]
+        elif arg == 'angle':
+            myAngle = args[arg]
         else:
             print('Argument {0} not valid'.format(arg))
-    plt.text(x,y,string,color=colour,fontsize=myFontsize,ha=myHAlignment,va=myVAlignment)
+    plt.text(x,y,string,color=colour,fontsize=myFontsize,ha=myHAlignment,va=myVAlignment,rotation=myAngle)
 
 def top_label(string,**args):
     """Adds a title to the current figure.
