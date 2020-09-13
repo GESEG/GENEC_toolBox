@@ -2023,6 +2023,13 @@ class Model(Outputs):
         self.Variables['t6'] = [self.Variables['t'][0]/1.e6,'t [Myr]','model']
         self.Variables['t9'] = [self.Variables['t'][0]/1.e9,'t [Gyr]','model']
         self.Variables['ageadv'] = [self.Variables['t'][0][-1] - self.Variables['t'][0],'log(time before collapse [yr])','model']
+        ageadv_inf = []
+        try:
+            ageadv_inf = np.where(self.Variables['ageadv'][0]==-np.inf)[0][0]
+        except IndexError:
+            pass
+        if ageadv_inf:
+            self.Variables['ageadv'][0][ageadv_inf:] = self.Variables['ageadv'][0][ageadv_inf-1]
         if format != 'starevol':
             self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
         if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
@@ -2078,23 +2085,31 @@ class Model(Outputs):
         else:
             self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
-        self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
-        self.Variables['NH'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)])+12.
+        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
+            self.Variables['NH'][0][mask][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
+        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
+            self.Variables['NH'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)][i])+12. if myN > 0. else -30.
         self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
         self.Variables['NC'] = [np.zeros((self.imax)),'log(N/C [numb.])','abundances']
         mask = self.Variables['C12s'][0]<=0.
-        self.Variables['NC'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
-        self.Variables['NC'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)
+        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
+            self.Variables['NC'][0][mask][i] = np.log10(myN/14.)-30. if myN > 0. else -30.
+        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
+            self.Variables['NC'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)][i]/12.) if myN > 0. else -30.
         self.Variables['NCrel'] = [self.Variables['NC'][0]-self.Variables['NC'][0][0],'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
         self.Variables['NO'] = [np.zeros((self.imax)),'log(N/O [numb.])','abundances']
         mask = self.Variables['O16s'][0]<=0.
-        self.Variables['NO'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
-        self.Variables['NO'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)]/16.)
+        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
+            self.Variables['NO'][0][mask][i] = np.log10(myN/14.)-30. if myN > 0. else -30.
+        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
+            self.Variables['NO'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)][i]/16.) if myN > 0. else -30.
         self.Variables['NOrel'] = [self.Variables['NO'][0]-self.Variables['NO'][0][0],'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
         self.Variables['C12C13'] = [np.zeros((self.imax)),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         mask = self.Variables['C13s'][0]<=0.
-        self.Variables['C12C13'][0][mask] = np.log10(self.Variables['C12s'][0][mask]/12.)-30.
-        self.Variables['C12C13'][0][np.logical_not(mask)] = np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)]/13.)
+        for i,myC in enumerate(self.Variables['C12s'][0][mask]):
+            self.Variables['C12C13'][0][mask][i] = np.log10(myC/12.)-30. if myC > 0. else -30.
+        for i,myC in enumerate(self.Variables['C12s'][0][np.logical_not(mask)]):
+            self.Variables['C12C13'][0][np.logical_not(mask)][i] = np.log10(myC/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)][i]/13.) if myC > 0. else -30.
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
@@ -5113,6 +5128,8 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         print('DHR1: HRD, Abund(c), kippenhahn, L-Teff vs time')
         print('-----------------------------------------------')
         HRD_plot()
+        defX(MyDriver.Xvar)
+        Limits(ymin=0.,ymax=1.)
         Abund('c')
         MyDriver.Link_ModelCurve = False
         Kippen(MyDriver.SelectedModels[0],shift=shift)
