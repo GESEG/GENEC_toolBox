@@ -6642,7 +6642,10 @@ def MyFig(name,path='',format='svg',layout=''):
              the optional argument layout='land' (or 'port')."""
     iLatex_save = MyDriver.LatexEnabled
     iLatex(True)
-    CurrentAxes = MyDriver.Previous_Axe
+    try:
+        CurrentAxes = MyDriver.Previous_Axe
+    except AttributeError:
+        CurrentAxes = plt.axes()
     CurrentAxes.xaxis.labelpad = 0.
     plt.show
     if path == '':
