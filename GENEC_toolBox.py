@@ -1362,6 +1362,9 @@ class Outputs():
 
         parseX,parseY = self.parseMask(tempX,tempY,myMask,forced_line)
         one_legend = True
+        if MyDriver.iPoints:
+            if not isinstance(iColour,list):
+                iColour = np.array([iColour])
         plotSettings={}
         for myX,myY in zip(parseX,parseY):
             if MyDriver.ilog[0] or MyDriver.logScale[0]:
