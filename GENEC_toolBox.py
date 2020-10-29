@@ -4008,7 +4008,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
 
     if len(Star_list) == 0:
         if var_error_print:
-            print('No star knows variable'+bad_var)
+            print('No star knows variable '+bad_var)
             print('Available variables are:')
             print(sorted(list(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys()), key=lambda s: s.lower()))
         return
@@ -6679,7 +6679,8 @@ def add_label(x,y,string,**args):
     """Allows to add a string at location (x,y).
        The optional arguments are:
         - fontsize (default: 24)
-        - align (default: left)
+        - ha (default: left)
+        - va (default: botom)
        Usage: add_label(x,y,string[,fontsize=20,align='center'])"""
     myFontsize = MyDriver.fontSize
     myHAlignment = "left"
