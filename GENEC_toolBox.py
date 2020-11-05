@@ -629,7 +629,7 @@ class readList():
                      'catList':['model','rotation','rotation','rotation','rotation','surface','rotation','structure'],\
                      'header':7,'column_number':8}
 
-    Struc_fmt = ['o2013','o2010','old_Hirschi','full','full_old']
+    Struc_fmt = ['o2013','preMS','o2010','old_Hirschi','full','full_old']
     Struc_formats = {}
     Struc_formats['o2013'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
@@ -679,6 +679,55 @@ class readList():
                 'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation', \
                 'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
                 'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':93}
+    Struc_formats['preMS'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['RGcorr',98],['P',2],['Hp',55], \
+                ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
+                ['drhodP',21],['delta',22],['mu',42],['mue',68],['muprev',91],['mufit',90],['Nabmu',44],['psi',23],['L',5], \
+                ['epsDpg',96],['epsDDn',97],['epsH',10],['epsHe',11],['epsC',12],['eps3a',24],['epsCagO',25],['epsOagNe',26],['epsgrav',27],['epsnu',16], \
+                ['dEdP',19],['dEdT',20],['H1',6],['H2',93],['He3',31],['He4',7],['Li6',94],['Li7',95],['C12',8],['C13',32],['C14',75],['N14',33],['N15',34], \
+                ['O16',9],['O17',35],['O18',36],['F18',76],['F19',69],['Ne20',37],['Ne21',70],['Ne22',38],['Na23',71],['Mg24',39], \
+                ['Mg25',40],['Mg26',41],['Al26',72],['Al27',73],['Si28_alu',74],['Si28',80],['S32',81],['Ar36',82],['Ca40',83], \
+                ['Ti44',84],['Cr48',85],['Fe52',86],['Ni56',87],['neutrons',77],['protons',78],['Omega',43],['Omegacons',58], \
+                ['Omegaprev',60],['Omfit',89],['dlodlr',50],['Lang',88],['obla',92],['Ur',52],['Vr',53],['Richardson',45], \
+                ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
+                ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
+                '$r_\mathrm{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','RG corr.','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
+                '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
+                r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
+                '$\mu_\mathrm{prev}$','$\mu_\mathrm{fit}$',r'$\nabla_\mu$','$\psi$', \
+                '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{Dpg}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_\mathrm{DDn}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$','$^1$H [mass frac.]','$^2$H [mass frac.]','$^3$He [mass frac.]', \
+                '$^4$He [mass frac.]','$^6$Li [mass frac.]','$^7$Li [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
+                '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
+                '$^{19}$F [mass frac.]','$^{20}$Ne [mass frac.]','$^{21}$Ne [mass frac.]','$^{22}$Ne [mass frac.]','$^{23}$Na [mass frac.]', \
+                '$^{24}$Mg [mass frac.]','$^{25}$Mg [mass frac.]','$^{26}$Mg [mass frac.]','$^{26}$Al [mass frac.]', \
+                '$^{27}$Al [mass frac.]','$^{28}$Si [mass frac.]','$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]', \
+                '$^{40}$Ca [mass frac.]','$^{44}$Ti [mass frac.]','$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]', \
+                '$^{56}$Ni [mass frac.]','neutrons [mass frac.]','protons [mass frac.]','$\Omega\ [\mathrm{s}^{-1}]$', \
+                '$\Omega_{\mathscr{L}\mathrm{,cons.}}\ [\mathrm{s}^{-1}]$','$\Omega_\mathrm{prev}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega_\mathrm{fit}\ [\mathrm{s}^{-1}]$','$\mathrm{d}\ln\Omega/\mathrm{d}\ln r$', \
+                '$\mathscr{L}_r\ [\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','$r_\mathrm{pol}/r_\mathrm{eq}$','$U_r\ [\mathrm{cm\,s}^{-1}]$', \
+                '$V_r\ [\mathrm{cm\,s}^{-1}]$','$\mathrm{Ri}=N^2/(\mathrm{d}V/\mathrm{d}z)^2$','$D_\mathrm{conv}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_\mathrm{shear}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{h}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_\mathrm{eff}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{circ}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_{\mathrm{mag,}\Omega}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_{\mathrm{mag,}X}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$\eta/K$','$N^2_\mathrm{mag}\ [\mathrm{s}^{-1}]$','$B_\phi\ [G]$','$\omega_\mathrm{Alfven}\ [\mathrm{s}^{-1}]$', \
+                '$q_\mathrm{min}$'],'catList':['structure','structure','structure','structure','structure','structure','structure','thermo','thermo','thermo', \
+                'thermo','thermo','thermo','thermo','thermo','thermo','thermo','EOS','EOS','EOS','EOS','EOS','EOS','EOS','EOS','EOS','energy','energy','energy', \
+                'energy','energy','energy','energy','energy','energy','energy','energy','energy','energy','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation', \
+                'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
+                'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':99}
     Struc_formats['o2010'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
                 ['drhodP',21],['delta',22],['mu',42],['mue',68],['muprev',91],['mufit',90],['Nabmu',44],['psi',23],['L',5], \
@@ -2708,6 +2757,7 @@ class Struc(Outputs):
 
         switcher = {
             'o2013': self.Spec_var_o2013(),
+            'preMS': self.Spec_var_o2013(),
             'o2010': self.Spec_var_o2010(),
             'old_Hirschi': self.Spec_var_oldHirschi(),
             'full': self.Spec_var_full(),
