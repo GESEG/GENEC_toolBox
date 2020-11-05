@@ -650,7 +650,7 @@ class readList():
                 '$\mu_\mathrm{prev}$','$\mu_\mathrm{fit}$',r'$\nabla_\mu$','$\psi$', \
                 '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
-                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
@@ -2405,7 +2405,7 @@ class Struc(Outputs):
 
     def make_content_list(self,FileName,format=''):
         MyFile = open(FileName)
-        if format in ['o2013','o2010']:
+        if format in ['o2013','preMS','o2010']:
             Struc_begin = "# modnb"
             Test_Length = 7
         elif format in ['old_Hirschi']:
@@ -2420,7 +2420,7 @@ class Struc(Outputs):
           Next_Line = False
           i = 1
           for MyLine in MyFile:
-              if Next_Line and (format in ['o2013','o2010']):
+              if Next_Line and (format in ['o2013','preMS','o2010']):
                   Next_Line = False
                   Current_Model = int(MyLine.split()[0])
                   Time_Step_Dic[Current_Model] = [i-1,i-1]
@@ -2431,7 +2431,7 @@ class Struc(Outputs):
                           Time_Step_Dic[Current_Model][1] = End_Line
                       Current_Model = int(MyLine.split()[-1])
                       Time_Step_Dic[Current_Model] = [i,i]
-                  elif format in ['o2013','o2010']:
+                  elif format in ['o2013','preMS','o2010']:
                       if i != 1:
                           End_Line = i-1
                           Time_Step_Dic[Current_Model][1] = End_Line
@@ -2453,7 +2453,7 @@ class Struc(Outputs):
         return Time_Step_Dic
 
     def Spec_var_o2013(self):
-        if self.Variables['format'][0] != 'o2013':
+        if self.Variables['format'][0] not in ['o2013','preMS']:
             return
         self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
@@ -2802,7 +2802,7 @@ class Struc(Outputs):
         for i in range((num_deb)):
             MyFile.readline()
 
-        if format in ['o2013','o2010']:
+        if format in ['o2013','preMS','o2010']:
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
@@ -2840,7 +2840,7 @@ class Struc(Outputs):
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
 
-        if format in ['o2013','o2010','old_Hirschi']:
+        if format in ['o2013','preMS','o2010','old_Hirschi']:
             self.Convection = BigArray[:,15]
             self.Convection = self.Convection >= 0.
         elif format in ['full','full_old']:
