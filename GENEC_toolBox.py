@@ -6935,7 +6935,7 @@ def get_value(var,num_star=0,Yvar=''):
         print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
     print('line: {0}, {1}: {2}'.format(myline,var,value))
 
-def show_where(var,value,num_star=0,c='0.80'):
+def show_where(var,value,num_star=0,c='0.80',marker='o',label='',edge=None):
     Xvar = MyDriver.lastXvar
     Yvar = MyDriver.lastYvar
     wherex = []
@@ -6948,10 +6948,14 @@ def show_where(var,value,num_star=0,c='0.80'):
         interpX = interpolate.interp1d(myVar[myind-2:myind+2],myX[myind-2:myind+2])
         interpY = interpolate.interp1d(myVar[myind-2:myind+2],myY[myind-2:myind+2])
         if num_star == 0 or num_star == i:
-            wherex.append(interpX(value))
-            wherey.append(interpY(value))
-    print(wherex,wherey)
-    plt.scatter(wherex,wherey,c=c,marker='o',edgecolors='k')
+            xplot,yplot = interpX(value),interpY(value)
+            print('{0}: {1} {2}'.format(i,xplot,yplot))
+            wherex.append(xplot)
+            wherey.append(yplot)
+    plt.scatter(wherex,wherey,c=c,marker=marker,edgecolors=edge)
+    if label:
+        for x,y in zip(wherex,wherey):
+            add_label(x,y,label)
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
