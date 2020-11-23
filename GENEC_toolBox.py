@@ -5818,7 +5818,7 @@ def add_noise(var,value,type='',num_star=0):
         print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
 
-def put_legend(loc=1,label=[],fontsize=''):
+def put_legend(loc=1,label=[],bbox=(0,0,1,1),fontsize=''):
     """Draws a frame with the curves legend
           at the location given by loc (default loc=1)
              1: top right
@@ -5839,7 +5839,7 @@ def put_legend(loc=1,label=[],fontsize=''):
         labels = label
     if fontsize == '':
         fontsize = MyDriver.fontSize/1.5
-    plt.legend(handles,labels,loc=loc,fontsize=fontsize)
+    plt.legend(handles,labels,loc=loc,bbox_to_anchor=bbox,fontsize=fontsize)
 
 def BuildMask(plotif,i):
     """Needed by Plot() to limit the plotting to conditions."""
