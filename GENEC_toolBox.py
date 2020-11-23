@@ -5130,17 +5130,24 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         MyDriver.Xvar = Xvar_save
         MyDriver.axisInv[0] = False
 
-def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
+def plotRatio(var1,var2,index=-9999,plotif=['',''],rlabel=None,forced_line=False):
     """Plots the ratio between variable_1 and variable_2.
        If an index is provided, for example PlotRatio("M","M",index=0),
           it will plot variable_1 divided by the value of variable_2[index]."""
     abort = False
     if MyDriver.modeplot == 'evol':
-      lenvar = 'line'
+        lenvar = 'line'
     elif MyDriver.modeplot == 'struc':
-      lenvar = 'shell'
+        lenvar = 'shell'
     elif MyDriver.modeplot == 'cluster':
-      lenvar = 'Mini'
+        lenvar = 'Mini'
+    if not rlabel:
+        if var1 == 'Omega_cen' and var2 == 'Omega_surf':
+            rlabel = '$\Omega_\mathrm{cen}/\Omega_\mathrm{surf}$'
+        elif var1 == 'Omega_surf' and var2 == 'Omega_cen':
+            rlabel = '$\Omega_\mathrm{surf}/\Omega_\mathrm{cen}$'
+        else:
+            rlabel = var1+'/'+var2
     if index == 0:
         ilabel = '$_\mathrm{ini}$'
     elif index == -1:
@@ -5149,7 +5156,7 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
         ilabel = ''
     for star in list(MyDriver.Model_list.keys()):
         MyStar = MyDriver.Model_list[star]
-        MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),var1+'/'+var2+ilabel,'']
+        MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),rlabel+ilabel,'']
         if index == -9999:
             mask = MyStar.Variables[var2][0] == 0.
             MyStar.Variables['ratio'][0][np.logical_not(mask)] = MyStar.Variables[var1][0][np.logical_not(mask)]/MyStar.Variables[var2][0][np.logical_not(mask)]
