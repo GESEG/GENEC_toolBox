@@ -4496,7 +4496,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False,cshift=0):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4532,7 +4532,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plot
     if zcol:
         Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
     else:
-        Plot(yvar,plotif=plotif,forced_line=forced_line)
+        Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift)
     if ceph and not spectro:
         Cepheid_strip()
     MyDriver.Xvar = Xvar_save
