@@ -4408,7 +4408,7 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
     else:
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
-    MyDriver.get_CBlimits = MyCB.get_clim()
+    MyDriver.get_CBlimits = MyCB.mappable.get_clim()
     print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
