@@ -2072,11 +2072,8 @@ class Model(Outputs):
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         self.Variables['FeH'] = [np.zeros((self.imax)),'Fe/H','abundances']
         mask = self.Variables['H1s'][0]<=0.
-        if format != "starevol":
-            self.Variables['FeH'][0][mask] = -30.
-            self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
-        else:
-            self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
+        self.Variables['FeH'][0][mask] = -30.
+        self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
         self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
         self.Variables['NH'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)])+12.
