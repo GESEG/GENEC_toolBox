@@ -109,7 +109,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.3.4'
+    GtB_version = '8.4.2'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -155,6 +155,8 @@ class Rendering():
                                ['black','red','green','blue','cyan','magenta','orange','olive','pink','brown','grey']]
     Colours_list['iris'] = [[(0.,0.,0.),(0.,0.,1.),(0.,0.8,1.),(0.,0.8,0.),(1.,0.8,0.),(1.,0.4,0.),(1.,0.,0.),(1.,0.,1.),(0.6,0.,0.8),(0.6,0.6,0.6)], \
                            ['black','blue','cyan','green','yellow','orange','red','magenta','purple','grey']]
+    Colours_list['safe'] = [[(0.,0.,0.),(0.917,0.839,0.266),(0.,0.352,0.784),(0.667,0.039,0.235),(0.980,0.470,0.980),(1.,0.509,0.372),(0.,0.431,0.509),(0.078,0.823,0.862),(0.039,0.607,0.294),(0.,0.352,0.784),(27)], \
+                            ['black','yellow','blue','raspberry','pink','vermillion','teal blue','aqua','green','blue','purple']]
     Line_list = ['-', (0,(8,1)), '--', ':',(0,(1,1,3,1)),(0,(1,1,8,1))]
     Point_list = ['o','^','*','s','p','v','d','>','<']
     Authorised_LineStyle=['cycle_colour','cycle_all']+Line_list
@@ -627,7 +629,7 @@ class readList():
                      'catList':['model','rotation','rotation','rotation','rotation','surface','rotation','structure'],\
                      'header':7,'column_number':8}
 
-    Struc_fmt = ['o2013','o2010','old_Hirschi','full','full_old']
+    Struc_fmt = ['o2013','preMS','o2010','old_Hirschi','full','full_old']
     Struc_formats = {}
     Struc_formats['o2013'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
@@ -648,7 +650,7 @@ class readList():
                 '$\mu_\mathrm{prev}$','$\mu_\mathrm{fit}$',r'$\nabla_\mu$','$\psi$', \
                 '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
-                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
                 '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
@@ -677,6 +679,55 @@ class readList():
                 'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation', \
                 'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
                 'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':93}
+    Struc_formats['preMS'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['RGcorr',98],['P',2],['Hp',55], \
+                ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
+                ['drhodP',21],['delta',22],['mu',42],['mue',68],['muprev',91],['mufit',90],['Nabmu',44],['psi',23],['L',5], \
+                ['epsDpg',96],['epsDDn',97],['epsH',10],['epsHe',11],['epsC',12],['eps3a',24],['epsCagO',25],['epsOagNe',26],['epsgrav',27],['epsnu',16], \
+                ['dEdP',19],['dEdT',20],['H1',6],['H2',93],['He3',31],['He4',7],['Li6',94],['Li7',95],['C12',8],['C13',32],['C14',75],['N14',33],['N15',34], \
+                ['O16',9],['O17',35],['O18',36],['F18',76],['F19',69],['Ne20',37],['Ne21',70],['Ne22',38],['Na23',71],['Mg24',39], \
+                ['Mg25',40],['Mg26',41],['Al26',72],['Al27',73],['Si28_alu',74],['Si28',80],['S32',81],['Ar36',82],['Ca40',83], \
+                ['Ti44',84],['Cr48',85],['Fe52',86],['Ni56',87],['neutrons',77],['protons',78],['Omega',43],['Omegacons',58], \
+                ['Omegaprev',60],['Omfit',89],['dlodlr',50],['Lang',88],['obla',92],['Ur',52],['Vr',53],['Richardson',45], \
+                ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
+                ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
+                '$r_\mathrm{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','RG corr.','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
+                '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
+                r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
+                '$\mu_\mathrm{prev}$','$\mu_\mathrm{fit}$',r'$\nabla_\mu$','$\psi$', \
+                '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{Dpg}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_\mathrm{DDn}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$','$^1$H [mass frac.]','$^2$H [mass frac.]','$^3$He [mass frac.]', \
+                '$^4$He [mass frac.]','$^6$Li [mass frac.]','$^7$Li [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
+                '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
+                '$^{19}$F [mass frac.]','$^{20}$Ne [mass frac.]','$^{21}$Ne [mass frac.]','$^{22}$Ne [mass frac.]','$^{23}$Na [mass frac.]', \
+                '$^{24}$Mg [mass frac.]','$^{25}$Mg [mass frac.]','$^{26}$Mg [mass frac.]','$^{26}$Al [mass frac.]', \
+                '$^{27}$Al [mass frac.]','$^{28}$Si [mass frac.]','$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]', \
+                '$^{40}$Ca [mass frac.]','$^{44}$Ti [mass frac.]','$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]', \
+                '$^{56}$Ni [mass frac.]','neutrons [mass frac.]','protons [mass frac.]','$\Omega\ [\mathrm{s}^{-1}]$', \
+                '$\Omega_{\mathscr{L}\mathrm{,cons.}}\ [\mathrm{s}^{-1}]$','$\Omega_\mathrm{prev}\ [\mathrm{s}^{-1}]$', \
+                '$\Omega_\mathrm{fit}\ [\mathrm{s}^{-1}]$','$\mathrm{d}\ln\Omega/\mathrm{d}\ln r$', \
+                '$\mathscr{L}_r\ [\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','$r_\mathrm{pol}/r_\mathrm{eq}$','$U_r\ [\mathrm{cm\,s}^{-1}]$', \
+                '$V_r\ [\mathrm{cm\,s}^{-1}]$','$\mathrm{Ri}=N^2/(\mathrm{d}V/\mathrm{d}z)^2$','$D_\mathrm{conv}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_\mathrm{shear}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{h}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_\mathrm{eff}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{circ}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_{\mathrm{mag,}\Omega}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_{\mathrm{mag,}X}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$\eta/K$','$N^2_\mathrm{mag}\ [\mathrm{s}^{-1}]$','$B_\phi\ [G]$','$\omega_\mathrm{Alfven}\ [\mathrm{s}^{-1}]$', \
+                '$q_\mathrm{min}$'],'catList':['structure','structure','structure','structure','structure','structure','structure','thermo','thermo','thermo', \
+                'thermo','thermo','thermo','thermo','thermo','thermo','thermo','EOS','EOS','EOS','EOS','EOS','EOS','EOS','EOS','EOS','energy','energy','energy', \
+                'energy','energy','energy','energy','energy','energy','energy','energy','energy','energy','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation','rotation', \
+                'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
+                'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':99}
     Struc_formats['o2010'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
                 ['drhodP',21],['delta',22],['mu',42],['mue',68],['muprev',91],['mufit',90],['Nabmu',44],['psi',23],['L',5], \
@@ -1216,7 +1267,7 @@ class Driver():
         self.gridls = '-'
         self.gridlw = 0.2
         self.gridlc = '0.80'
-        self.minorLoc = 0
+        self.minorLoc = [0,0]
 
         self.LatexEnabled = False
         self.lineFlag = 'cycle_colour'
@@ -1271,21 +1322,29 @@ class Driver():
         """Checks whether a number is already attributed and prompts for a new one if necessary."""
         for Existing_Indexes in list(self.Model_list.keys()):
             if number == Existing_Indexes:
-                print('This star number is already attributed to model {0}'.format(self.Model_list[number].Variables['FileName'][0]))
+                print('This star number ({0}) is already attributed to model {1}'.format(number,self.Model_list[number].Variables['FileName'][0]))
                 answer = input('Do you want to overwrite it? y/n ')
                 if answer == 'n':
                     print('The attributed star number{1} {2} : {0}'.format(list(self.Model_list.keys()),\
                         pluralise(list(self.Model_list.keys()),'','s'),pluralise(list(self.Model_list.keys()),'is','are')))
-                    answer = input('Would you like to attribute a new number ? y/n ')
-                    if answer == 'n':
+                    new_num = input('Enter new number (0 to abort loading): ')
+                    try:
+                        new_num = int(new_num)
+                    except ValueError:
+                        if new_num == 'y':
+                            new_num = int(input('Enter new number: '))
+                        elif new_num == 'n':
+                            new_num = 0
+                        else:
+                            print('Wrong value, aborting...')
+                            return False, number
+                    if new_num == 0:
+                        return False, number
+                    if new_num in list(self.Model_list.keys()):
+                        print('Again, this number already exists.')
                         return False, number
                     else:
-                        new_num = int(input('Enter new number: '))
-                        if new_num in list(self.Model_list.keys()):
-                            print('Again, this number already exists.')
-                            return False, number
-                        else:
-                            return True, new_num
+                        return True, new_num
                 else :
                     return True, number
         return True, number
@@ -1362,6 +1421,9 @@ class Outputs():
 
         parseX,parseY = self.parseMask(tempX,tempY,myMask,forced_line)
         one_legend = True
+        if MyDriver.iPoints:
+            if not isinstance(iColour,list):
+                iColour = np.array([iColour])
         plotSettings={}
         for myX,myY in zip(parseX,parseY):
             if MyDriver.ilog[0] or MyDriver.logScale[0]:
@@ -1388,13 +1450,13 @@ class Outputs():
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     else:
-                        plotSettings={'c':iColour,'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
+                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     one_legend = False
                 else:
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize}
                     else:
-                        plotSettings={'c':iColour,'marker':iStyle,'s':MyDriver.pointSize}
+                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize}
                 if iStyle not in Rendering.Point_list or MyDriver.emptyPoint:
                     plotSettings['linewidths'] = 2.
                 else:
@@ -1612,7 +1674,7 @@ class Model(Outputs):
             return
         if self.Variables['FileName'][0][-3:] == '.wg':
             self.Variables['Llostwinds'] = [np.add.accumulate(self.Variables['dlelex'][0]),'$\int\ \dot{\mathscr{L}}\,\mathrm{d}t\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
-            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
+            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','rotation']
         return
     def Spec_var_tgrids(self):
         if self.Variables['format'][0][0] != 'tgrids':
@@ -1942,7 +2004,10 @@ class Model(Outputs):
         self.Variables['line_num'] = [[num_deb,num_fin_stored],'boundary lines','reading']
         self.Variables['options'] = [[colour,wa],'options colour and wa','reading']
         self.Variables['line'][0] = self.Variables['line'][0].astype(int)
-        massini = self.Variables['M'][0][0]
+        if format == 'preMS':
+          massini = np.max(self.Variables['M'][0])
+        else:
+          massini = self.Variables['M'][0][0]
         self.Variables['Mini'] = [massini,'$M_\mathrm{ini}\ [M_\odot]$','model']
         self.imax = np.size(self.Variables['line'][0])
         if not quiet:
@@ -1994,6 +2059,9 @@ class Model(Outputs):
             tauH = self.Variables['t'][0][ind_endH]
             ttauH = self.Variables['t'][0]/tauH
             self.Variables['t_rel'][0][0:ind_endH+1] = ttauH[0:ind_endH+1]
+        else:
+            t_max = self.Variables['t'][0][-1]
+            self.Variables['t_rel'][0] = 0.5*self.Variables['t'][0]/t_max
         if ind_begHe != -1:
             self.Variables['phase'][0][ind_begHe:ind_endHe] = 'He'
         if ind_endHe != -1:
@@ -2001,11 +2069,19 @@ class Model(Outputs):
             tauHe = self.Variables['t'][0][ind_endHe]
             ttauHe = (self.Variables['t'][0]-tauH)/(tauHe-tauH)
             self.Variables['t_rel'][0][ind_endH+1:ind_endHe+1] = 1. + ttauHe[ind_endH+1:ind_endHe+1]
+        else:
+            if self.Variables['t_rel'][0][-1] == 0.:
+                t_max = self.Variables['t'][0][-1]
+                self.Variables['t_rel'][0][ind_endH+1:] = 1.5*self.Variables['t'][0][ind_endH+1:]/t_max
         if ind_begC != -1:
             self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
             tauadv = self.Variables['t'][0][-1]
             ttauadv = (self.Variables['t'][0]-tauHe)/(tauadv-tauHe)
             self.Variables['t_rel'][0][ind_endHe+1:] = 2. + ttauadv[ind_endHe+1:]
+        else:
+            if self.Variables['t_rel'][0][-1] == 0.:
+                t_max = self.Variables['t'][0][-1]
+                self.Variables['t_rel'][0][ind_endHe+1:] = 2.25*self.Variables['t'][0][ind_endHe+1:]/t_max
         if ind_endC != -1:
             self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
         if ind_begNe != -1:
@@ -2023,6 +2099,13 @@ class Model(Outputs):
         self.Variables['t6'] = [self.Variables['t'][0]/1.e6,'t [Myr]','model']
         self.Variables['t9'] = [self.Variables['t'][0]/1.e9,'t [Gyr]','model']
         self.Variables['ageadv'] = [self.Variables['t'][0][-1] - self.Variables['t'][0],'log(time before collapse [yr])','model']
+        ageadv_inf = []
+        try:
+            ageadv_inf = np.where(self.Variables['ageadv'][0]==-np.inf)[0][0]
+        except IndexError:
+            pass
+        if ageadv_inf:
+            self.Variables['ageadv'][0][ageadv_inf:] = self.Variables['ageadv'][0][ageadv_inf-1]
         if format != 'starevol':
             self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
         if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
@@ -2070,28 +2153,39 @@ class Model(Outputs):
         self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        self.Variables['FeH'] = [np.zeros((self.imax)),'Fe/H','abundances']
-        mask = self.Variables['H1s'][0]<=0.
-        self.Variables['FeH'][0][mask] = -30.
-        self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
+        self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
+        mask = self.Variables['H1s'][0]<=1.e-15
+        if format != "starevol":
+            self.Variables['FeH'][0][mask] = -30.
+            self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
+        else:
+            self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
         self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
-        self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
-        self.Variables['NH'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)])+12.
+        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
+            self.Variables['NH'][0][mask][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
+        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
+            self.Variables['NH'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)][i])+12. if myN > 0. else -30.
         self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
         self.Variables['NC'] = [np.zeros((self.imax)),'log(N/C [numb.])','abundances']
         mask = self.Variables['C12s'][0]<=0.
-        self.Variables['NC'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
-        self.Variables['NC'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)
+        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
+            self.Variables['NC'][0][mask][i] = np.log10(myN/14.)-30. if myN > 0. else -30.
+        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
+            self.Variables['NC'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)][i]/12.) if myN > 0. else -30.
         self.Variables['NCrel'] = [self.Variables['NC'][0]-self.Variables['NC'][0][0],'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
         self.Variables['NO'] = [np.zeros((self.imax)),'log(N/O [numb.])','abundances']
         mask = self.Variables['O16s'][0]<=0.
-        self.Variables['NO'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
-        self.Variables['NO'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)]/16.)
+        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
+            self.Variables['NO'][0][mask][i] = np.log10(myN/14.)-30. if myN > 0. else -30.
+        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
+            self.Variables['NO'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)][i]/16.) if myN > 0. else -30.
         self.Variables['NOrel'] = [self.Variables['NO'][0]-self.Variables['NO'][0][0],'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
         self.Variables['C12C13'] = [np.zeros((self.imax)),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         mask = self.Variables['C13s'][0]<=0.
-        self.Variables['C12C13'][0][mask] = np.log10(self.Variables['C12s'][0][mask]/12.)-30.
-        self.Variables['C12C13'][0][np.logical_not(mask)] = np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)]/13.)
+        for i,myC in enumerate(self.Variables['C12s'][0][mask]):
+            self.Variables['C12C13'][0][mask][i] = np.log10(myC/12.)-30. if myC > 0. else -30.
+        for i,myC in enumerate(self.Variables['C12s'][0][np.logical_not(mask)]):
+            self.Variables['C12C13'][0][np.logical_not(mask)][i] = np.log10(myC/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)][i]/13.) if myC > 0. else -30.
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
@@ -2195,6 +2289,7 @@ class Model(Outputs):
         BurnFile = open(MyBurnFile,'r')
         lastline = os.popen('tail -1 '+MyBurnFile).readline().replace('\n','')
         adv_burn = len(lastline.split()) > 12
+        D_burn = len(lastline.split()) > 21
         BigArray = np.genfromtxt(MyBurnFile,comments=None)
         lineB = BigArray[:,0]
         ageB = BigArray[:,1]
@@ -2210,7 +2305,11 @@ class Model(Outputs):
             epsNe = np.zeros((3,len(lineB)))
             epsO = np.zeros((3,len(lineB)))
             epsSi = np.zeros((3,len(lineB)))
-        return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi
+        if D_burn:
+            epsD = np.array((BigArray[:,22],BigArray[:,21],BigArray[:,23]))
+        else:
+            epsD = np.zeros((3,len(lineB)))
+        return lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi,epsD
 
     def ReadBlock(self,format,FileName,file_cols,num_deb,num_fin,quiet):
         if format == 'preMS':
@@ -2224,6 +2323,7 @@ class Model(Outputs):
             Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
             Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
             col_num = readList.Evol_formats[format]['column_number']
+            format_ext = format
         else:
             if format == "starevol":
                 current_ext = FileName[FileName.rfind(".")+1:]
@@ -2323,7 +2423,7 @@ class Struc(Outputs):
 
     def make_content_list(self,FileName,format=''):
         MyFile = open(FileName)
-        if format in ['o2013','o2010']:
+        if format in ['o2013','preMS','o2010']:
             Struc_begin = "# modnb"
             Test_Length = 7
         elif format in ['old_Hirschi']:
@@ -2338,7 +2438,7 @@ class Struc(Outputs):
           Next_Line = False
           i = 1
           for MyLine in MyFile:
-              if Next_Line and (format in ['o2013','o2010']):
+              if Next_Line and (format in ['o2013','preMS','o2010']):
                   Next_Line = False
                   Current_Model = int(MyLine.split()[0])
                   Time_Step_Dic[Current_Model] = [i-1,i-1]
@@ -2349,7 +2449,7 @@ class Struc(Outputs):
                           Time_Step_Dic[Current_Model][1] = End_Line
                       Current_Model = int(MyLine.split()[-1])
                       Time_Step_Dic[Current_Model] = [i,i]
-                  elif format in ['o2013','o2010']:
+                  elif format in ['o2013','preMS','o2010']:
                       if i != 1:
                           End_Line = i-1
                           Time_Step_Dic[Current_Model][1] = End_Line
@@ -2371,7 +2471,7 @@ class Struc(Outputs):
         return Time_Step_Dic
 
     def Spec_var_o2013(self):
-        if self.Variables['format'][0] != 'o2013':
+        if self.Variables['format'][0] not in ['o2013','preMS']:
             return
         self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
@@ -2675,6 +2775,7 @@ class Struc(Outputs):
 
         switcher = {
             'o2013': self.Spec_var_o2013(),
+            'preMS': self.Spec_var_o2013(),
             'o2010': self.Spec_var_o2010(),
             'old_Hirschi': self.Spec_var_oldHirschi(),
             'full': self.Spec_var_full(),
@@ -2719,7 +2820,7 @@ class Struc(Outputs):
         for i in range((num_deb)):
             MyFile.readline()
 
-        if format in ['o2013','o2010']:
+        if format in ['o2013','preMS','o2010']:
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
@@ -2757,7 +2858,7 @@ class Struc(Outputs):
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
 
-        if format in ['o2013','o2010','old_Hirschi']:
+        if format in ['o2013','preMS','o2010','old_Hirschi']:
             self.Convection = BigArray[:,15]
             self.Convection = self.Convection >= 0.
         elif format in ['full','full_old']:
@@ -3008,7 +3109,7 @@ class Analysis():
             mode = ['list','grids']
         else:
             self.mode = mode
-        Mini = Star.Variables['M'][0][0]
+        Mini = Star.Variables['Mini'][0]
         Oini = Star.Variables['OOc'][0][0]
         Zini = 1.-Star.Variables['H1s'][0][0]-Star.Variables['He4s'][0][0]
         dist_min = 1.e9
@@ -3124,6 +3225,7 @@ class Analysis():
             print('C-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauCb']))
             print('Ne-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauNeb']))
             print('O-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauOb']))
+            print('total lifetime: '+str(MyStar.Variables['t'][0][-1]))
             print('----------------------------------------------------------------')
 
 class Kippenhahn():
@@ -3145,9 +3247,9 @@ class Kippenhahn():
             if time%time_jump != 0 and time != np.size(Model.CZ_array[0,0,:])-1:
                 self.time_mask.append(False)
                 continue
-            if MyDriver.axisLimits[3] != 0. and (time_array[time] < MyDriver.axisLimits[0] or time_array[time] > MyDriver.axisLimits[1]):
-                self.time_mask.append(False)
-                continue
+            #if MyDriver.axisLimits[3] != 0. and (time_array[time] < MyDriver.axisLimits[0] or time_array[time] > MyDriver.axisLimits[1]):
+            #    self.time_mask.append(False)
+            #    continue
             if time%5000 == 0:
                 print('Computing time step no: '+str(time))
             current_vector = np.zeros((self.mass_step))
@@ -3273,7 +3375,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
             if not num_star in MyDriver.SelectedModels_evol:
                 MyDriver.SelectedModels_evol.append(num_star)
             MyData.lifetime(num_star,mode=['free','free'],quiet=True)
-            Mini = round(MyDriver.Model_list[num_star].Variables['M'][0][0],2)
+            Mini = round(MyDriver.Model_list[num_star].Variables['Mini'][0],2)
             Oini = round(MyDriver.Model_list[num_star].Variables['OOc'][0][0],2)
             Zini = 1.-MyDriver.Model_list[num_star].Variables['H1s'][0][0]-MyDriver.Model_list[num_star].Variables['He4s'][0][0]
             tauH = MyData.Data[(Mini,Oini,Zini)]['tauMS']
@@ -3447,6 +3549,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                         MyDriver.SelectedModels.append(mynum_star)
                         if not mynum_star in MyDriver.SelectedModels_cluster:
                             MyDriver.SelectedModels_cluster.append(mynum_star)
+                    mynum_star += 1
                 except IOError as IOerr:
                     print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
 
@@ -3566,7 +3669,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
         print('')
         Loaded('evol')
     else:
-        print('{0} file{1} loaded. Details can be displayed with Loaded().'.format(num_files,pluralise(num_files,'','s')))
+        print('{0} file{1} loaded. Details can be displayed with Loaded().'.format(num_files,'s' if num_files>1 else ''))
 
 def loadSFromDir(DirName,select='*',ini_index=1,toread=[],format='',forced=False,quiet=False):
     """Loads all structures (.v or StrucData) in the directory given in argument.
@@ -3690,13 +3793,13 @@ def flatten(x):
             result.append(el)
     return result
 
-def reloadE(model_list):
+def reloadE(model_list,quiet=True):
     """Reloads the selected models."""
     try:
         for i in flatten([model_list]):
             loadE(MyDriver.Model_list_evol[i].Variables['FileName'][0],i,num_deb=MyDriver.Model_list_evol[i].Variables['line_num'][0][0]-MyDriver.Model_list_evol[i].Variables['format'][0][1],\
                 num_fin=MyDriver.Model_list_evol[i].Variables['line_num'][0][1],format=MyDriver.Model_list_evol[i].Variables['format'][0][0],colour=MyDriver.Model_list_evol[i].Variables['options'][0][0],\
-                wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=True)
+                wa=MyDriver.Model_list_evol[i].Variables['options'][0][1],forced=True,quiet=quiet)
             print('Model {0} reloaded'.format(i))
     except KeyError:
         not_found=[i for i in flatten([model_list]) if i not in list(MyDriver.Model_list_evol.keys())]
@@ -3986,7 +4089,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
 
     if len(Star_list) == 0:
         if var_error_print:
-            print('No star knows variable'+bad_var)
+            print('No star knows variable '+bad_var)
             print('Available variables are:')
             print(sorted(list(MyDriver.Model_list[MyDriver.SelectedModels[0]].Variables.keys()), key=lambda s: s.lower()))
         return
@@ -4151,14 +4254,16 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     New_Axes.set_ylabel(Ylabel,fontsize = MyDriver.fontSize+4)
     New_Axes.tick_params(axis='x', labelsize = MyDriver.fontSize)
     New_Axes.tick_params(axis='y', labelsize = MyDriver.fontSize)
-    if MyDriver.minorLoc != 0:
+    if MyDriver.minorLoc[0] != 0:
         if MyDriver.logScale[0] == False:
-            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc))
-        if MyDriver.logScale[1] == False:
-            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc))
+            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[0]))
     else:
         if MyDriver.logScale[0] == False:
             New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator())
+    if MyDriver.minorLoc[1] != 0:
+        if MyDriver.logScale[1] == False:
+            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[1]))
+    else:
         if MyDriver.logScale[1] == False:
             New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator())
 
@@ -4178,7 +4283,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
 
-def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
+def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[]):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name),
           and colour-coded as a function of the input variable z.
        By default, the colour map is 'gist_rainbow', but it can be modified
@@ -4316,6 +4421,10 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
                     MyDriver.axisLimits[3] = np.nanmax(MyDriver.Model_list[i].Variables[y][0][myMask])
 
         cmap=cm.get_cmap(MyDriver.colourMap)
+        if extend=='both' or extend=='min' and under!=None:
+            cmap.set_under(under)
+        if extend=='both' or extend=='max' and over!=None:
+            cmap.set_over(over)
         if binz != 0:
             bounds = np.linspace(MinMap,MaxMap,binz+1)
         else:
@@ -4365,8 +4474,18 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
     New_Axes.set_ylabel(Ylabel,fontsize = MyDriver.fontSize+4)
     New_Axes.tick_params(axis='x', labelsize = MyDriver.fontSize)
     New_Axes.tick_params(axis='y', labelsize = MyDriver.fontSize)
-    New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(4))
-    New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(4))
+    if MyDriver.minorLoc[0] != 0:
+        if MyDriver.logScale[0] == False:
+            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[0]))
+    else:
+        if MyDriver.logScale[0] == False:
+            New_Axes.xaxis.set_minor_locator(mptick.AutoMinorLocator())
+    if MyDriver.minorLoc[1] != 0:
+        if MyDriver.logScale[1] == False:
+            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator(MyDriver.minorLoc[1]))
+    else:
+        if MyDriver.logScale[1] == False:
+            New_Axes.yaxis.set_minor_locator(mptick.AutoMinorLocator())
 
     New_Axes.axes.xaxis.set_tick_params(which='major',length=MyDriver.ticklength,width=MyDriver.tickwidth)
     New_Axes.axes.xaxis.set_tick_params(which='minor',length=MyDriver.ticklength/2,width=MyDriver.tickwidth)
@@ -4379,14 +4498,14 @@ def Plot_colour(y,z,binz=0,s='',logs=False,plotif=['',''],ticks=[]):
         CBticks = np.linspace(MinMap,MaxMap,MyDriver.CBticksN)
     else:
         CBticks = ticks
-    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks)
+    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
     if MyDriver.ilog[2]:
         MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
     else:
         MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
         MyCB.ax.yaxis.set_label_position('right')
-    MyDriver.get_CBlimits = MyCB.get_clim()
+    MyDriver.get_CBlimits = MyCB.mappable.get_clim()
     print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
@@ -4474,7 +4593,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4508,15 +4627,15 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,plot
     else:
         yvar = 'L_lgd'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks)
     else:
-        Plot(yvar,plotif=plotif,forced_line=forced_line)
+        Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift)
     if ceph and not spectro:
         Cepheid_strip()
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
-def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=False):
+def CMD(c='',zcol='',binz=256,extend='neither',under=None,over=None,noised='',plotif=['',''],ticks=[],forced_line=False):
     """Plots a CMD for the colours entered in parameters. If called without argument, M_V versus B-V is plotted.
        Usage: CMD(), or CMD('VBV')"""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
@@ -4543,14 +4662,14 @@ def CMD(c='',zcol='',binz=256,noised='',plotif=['',''],ticks=[],forced_line=Fals
     defX(varx)
     axis_inv('y')
     if zcol:
-        Plot_colour(vary,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(vary,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks)
     else:
         Plot(vary,plotif=plotif,forced_line=forced_line)
     no_axis_inv()
 
     MyDriver.Xvar = Xvar_save
 
-def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False,*args):
+def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,*args):
     """Plots a T-rho diagram if in structure mode or a T_c-rho_c diagram if in evolution mode.
        Called with deg=True, it draws the limits between perfect gaz and degenerate gaz.
        Called with PISN=True, show the approximate region where pair instability occurs.
@@ -4566,7 +4685,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line
         yVar = 'T'
         logVar('xy')
     if zcol:
-        Plot_colour(yVar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yVar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
     else:
         Plot(yVar,plotif=plotif,forced_line=forced_line)
     if deg:
@@ -4580,7 +4699,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,plotif=['',''],ticks=[],forced_line
         no_logVar()
     MyDriver.Xvar = Xvar_save
 
-def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of g as a function of Teff."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -4608,13 +4727,13 @@ def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256
         yvar = yvar+'_noised'
     axis_inv('y')
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line)
     no_axis_inv()
     MyDriver.Xvar = Xvar_save
 
-def YTeff(corr=False,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False):
+def YTeff(corr=False,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False):
     """Plots a diagram of Teff as a function of the central He abundance."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -4625,7 +4744,7 @@ def YTeff(corr=False,zcol='',binz=256,plotif=['',''],ticks=[],forced_line=False)
     else:
         yvar = 'Teff'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line)
     MyDriver.Xvar = Xvar_save
@@ -4667,38 +4786,29 @@ def Abund(where='x'):
         MyDriver.lineFlag = 'cycle_all'
         if MyDriver.modeplot not in ['evol','cluster']:
             switch('evol')
+        var_list = ['H1','He4','C12','N14','O16','Ne20']
+        colour_list_c = ['Black','Gray','Red','ForestGreen','Blue','Turquoise']
+        colour_list_s = ['Black','Gray','xkcd:Raspberry','Green','Blue','DarkTurquoise']
+        if MyDriver.colourSequence == 'safe':
+            colour_list = colour_list_s
+        else:
+            colour_list = colour_list_c
         if where in 'sS':
             MyDriver.axisLabel[1] = 'Surface abund. [mass frac.]'
-            set_colourFlag('Black')
-            Plot('H1s')
-            keep_plot(True)
-            set_colourFlag('Gray')
-            Plot('He4s')
-            set_colourFlag('Red')
-            Plot('C12s')
-            set_colourFlag('ForestGreen')
-            Plot('N14s')
-            set_colourFlag('Blue')
-            Plot('O16s')
-            set_colourFlag('Turquoise')
-            Plot('Ne20s')
+            for var,col in zip(var_list,colour_list):
+                set_colourFlag(col)
+                Plot(var+'s')
+                keep_plot(True)
+            keep_plot(False)
         elif where in 'cC':
             MyDriver.axisLabel[1] = 'Central abund. [mass frac.]'
-            set_colourFlag('Black')
-            Plot('H1c')
-            keep_plot(True)
-            set_colourFlag('Gray')
-            Plot('He4c')
-            set_colourFlag('Red')
-            Plot('C12c')
-            set_colourFlag('ForestGreen')
-            Plot('N14c')
-            set_colourFlag('Blue')
-            Plot('O16c')
-            set_colourFlag('Turquoise')
-            Plot('Ne20c')
+            for var,col in zip(var_list,colour_list):
+                set_colourFlag(col)
+                Plot(var+'c')
+                keep_plot(True)
             set_colourFlag('Orange')
             Plot('Si28c',var_error_print=False)
+            keep_plot(False)
         elDic = {1:['H1','black'],2:['He4','grey'],3:['C12','red'],4:['N14','green'],5:['O16','blue'],\
                  6:['Ne20','cyan'],7:['Si28','orange (NB: available only for stars loaded with wa=True)']}
         for key in sorted(elDic.keys()):
@@ -4927,7 +5037,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi','preMS']:
         print('This format does not contain informations on convective zones.')
         return
     else:
@@ -4953,7 +5063,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         if hatch=='' and noshade:
             hatch='///'
         MyFig = Kippenhahn()
-        MyFig.init_Kipp(MyDriver.Model_list[num_star].Variables['M'][0][0])
+        MyFig.init_Kipp(MyDriver.Model_list[num_star].Variables['Mini'][0])
         MyFig.findCZ(MyDriver.Model_list[num_star],MyDriver.Model_list[num_star].Variables[MyDriver.Xvar][0],shift)
         MyFig.plot_Kippen(KippenSub,MyDriver.Model_list[num_star].Variables[MyDriver.Xvar][0],hatch,noshade)
         MyDriver.Model_list[num_star].Plot(MyDriver.Xvar,'M',myMask,'Red','-',myLegend1,[])
@@ -4980,7 +5090,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
             Evol_file = MyDriver.Model_list[num_star].Variables['FileName'][0]
             i_ext = Evol_file.rfind('.')
             rootName = Evol_file[:i_ext]
-            lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
+            lineB,ageB,massB,epsH,epsHe,epsC,epsNe,epsO,epsSi,epsD = MyDriver.Model_list[num_star].read_BurnFile(rootName+'.burn')
             marine = (0,0,0.4)
             if not isinstance(lineB,float):
                 if MyDriver.Xvar == 't6':
@@ -5014,6 +5124,10 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
                     plt.plot(ageBplot,epsSi[0],c='orange',ls='-')
                     plt.plot(ageBplot,epsSi[1],c='orange',ls='--')
                     plt.plot(ageBplot,epsSi[2],c='orange',ls='--')
+                if not all(epsD[1]==0.):
+                    plt.plot(ageBplot,epsD[0],c='orange',ls='-')
+                    plt.plot(ageBplot,epsD[1],c='orange',ls='--')
+                    plt.plot(ageBplot,epsD[2],c='orange',ls='--')
 
         KippenSub.tick_params(axis='x', labelsize = MyDriver.fontSize)
         KippenSub.tick_params(axis='y', labelsize = MyDriver.fontSize)
@@ -5025,22 +5139,33 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         KippenSub.axes.yaxis.set_tick_params(which='major',length=MyDriver.ticklength,width=MyDriver.tickwidth)
         KippenSub.axes.yaxis.set_tick_params(which='minor',length=MyDriver.ticklength/2,width=MyDriver.tickwidth)
         KippenSub.ticklabel_format(style='sci',scilimits=(-3,4),axis='both')
+        if MyDriver.Xvar == 't_rel':
+            xline(1.)
+            xline(2.)
 
         plt.show(block=False)
 
         MyDriver.Xvar = Xvar_save
+        MyDriver.axisInv[0] = False
 
-def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
+def plotRatio(var1,var2,index=-9999,plotif=['',''],rlabel=None,forced_line=False):
     """Plots the ratio between variable_1 and variable_2.
        If an index is provided, for example PlotRatio("M","M",index=0),
           it will plot variable_1 divided by the value of variable_2[index]."""
     abort = False
     if MyDriver.modeplot == 'evol':
-      lenvar = 'line'
+        lenvar = 'line'
     elif MyDriver.modeplot == 'struc':
-      lenvar = 'shell'
+        lenvar = 'shell'
     elif MyDriver.modeplot == 'cluster':
-      lenvar = 'Mini'
+        lenvar = 'Mini'
+    if not rlabel:
+        if var1 == 'Omega_cen' and var2 == 'Omega_surf':
+            rlabel = '$\Omega_\mathrm{cen}/\Omega_\mathrm{surf}$'
+        elif var1 == 'Omega_surf' and var2 == 'Omega_cen':
+            rlabel = '$\Omega_\mathrm{surf}/\Omega_\mathrm{cen}$'
+        else:
+            rlabel = var1+'/'+var2
     if index == 0:
         ilabel = '$_\mathrm{ini}$'
     elif index == -1:
@@ -5049,7 +5174,7 @@ def plotRatio(var1,var2,index=-9999,plotif=['',''],forced_line=False):
         ilabel = ''
     for star in list(MyDriver.Model_list.keys()):
         MyStar = MyDriver.Model_list[star]
-        MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),var1+'/'+var2+ilabel,'']
+        MyStar.Variables['ratio'] = [np.zeros(len(MyStar.Variables[lenvar][0])),rlabel+ilabel,'']
         if index == -9999:
             mask = MyStar.Variables[var2][0] == 0.
             MyStar.Variables['ratio'][0][np.logical_not(mask)] = MyStar.Variables[var1][0][np.logical_not(mask)]/MyStar.Variables[var2][0][np.logical_not(mask)]
@@ -5109,6 +5234,8 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         print('DHR1: HRD, Abund(c), kippenhahn, L-Teff vs time')
         print('-----------------------------------------------')
         HRD_plot()
+        defX(MyDriver.Xvar)
+        Limits(ymin=0.,ymax=1.)
         Abund('c')
         MyDriver.Link_ModelCurve = False
         Kippen(MyDriver.SelectedModels[0],shift=shift)
@@ -5543,12 +5670,12 @@ def Cepheid_strip(Zzone=''):
         if test_multiZ:
             print('Cepheid strip not drawn, more than one metallicity detected.')
 
-def mark_phase(fuel='',marker=['o','x'],colour='k',quiet=False):
+def mark_phase(fuel='',marker=['o','^'],colour='k',quiet=False):
     """Marks the beginning and end of a given burning phase in the current plot.
        The x and y variables have to be entered (Teff and L by default).
-       The default markers are ['o','x'], but they can be modified by the optional argument marker=['',''].
+       The default markers are ['o','^'], but they can be modified by the optional argument marker=['',''].
        Other optional parameters are:
-        - marker=['',''] to modify the default markers (['o','x']);
+        - marker=['',''] to modify the default markers (['o','^']);
         - colour='', to modify the default colour (black)."""
     if MyDriver.modeplot != 'evol':
         print('Possible only in evol mode.')
@@ -5718,7 +5845,7 @@ def add_noise(var,value,type='',num_star=0):
         print('Model{1} {0} do{2} not exist in cluster list.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'es','')))
 
 
-def put_legend(loc=1,label=[],fontsize=''):
+def put_legend(loc=1,label=[],bbox=(0,0,1,1),fontsize=''):
     """Draws a frame with the curves legend
           at the location given by loc (default loc=1)
              1: top right
@@ -5739,7 +5866,7 @@ def put_legend(loc=1,label=[],fontsize=''):
         labels = label
     if fontsize == '':
         fontsize = MyDriver.fontSize/1.5
-    plt.legend(handles,labels,loc=loc,fontsize=fontsize)
+    plt.legend(handles,labels,loc=loc,bbox_to_anchor=bbox,fontsize=fontsize)
 
 def BuildMask(plotif,i):
     """Needed by Plot() to limit the plotting to conditions."""
@@ -5878,7 +6005,7 @@ def dot_age(age,num_star=0,marker='o',colour='',age_print=False,precision=5,lege
     Xvar = MyDriver.lastXvar
     Yvar = MyDriver.lastYvar
     if not age_print:
-        print('Mark{0} at {1}:'.format(pluralise(age,'','s'),age_string))
+        print('Mark{0} at log(age):'.format(pluralise(age,'','s')))
         for j,a in enumerate(age):
             if log_age:
                 a_print = '{0:10.6g}'.format(np.log10(a))
@@ -5998,10 +6125,10 @@ def noLimits(*args):
             if arg not in authorised:
                 print('Bad argument for function noLimits. Should be "x", "y", or "xy".')
 
-def keep_limits(choice=None):
+def keep_limits(choice=None,quiet=False):
     """Fixes the limits to the actual ones if set to True."""
     if choice == True or choice == None:
-        [xmin,xmax,ymin,ymax] = get_limits()
+        [xmin,xmax,ymin,ymax] = get_limits(quiet)
         Limits(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax)
     elif choice == False:
         noLimits()
@@ -6022,11 +6149,15 @@ def emptyPoints(choice):
     else:
         print('Wrong value: should be True or False.')
 
-def set_lineStyle(NewValue,width=1):
+def set_lineStyle(NewValue='default',width=1):
     """Sets the line style for plotting.
-       The allowed values are the following: 'cycle_all', 'cycle_colour', '-', '--', ':', '-.' """
+       The allowed values are the following: 'cycle_all', 'cycle_colour', '-', '--', ':', '-.'
+       Alternatively, a tuple can be entered with the offset and length of on and off line:
+           (offset,(on,off,on,off,...)) """
     MyDriver.lineWidth = width
-    if NewValue in Rendering.Authorised_LineStyle:
+    if NewValue == 'default':
+            MyDriver.lieFlag = 'cycle_colour'
+    elif NewValue in Rendering.Authorised_LineStyle or isinstance(NewValue,tuple):
         MyDriver.lineFlag = NewValue
     else:
         print('The value you entered is not correct, please choose one of the following: {0}'.format(Rendering.Authorised_LineStyle[:]))
@@ -6034,6 +6165,16 @@ def set_lineStyle(NewValue,width=1):
 def setLine_style(NewValue,width=1):
     """Retrocompatibility command"""
     set_lineStyle(NewValue,width=1)
+
+def set_lineWidth(width='default'):
+    """Sets the width of the lines."""
+    if isinstance(width,str):
+        if width == 'default':
+            MyDriver.lineWidth = 1
+        else:
+            print('The argument should be "default" or an integer for the width of the line.')
+    elif isinstance(width,int) or isinstance(width,float):
+        MyDriver.lineWidth = width
 
 def set_pointStyle(NewValue):
     """Sets the point style for plotting.
@@ -6067,6 +6208,7 @@ def set_pointSize(NewValue=0,f=1.):
         elif isinstance(NewValue,int) or isinstance(NewValue,float):
             MyDriver.pointSize = NewValue
     else:
+        MyDriver.pointSize = 24
         MyDriver.pointSize = f*MyDriver.pointSize
 
 def setPoint_size(NewValue=0,f=1.):
@@ -6104,6 +6246,9 @@ def set_colourSequence(NewValue):
         MyDriver.colourSequence = 'contrast'
     elif NewValue == 'i':
         MyDriver.colourSequence = 'iris'
+    elif NewValue == 's':
+        MyDriver.colourSequence = 'safe'
+        print('colour sequence set to '+MyDriver.colourSequence)
     elif NewValue == 'p':
         print('Personnalised colour sequence')
         cseq_key = input('Enter new sequence name: ')
@@ -6130,7 +6275,9 @@ def set_colourFlag(NewValue):
            or a float for shades of grey
            or a triplet for RGB definition."""
     if isinstance(NewValue,str):
-        if NewValue.lower() in Rendering.Authorised_Colours:
+        if NewValue[0] == '#' or 'xkcd:' in NewValue:
+            MyDriver.colourFlag = NewValue
+        elif NewValue.lower() in Rendering.Authorised_Colours:
             MyDriver.colourFlag = NewValue
         else:
             print('The name you entered does not exist. Check and try again')
@@ -6351,7 +6498,7 @@ def default_settings():
     MyDriver.fontSize = 24
     MyDriver.ticklength = 8
     MyDriver.tickwidth = 1
-    MyDriver.minorLoc = 0
+    MyDriver.minorLoc = [0,0]
     MyDriver.subplotSep = 0.2
     MyDriver.logScale = [False,False]
     MyDriver.plotgrid = False
@@ -6591,11 +6738,14 @@ def ChangeTickSize(length=2,width=1):
     """Retrocompatibility command"""
     set_tickSize(length=2,width=1)
 
-def set_tickNumber(tick=5):
+def set_tickNumber(tick=5,axis='xy'):
     """Allows to change the number of the minor ticks on the axes.
        Usage: set_tickNumber(num)
        By default: num=5 (automatic behaviour: num=0)"""
-    MyDriver.minorLoc = tick
+    if 'x' in axis:
+        MyDriver.minorLoc[0] = tick
+    if 'y' in axis:
+        MyDriver.minorLoc[1] = tick
 
 def Margins(top=0.1,right=0.1,bottom=0.2,left=0.2):
     """Allows to modify the margins of a plot.
@@ -6621,7 +6771,10 @@ def MyFig(name,path='',format='svg',layout=''):
              the optional argument layout='land' (or 'port')."""
     iLatex_save = MyDriver.LatexEnabled
     iLatex(True)
-    CurrentAxes = MyDriver.Previous_Axe
+    try:
+        CurrentAxes = MyDriver.Previous_Axe
+    except AttributeError:
+        CurrentAxes = plt.axes()
     CurrentAxes.xaxis.labelpad = 0.
     plt.show
     if path == '':
@@ -6652,12 +6805,14 @@ def add_label(x,y,string,**args):
     """Allows to add a string at location (x,y).
        The optional arguments are:
         - fontsize (default: 24)
-        - align (default: left)
+        - ha (default: left)
+        - va (default: botom)
        Usage: add_label(x,y,string[,fontsize=20,align='center'])"""
     myFontsize = MyDriver.fontSize
     myHAlignment = "left"
     myVAlignment = "bottom"
     colour='k'
+    myAngle=0
     for arg in list(args.keys()):
         if arg == 'colour':
             colour = args[arg]
@@ -6667,9 +6822,11 @@ def add_label(x,y,string,**args):
             myHAlignment = args[arg]
         elif arg == 'va':
             myVAlignment = args[arg]
+        elif arg == 'angle':
+            myAngle = args[arg]
         else:
             print('Argument {0} not valid'.format(arg))
-    plt.text(x,y,string,color=colour,fontsize=myFontsize,ha=myHAlignment,va=myVAlignment)
+    plt.text(x,y,string,color=colour,fontsize=myFontsize,ha=myHAlignment,va=myVAlignment,rotation=myAngle)
 
 def top_label(string,**args):
     """Adds a title to the current figure.
@@ -6744,45 +6901,92 @@ def dist():
     else:
         print('dy/dx = infinity')
 
-def closest_line(Xvar='',Yvar='',printline=False):
-    """Finds the closest line from a cursor selection.
-       The optional parameter printline=True prints the whole line from the file,
-       otherwise only the number is returned (default behaviour)."""
-    if not Xvar:
-        Xvar = MyDriver.lastXvar
+def closest_index(num_star=0,Yvar=''):
+    """Finds the closest index in the data from a cursor selection.
+       Used by closest_line() and get_value()."""
+    Xvar = MyDriver.lastXvar
     if not Yvar:
         Yvar = MyDriver.lastYvar
     xclic,yclic = cursor()
-    distance_all = 9999999.
-    best_i = 0
-    line_i = {}
+    best_mod_i = []
+    closest_i = []
+    distance_i = []
     for i in MyDriver.SelectedModels:
         myX = Get_Var(Xvar,i)
         myY = Get_Var(Yvar,i)
-        myline = Get_Var('line',i)
         norm_x = (myX-min(myX))/(max(myX)-min(myX))
         norm_y = (myY-min(myY))/(max(myY)-min(myY))
         dist_x = (xclic-min(myX))/(max(myX)-min(myX))
         dist_y = (yclic-min(myY))/(max(myY)-min(myY))
         distance = (norm_x - dist_x)**2. + (norm_y - dist_y)**2.
-        closest = np.argmin(distance)
-        if np.min(distance) < distance_all:
-            distance_all = np.min(distance)
-            best_i = i
-        line_i[i] = myline[closest]
-    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_i].Variables['FileName'][0])[1] != '.wg':
-        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
-    if not printline:
-      if len(MyDriver.SelectedModels) > 1:
-        print('closest model: {0}'.format(best_i))
-      return line_i[best_i]
+        closest_i.append(np.argmin(distance))
+        best_mod_i.append(i)
+        distance_i.append(np.min(distance))
+    if num_star != 0:
+        best_mod = num_star
+        arg = [i for i,mod in enumerate(best_mod_i) if mod == num_star][0]
+        closest = closest_i[arg]
+        if arg != np.argmin(distance_i):
+            print('Note that your click was closer from model {0}'.format(best_mod_i[np.argmin(distance_i)]))
     else:
-      with open(MyDriver.Model_list[best_i].Variables['FileName'][0],'r') as myfile:
+        arg = np.argmin(distance_i)
+        closest = closest_i[arg]
+        best_mod = best_mod_i[arg]
+    return closest,best_mod
+
+def closest_line(num_star=0,p=False,Yvar=''):
+    """Finds the closest line from a cursor selection.
+       The optional parameter printline=True prints the whole line from the file,
+       otherwise only the number is returned (default behaviour).
+       In case the click is done on a plot with two different y axes,
+       posibility to precise the y variable with optional parameter Yvar=''"""
+    closest,best_mod=closest_index(num_star,Yvar)
+    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
+        print('Beware: the line will not be as accurate as if you used the complete .wg file.\n')
+    if not p:
+      if len(MyDriver.SelectedModels) > 1:
+        print('closest model: {0}'.format(best_mod))
+      return myline
+    else:
+      with open(MyDriver.Model_list[best_mod].Variables['FileName'][0],'r') as myfile:
         for file_line in myfile:
           current_model = int(file_line.split()[0])
-          if current_model == line_i[best_i]:
+          if current_model == myline:
             print(str(file_line))
-            return line_i[best_i]
+            return myline
+
+def get_value(var,num_star=0,Yvar=''):
+    """Finds the value of var at the location of a cursor selection.
+       Note that var is intended to be different than the x and y variables of the plot."""
+    closest,best_mod=closest_index(num_star,Yvar)
+    value = Get_Var(var,best_mod)[closest]
+    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
+        print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
+    print('line: {0}, {1}: {2}'.format(myline,var,value))
+
+def show_where(var,value,num_star=0,c='0.80',marker='o',label='',edge=None):
+    Xvar = MyDriver.lastXvar
+    Yvar = MyDriver.lastYvar
+    wherex = []
+    wherey = []
+    for i in MyDriver.SelectedModels:
+        myVar = Get_Var(var,i)
+        myX = Get_Var(Xvar,i)
+        myY = Get_Var(Yvar,i)
+        myind = np.argmin(abs(myVar-value))
+        interpX = interpolate.interp1d(myVar[myind-2:myind+2],myX[myind-2:myind+2])
+        interpY = interpolate.interp1d(myVar[myind-2:myind+2],myY[myind-2:myind+2])
+        if num_star == 0 or num_star == i:
+            xplot,yplot = interpX(value),interpY(value)
+            print('{0}: {1} {2}'.format(i,xplot,yplot))
+            wherex.append(xplot)
+            wherey.append(yplot)
+    plt.scatter(wherex,wherey,c=c,marker=marker,edgecolors=edge)
+    if label:
+        for x,y in zip(wherex,wherey):
+            add_label(x,y,label)
 
 def file_len(fname):
     """Finds the length of a file. Needed by Structure.read()"""
