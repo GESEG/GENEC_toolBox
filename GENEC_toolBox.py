@@ -4283,7 +4283,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
 
-def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[]):
+def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[],plot_CB=True):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name),
           and colour-coded as a function of the input variable z.
        By default, the colour map is 'gist_rainbow', but it can be modified
@@ -4498,15 +4498,16 @@ def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,p
         CBticks = np.linspace(MinMap,MaxMap,MyDriver.CBticksN)
     else:
         CBticks = ticks
-    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
-    if MyDriver.ilog[2]:
-        MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
-        MyCB.ax.yaxis.set_label_position('right')
-    else:
-        MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
-        MyCB.ax.yaxis.set_label_position('right')
-    MyDriver.get_CBlimits = MyCB.mappable.get_clim()
-    print(MyDriver.get_CBlimits)
+    if plot_CB:
+        MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
+        if MyDriver.ilog[2]:
+            MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
+            MyCB.ax.yaxis.set_label_position('right')
+        else:
+            MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
+            MyCB.ax.yaxis.set_label_position('right')
+        MyDriver.get_CBlimits = MyCB.mappable.get_clim()
+        print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -4593,7 +4594,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4627,7 +4628,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     else:
         yvar = 'L_lgd'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks,plot_CB=plot_CB)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift)
     if ceph and not spectro:
