@@ -4283,7 +4283,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
 
-def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[]):
+def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[],plot_CB=True,levels=None):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name),
           and colour-coded as a function of the input variable z.
        By default, the colour map is 'gist_rainbow', but it can be modified
@@ -4293,7 +4293,9 @@ def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,p
         - binz=n to limit the number of colours to n;
         - s='var' to resize the dots according to the value of 'var' (switches automatically to Points(True));
         - logs=True to take the log of the s variable;
-        - plotif=['var','cond'] to limit the plot to a condition on a variable."""
+        - plotif=['var','cond'] to limit the plot to a condition on a variable.
+        - plot_CB=True to decide whether the colorbar is shown (useful when plotting different variables but only one colorbar is wanted)
+        - levels=None is an alternative to binz and overrides it if set to an array. Also sets the colorbar ticks to match with the levels"""
     varsize = s!=''
     if varsize:
         pointsize = s
@@ -4425,8 +4427,10 @@ def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,p
             cmap.set_under(under)
         if extend=='both' or extend=='max' and over!=None:
             cmap.set_over(over)
-        if binz != 0:
+        if binz != 0 and levels==None:
             bounds = np.linspace(MinMap,MaxMap,binz+1)
+        elif levels != None:
+            bounds = np.array(levels)
         else:
             bounds = np.linspace(MinMap,MaxMap)
         norm = colors.BoundaryNorm(bounds,cmap.N)
@@ -4498,15 +4502,18 @@ def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,p
         CBticks = np.linspace(MinMap,MaxMap,MyDriver.CBticksN)
     else:
         CBticks = ticks
-    MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
-    if MyDriver.ilog[2]:
-        MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
-        MyCB.ax.yaxis.set_label_position('right')
-    else:
-        MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
-        MyCB.ax.yaxis.set_label_position('right')
-    MyDriver.get_CBlimits = MyCB.mappable.get_clim()
-    print(MyDriver.get_CBlimits)
+    if levels != None:
+        CBticks = levels
+    if plot_CB:
+        MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
+        if MyDriver.ilog[2]:
+            MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
+            MyCB.ax.yaxis.set_label_position('right')
+        else:
+            MyCB.ax.set_ylabel(MyDriver.Model_list[Star_list[0]].Variables[z][1],fontsize=MyDriver.fontSize-2)
+            MyCB.ax.yaxis.set_label_position('right')
+        MyDriver.get_CBlimits = MyCB.mappable.get_clim()
+        print(MyDriver.get_CBlimits)
 
     MyDriver.lastXvar = MyDriver.Xvar
     MyDriver.lastYvar = y
@@ -4593,7 +4600,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,levels=None):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4601,7 +4608,9 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
           dark=True, for the Teff and L modified by gravity (+limb) darkening (only in cluster mode);
           zcol='zvar' for a plot colour-coded by variable zvar;
           binz=n to set the number of colours for the colour plot;
-          plotif=['var','cond'], for limiting the plot to a condition on a variable."""
+          plotif=['var','cond'], for limiting the plot to a condition on a variable.
+          plot_CB=True is used by Plot_colour(), decide if the colorbar is displayed or not.
+          levels=None is used by Plot_contour(), alternative to binz for binning the colours."""
     if MyDriver.modeplot != 'evol' and MyDriver.modeplot != 'cluster':
         print('Wrong mode for HRD')
         return
@@ -4627,7 +4636,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     else:
         yvar = 'L_lgd'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks,plot_CB=plot_CB,levels=levels)
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift)
     if ceph and not spectro:
