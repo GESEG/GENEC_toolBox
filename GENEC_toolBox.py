@@ -56,7 +56,7 @@ import matplotlib.colors as colors
 from matplotlib import rc
 from matplotlib import rcParams
 rc('font',**{'family':'serif','serif':['Times New Roman']})
-rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
+rcParams['text.latex.preamble']=r"\usepackage{amsmath}"
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
 import time
