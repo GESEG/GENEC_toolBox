@@ -3424,12 +3424,12 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     if format == '':
         if 'StrucData' in MyVFile:
-            for fmt in readList.Struc_fmt[3:4]:
+            for fmt in readList.Struc_fmt[4:]:
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
         else:
-            for fmt in readList.Struc_fmt[0:3]:
+            for fmt in readList.Struc_fmt[0:4]:
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
