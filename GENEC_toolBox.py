@@ -1450,13 +1450,13 @@ class Outputs():
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     else:
-                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
+                        plotSettings={'c':np.array(iColour),'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     one_legend = False
                 else:
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize}
                     else:
-                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize}
+                        plotSettings={'c':np.array(iColour),'marker':iStyle,'s':MyDriver.pointSize}
                 if iStyle not in Rendering.Point_list or MyDriver.emptyPoint:
                     plotSettings['linewidths'] = 2.
                 else:
