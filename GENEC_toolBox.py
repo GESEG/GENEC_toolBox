@@ -1454,13 +1454,13 @@ class Outputs():
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     else:
-                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
+                        plotSettings={'c':np.array(iColour),'marker':iStyle,'s':MyDriver.pointSize,'label':myLegend}
                     one_legend = False
                 else:
                     if MyDriver.emptyPoint:
                         plotSettings={'facecolors':'none','edgecolors':iColour,'marker':iStyle,'s':MyDriver.pointSize}
                     else:
-                        plotSettings={'c':np.array([iColour]),'marker':iStyle,'s':MyDriver.pointSize}
+                        plotSettings={'c':np.array(iColour),'marker':iStyle,'s':MyDriver.pointSize}
                 if iStyle not in Rendering.Point_list or MyDriver.emptyPoint:
                     plotSettings['linewidths'] = 2.
                 else:
@@ -4052,7 +4052,7 @@ def Vector_split(varName,num_star,quiet=False):
     if not quiet:
         print('The positive and negative values can be plotted under the name {0}_pos and {0}_neg respectively'.format(varName))
 
-def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
+def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True,size=(8,8)):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name).
        Usage:Plot('VarName')
        Possibility to restrict the data plotted to a condition on a variable:
@@ -4070,7 +4070,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
         if NewFig:
             if MyDriver.closeFig:
                 plt.close()
-            MyDriver.AddFigure((8,8))
+            MyDriver.AddFigure(size)
         MyDriver.current_Fig.subplots_adjust(wspace=MyDriver.subplotSep)
         New_Axes = MyDriver.current_Fig.add_subplot(mySubplot)
     else:
@@ -4287,7 +4287,7 @@ def Plot(y,plotif=['',''],cshift=0,forced_line=False,var_error_print=True):
     MyDriver.Store_Axes(New_Axes)
     MyDriver.axisInv = list(axisInv_save)
 
-def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[],plot_CB=True,levels=None):
+def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,plotif=['',''],ticks=[],plot_CB=True,levels=None,size=(8,8)):
     """Plots the input variable y as a function of the x variable entered with defX(Variable_name),
           and colour-coded as a function of the input variable z.
        By default, the colour map is 'gist_rainbow', but it can be modified
@@ -4316,7 +4316,7 @@ def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,p
         if NewFig:
             if MyDriver.closeFig:
                 plt.close()
-            MyDriver.AddFigure((8,8))
+            MyDriver.AddFigure(size)
         MyDriver.current_Fig.subplots_adjust(wspace=MyDriver.subplotSep)
         New_Axes = MyDriver.current_Fig.add_subplot(mySubplot)
     else:
@@ -4604,7 +4604,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,levels=None):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,levels=None,size=(8,8)):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4640,9 +4640,9 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     else:
         yvar = 'L_lgd'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks,plot_CB=plot_CB,levels=levels)
+        Plot_colour(yvar,zcol,binz=binz,extend=extend,under=under,over=over,plotif=plotif,ticks=ticks,plot_CB=plot_CB,levels=levels,size=size)
     else:
-        Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift)
+        Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift,size=size)
     if ceph and not spectro:
         Cepheid_strip()
     MyDriver.Xvar = Xvar_save
@@ -4682,7 +4682,7 @@ def CMD(c='',zcol='',binz=256,extend='neither',under=None,over=None,noised='',pl
 
     MyDriver.Xvar = Xvar_save
 
-def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,*args):
+def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,size=(8,8),*args):
     """Plots a T-rho diagram if in structure mode or a T_c-rho_c diagram if in evolution mode.
        Called with deg=True, it draws the limits between perfect gaz and degenerate gaz.
        Called with PISN=True, show the approximate region where pair instability occurs.
@@ -4698,9 +4698,9 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=No
         yVar = 'T'
         logVar('xy')
     if zcol:
-        Plot_colour(yVar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
+        Plot_colour(yVar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks,size=size)
     else:
-        Plot(yVar,plotif=plotif,forced_line=forced_line)
+        Plot(yVar,plotif=plotif,forced_line=forced_line,size=size)
     if deg:
         if 'legend' in args:
             degenerate_line('legend')
@@ -4746,7 +4746,7 @@ def gTeff(dark=False,mean=False,surf=False,corr=False,noised='',zcol='',binz=256
     no_axis_inv()
     MyDriver.Xvar = Xvar_save
 
-def YTeff(corr=False,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False):
+def YTeff(corr=False,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,size=(8,8)):
     """Plots a diagram of Teff as a function of the central He abundance."""
     if MyDriver.modeplot not in ['evol','cluster']:
         switch('evol')
@@ -4757,9 +4757,9 @@ def YTeff(corr=False,zcol='',binz=256,extend='neither',under=None,over=None,plot
     else:
         yvar = 'Teff'
     if zcol:
-        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks)
+        Plot_colour(yvar,zcol,binz=binz,plotif=plotif,extend=extend,under=under,over=over,ticks=ticks,size=size)
     else:
-        Plot(yvar,plotif=plotif,forced_line=forced_line)
+        Plot(yvar,plotif=plotif,forced_line=forced_line,size=size)
     MyDriver.Xvar = Xvar_save
 
 def Abund(where='x'):
@@ -5017,7 +5017,7 @@ def j_profiles(*args):
     MyDriver.axisLabel[0] = False
     MyDriver.Link_ModelCurve = True
 
-def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
+def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False,size=(8,8)):
     """Plots a Kippenhahn diagram for the model number entered as input argument.
        The optional parameter burn=True allows for the plotting of the burning zones.
           It needs a file .burn which is seeked by default in the same location as the evolution file,
@@ -5048,7 +5048,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
                 if mySubplot == 111:
                     MyDriver.AddFigure((11.5,8))
                 else:
-                    MyDriver.AddFigure((8,8))
+                    MyDriver.AddFigure(size)
             KippenSub = MyDriver.current_Fig.add_subplot(mySubplot)
         Xvar_save = MyDriver.Xvar
         if not MyDriver.Xvar in ['t','t6','t9','ageadv','line','t_rel']:
@@ -6997,7 +6997,7 @@ def file_len(fname):
         raise IOError(err)
     return int(result.strip().split()[0])
 
-def plotExternal(fileName,colX,colY,*argus,**args):
+def plotExternal(fileName,colX,colY,size=(8,8),*argus,**args):
     """Offers the possibility to overplot some external data.
        Usage: plotExternal(file_name,col_x,col_y[,skip=skip_header_lines,style=myStyle,log='xy']).
        The optional parameters are:
@@ -7081,7 +7081,7 @@ def plotExternal(fileName,colX,colY,*argus,**args):
     if newFig:
         if MyDriver.closeFig:
             plt.close()
-        MyDriver.AddFigure((8,8))
+        MyDriver.AddFigure(size)
         MyDriver.current_Fig.subplots_adjust(wspace=MyDriver.subplotSep)
         New_Axes = MyDriver.current_Fig.add_subplot(111)
     else:
