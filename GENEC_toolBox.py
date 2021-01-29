@@ -140,10 +140,12 @@ class FormatError(EnvironmentError):
 class Rendering():
     """Lists the available colours and line styles for plots:
           Colours:
-             iris map: Blue, Turquoise, MediumForestGreen, Gold1, DarkOrange,
-                       Red, Magenta, MediumOrchid4, Black, Gray
+             iris map: Black, Blue, Cyan, Green, Yellow, Orange,
+                       Red, Magenta, Purple, Grey
              contrast map: Black, Red, Green, Blue, Cyan,
-                           Magenta, Orange, Olive, Pink, Brown.
+                           Magenta, Orange, Olive, Pink, Brown, Grey
+             colour-blind safe map: Black, Yellow, Blue, Raspberry,
+                                    Pink, Vermillion, Teal blue, Aqua, Green, Purple
           Line styles:
              'cycle_colour', 'cycle_all', '-', '--', ':', '-.'.
           Points styles:
@@ -155,8 +157,10 @@ class Rendering():
                                ['black','red','green','blue','cyan','magenta','orange','olive','pink','brown','grey']]
     Colours_list['iris'] = [[(0.,0.,0.),(0.,0.,1.),(0.,0.8,1.),(0.,0.8,0.),(1.,0.8,0.),(1.,0.4,0.),(1.,0.,0.),(1.,0.,1.),(0.6,0.,0.8),(0.6,0.6,0.6)], \
                            ['black','blue','cyan','green','yellow','orange','red','magenta','purple','grey']]
-    Colours_list['safe'] = [[(0.,0.,0.),(0.917,0.839,0.266),(0.,0.352,0.784),(0.667,0.039,0.235),(0.980,0.470,0.980),(1.,0.509,0.372),(0.,0.431,0.509),(0.078,0.823,0.862),(0.039,0.607,0.294),(0.,0.352,0.784),(27)], \
-                            ['black','yellow','blue','raspberry','pink','vermillion','teal blue','aqua','green','blue','purple']]
+    Colours_list['safe'] = [[(0.,0.,0.),(0.917,0.839,0.266),(0.,0.352,0.784),(0.667,0.039,0.235),(0.980,0.470,0.980),(1.,0.509,0.372),(0.,0.431,0.509),(0.078,0.823,0.862),(0.039,0.607,0.294),(0.6,0.,0.8)], \
+                            ['black','yellow','blue','raspberry','pink','vermillion','teal blue','aqua','green','purple']]
+    Colours_list['iris_safe'] = [['#000000','#4477AA','#66CCEE','#009988','#228833','#DDCC77','#EE7733','#CC3311','#CC6677','#BBBBBB'],\
+                                 ['black','blue','cyan','teal','green','sand','orange','red','rose','grey']]
     Line_list = ['-', (0,(8,1)), '--', ':',(0,(1,1,3,1)),(0,(1,1,8,1))]
     Point_list = ['o','^','*','s','p','v','d','>','<']
     Authorised_LineStyle=['cycle_colour','cycle_all']+Line_list
@@ -4831,72 +4835,56 @@ def Abund(where='x'):
             MyDriver.lineFlag = 'cycle_all'
         else:
             multiplot = False
-        set_colourFlag('Black')
-        Plot('H1')
-        keep_plot(True)
-        set_colourFlag('Gray')
-        Plot('He4')
-        set_colourFlag('Red')
-        Plot('C12')
+        main_chem = ['H1','He4','C12','N14','O16','Ne20','Mg24','Si28']
+        colours_main_c = ['Black','Gray','Red','ForestGreen','Blue','Turquoise','DarkViolet','Orange']
+        colours_main_s = ['Black','Gray','#CC3311','#228833','#4477AA','DarkTurquoise','Purple','Orange']
+        if MyDriver.colourSequence in ['contrast','iris']:
+            colours_main = colours_main_c
+        elif MyDriver.colourSequence in ['safe','iris_safe']:
+            colours_main = colours_main_s
+        sec_chem = ['C13','N15','O17','Ne22','Mg25']
+        colours_sec_single_c = ['Red','ForestGreen','Blue','Turquoise','DarkViolet']
+        colours_sec_single_s = ['xkcd:Raspberry','Green','Blue','DarkTurquoise','Purple']
+        colours_sec_multip = ['Salmon','LimeGreen','RoyalBlue','PaleTurquoise','MediumOrchid']
+        if not multiplot:
+            if MyDriver.colourSequence in ['contrast','iris']:
+                colours_sec = colours_sec_single_c
+            elif MyDriver.colourSequence in ['safe','iris_safe']:
+                colours_sec = colours_sec_single_s
+        else:
+            colours_sec = colours_sec_multip
+        third_chem = ['O18','Mg26']
+        colours_third_single_c = ['Blue','DarkViolet']
+        colours_third_single_s = ['Blue','Purple']
+        colours_third_multip = ['DeepSkyBlue','Plum']
+        if not multiplot:
+            if MyDriver.colourSequence in ['contrast','iris']:
+                colours_third = colours_third_single_c
+            elif MyDriver.colourSequence in ['safe','iris_safe']:
+                colours_third = colours_third_single_s
+        else:
+            colours_third = colours_third_multip
+        if not multiplot:
+            MyDriver.lineFLag = '-'
+        else:
+            MyDriver.lineFlag = 'cycle_all'
+        for var,col in zip(main_chem,colours_main):
+            set_colourFlag(col)
+            Plot(var)
+            keep_plot(True)
         if not multiplot:
             MyDriver.lineFlag = '--'
-        else:
-            set_colourFlag('Salmon')
-        Plot('C13')
-        if not multiplot:
-            MyDriver.lineFlag = '-'
-        set_colourFlag('Green')
-        Plot('N14')
-        if not multiplot:
-            MyDriver.lineFlag = '--'
-        else:
-            set_colourFlag('LimeGreen')
-        Plot('N15')
-        if not multiplot:
-            MyDriver.lineFlag = '-'
-            set_colourFlag('Blue')
-        else:
-            set_colourFlag('Blue')
-        Plot('O16')
-        if not multiplot:
-            MyDriver.lineFlag = '--'
-        else:
-            set_colourFlag('RoyalBlue')
-        Plot('O17')
+        for var,col in zip(sec_chem,colours_sec):
+            set_colourFlag(col)
+            Plot(var)
+            keep_plot(True)
         if not multiplot:
             MyDriver.lineFlag = ':'
-        else:
-            set_colourFlag('DeepSkyBlue')
-        Plot('O18')
-        if not multiplot:
-            MyDriver.lineFlag = '-'
-        set_colourFlag('Cyan')
-        Plot('Ne20')
-        if not multiplot:
-            MyDriver.lineFlag = '--'
-        else:
-            set_colourFlag('PaleTurquoise')
-        Plot('Ne22')
-        if not multiplot:
-            MyDriver.lineFlag = '-'
-            set_colourFlag('MediumOrchid')
-        else:
-            set_colourFlag('DarkViolet')
-        Plot('Mg24')
-        if not multiplot:
-            MyDriver.lineFlag = '--'
-        else:
-            set_colourFlag('MediumOrchid')
-        Plot('Mg25')
-        if not multiplot:
-            MyDriver.lineFlag = ':'
-        else:
-            set_colourFlag('Plum')
-        Plot('Mg26')
-        set_colourFlag('orange')
-        if not multiplot:
-            MyDriver.lineFlag = '-'
-        Plot('Si28')
+        for var,col in zip(third_chem,colours_third):
+            set_colourFlag(col)
+            Plot(var)
+            keep_plot(True)
+        keep_plot(False)
         if multiplot:
             elDic = {1:['H','black'],2:['He','grey'],3:['C','red (12),salmon(13)'],4:['N','green (dark 14, light 15)'],\
                      5:['O','blue (dark 16, medium 17, light 18)'],6:['Ne','cyan (dark 20, light 22)'],7:['Mg','purple (dark 24, medium 25, light 26)'],8:['Si','orange']}
@@ -6257,6 +6245,9 @@ def set_colourSequence(NewValue):
         MyDriver.colourSequence = 'iris'
     elif NewValue == 's':
         MyDriver.colourSequence = 'safe'
+        print('colour sequence set to '+MyDriver.colourSequence)
+    elif NewValue == 'is':
+        MyDriver.colourSequence = 'iris_safe'
         print('colour sequence set to '+MyDriver.colourSequence)
     elif NewValue == 'p':
         print('Personnalised colour sequence')
