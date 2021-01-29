@@ -6146,12 +6146,13 @@ def emptyPoints(choice):
     else:
         print('Wrong value: should be True or False.')
 
-def set_lineStyle(NewValue='default',width=1):
+def set_lineStyle(NewValue='default',width=None):
     """Sets the line style for plotting.
        The allowed values are the following: 'cycle_all', 'cycle_colour', '-', '--', ':', '-.'
        Alternatively, a tuple can be entered with the offset and length of on and off line:
            (offset,(on,off,on,off,...)) """
-    MyDriver.lineWidth = width
+    if width:
+        MyDriver.lineWidth = width
     if NewValue == 'default':
             MyDriver.lieFlag = 'cycle_colour'
     elif NewValue in Rendering.Authorised_LineStyle or isinstance(NewValue,tuple):
