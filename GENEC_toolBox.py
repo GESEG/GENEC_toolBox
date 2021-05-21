@@ -2026,9 +2026,11 @@ class Model(Outputs):
 
         ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi = 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
         self.Variables['phase'] = [np.array(['' for x in range(self.imax)],dtype=object),'combustion phase','energetics']
-        if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0]:
+        if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0] and format!='preMS':
             ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
         try:
+            if format == 'preMS':
+                ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
             ind_endH = np.where(self.Variables['H1c'][0]<1.e-5)[0][0]
             ind_begHe = ind_endH + np.where(self.Variables['He4c'][0][ind_endH:]<np.max(self.Variables['He4c'][0])-3.e-3)[0][0]
             ind_endHe = np.where(self.Variables['He4c'][0]<1.e-5)[0][0]
@@ -3487,6 +3489,8 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
                 raise np.linalg.LinAlgError
             except FormatError:
                 raise FormatError(1,'column number= '+str(file_cols)+' does not match any known format',FileName)
+            except ValueError:
+                raise ValueError(1,FileName)
 
     if toZip:
         os.system(CommandZip)
