@@ -2166,11 +2166,12 @@ class Model(Outputs):
             self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
         else:
             self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
-        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.]+12)','abundances']
-        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
-            self.Variables['NH'][0][mask][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
-        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
-            self.Variables['NH'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)][i])+12. if myN > 0. else -30.
+        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.])+12','abundances']
+        for i,myN in enumerate(self.Variables['N14s'][0]):
+            if self.Variables['H1s'][0][i]<=1.e-15:
+                self.Variables['NH'][0][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
+            else:
+                self.Variables['NH'][0][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][i])+12. if myN > 0. else -30.
         self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
         self.Variables['NC'] = [np.zeros((self.imax)),'log(N/C [numb.])','abundances']
         mask = self.Variables['C12s'][0]<=0.
@@ -3062,10 +3063,12 @@ class Cluster(Outputs):
         if not quiet:
             print(str(imax)+' lines read.')
 
-        self.Variables['NH'] = [np.zeros((imax)),'log(N/H [numb.]+12)','abundances']
-        mask = self.Variables['H1s'][0]<=0.
-        self.Variables['NH'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)+42.
-        self.Variables['NH'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)])+12.
+        self.Variables['NH'] = [np.zeros((imax)),'log(N/H [numb.])+12','abundances']
+        for i,myN in enumerate(self.Variables['N14s'][0]):
+            if self.Variables['H1s'][0][i]<=1.e-15:
+                self.Variables['NH'][0][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
+            else:
+                self.Variables['NH'][0][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][i])+12. if myN > 0. else -30.
         self.Variables['NC'] = [np.zeros((imax)),'log(N/C [numb.])','abundances']
         mask = self.Variables['C12s'][0]<=0.
         self.Variables['NC'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
