@@ -4611,7 +4611,7 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,levels=None,size=(8,8)):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,levels=None,size=(8,8),alpha=0.40):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4651,7 +4651,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift,size=size)
     if ceph and not spectro:
-        Cepheid_strip()
+        Cepheid_strip(alpha=alpha)
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
@@ -4689,7 +4689,7 @@ def CMD(c='',zcol='',binz=256,extend='neither',under=None,over=None,noised='',pl
 
     MyDriver.Xvar = Xvar_save
 
-def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,size=(8,8),*args):
+def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,size=(8,8),alpha=0.40,*args):
     """Plots a T-rho diagram if in structure mode or a T_c-rho_c diagram if in evolution mode.
        Called with deg=True, it draws the limits between perfect gaz and degenerate gaz.
        Called with PISN=True, show the approximate region where pair instability occurs.
@@ -4714,7 +4714,7 @@ def rhoT(deg=True,PISN=True,zcol='',binz=256,extend='neither',under=None,over=No
         else:
             degenerate_line()
     if PISN:
-        PISN_zone()
+        PISN_zone(alpha=alpha)
     if MyDriver.modeplot == 'struc':
         no_logVar()
     MyDriver.Xvar = Xvar_save
@@ -5621,7 +5621,7 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
 
-def Cepheid_strip(Zzone=''):
+def Cepheid_strip(Zzone='',alpha=0.40):
     """Plots the limits of the instability strip in the HRD. The limits are those given by Tammann+ 2003,
        except at Zsol where we have the borders determined consistently on our models by H. Saio.
        Included by default in the HRD_tot() plot."""
@@ -5667,7 +5667,7 @@ def Cepheid_strip(Zzone=''):
             CephT_red = StripDef[Zzone][0]*CephL_mid[::-1] + StripDef[Zzone][1] - deltaStrip
         CephT = np.concatenate((CephT_blue,CephT_red))
         CephL = np.concatenate((CephL_mid,CephL_mid[::-1]))
-        shade(CephT,CephL)
+        shade(CephT,CephL,alpha=alpha)
     else:
         if not mCeph:
             print('Cepheid strip not drawn, masses out of range.')
@@ -5727,7 +5727,7 @@ def mark_phase(fuel='',marker=['o','^'],colour='k',quiet=False):
             print('Star{2} {0} do{3} not have a phase of {1}-burning.'.format(failed,fuel,pluralise(failed,'','s'),pluralise(failed,'es','')))
     #return ind_beg_all,ind_end_all,xpos_beg_all,ypos_beg_all,xpos_end_all,ypos_end_all
 
-def PISN_zone():
+def PISN_zone(alpha=0.40):
     """Plots the limits of the zone where pair-creation instability should occur in the Tc-rhoc
        plan. Data from Chatzopoulos et al. ApJ 799 1 (2015), extracted woth Dexter."""
     rho_data = np.array([  692.9,  835.6,  984.5,  1168.,  1366.,  1584.,  1838.,  2251.,  2632. , 3077., \
@@ -5747,7 +5747,7 @@ def PISN_zone():
                        3.295e9,3.295e9,3.296e9,3.297e9,3.297e9,3.298e9,3.287e9,3.288e9,3.288e9,3.289e9])
     log_rho_data = np.log10(rho_data)
     log_T_data = np.log10(T_data)
-    shade(log_rho_data,log_T_data)
+    shade(log_rho_data,log_T_data,alpha=alpha)
 
 def get_lifetimes(num_star=0):
     """Prints the lifetimes of the different stages."""
