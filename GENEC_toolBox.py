@@ -5674,7 +5674,7 @@ def Cepheid_strip(Zzone='',alpha=0.40):
         if test_multiZ:
             print('Cepheid strip not drawn, more than one metallicity detected.')
 
-def mark_phase(fuel='',marker=['o','^'],colour='k',quiet=False):
+def mark_phase(fuel='',marker=['o','^'],colour='k',fillcolour='none',quiet=False):
     """Marks the beginning and end of a given burning phase in the current plot.
        The x and y variables have to be entered (Teff and L by default).
        The default markers are ['o','^'], but they can be modified by the optional argument marker=['',''].
@@ -5708,11 +5708,11 @@ def mark_phase(fuel='',marker=['o','^'],colour='k',quiet=False):
             if marker[0] in ['.',',','+','x','|','_']:
                 plt.scatter(xpos_beg,ypos_beg,marker=marker[0],c=colour)
             else:
-                plt.scatter(xpos_beg,ypos_beg,marker=marker[0],facecolors='none',edgecolors=colour)
+                plt.scatter(xpos_beg,ypos_beg,marker=marker[0],facecolors=fillcolour,edgecolors=colour)
             if marker[1] in ['.',',','+','x','|','_']:
                 plt.scatter(xpos_end,ypos_end,marker=marker[1],c=colour)
             else:
-                plt.scatter(xpos_end,ypos_end,marker=marker[1],facecolors='none',edgecolors=colour)
+                plt.scatter(xpos_end,ypos_end,marker=marker[1],facecolors=fillcolour,edgecolors=colour)
             ind_beg_all = ind_beg_all + [ind_beg]
             ind_end_all = ind_end_all + [ind_end]
             xpos_beg_all = xpos_beg_all + [xpos_beg]
