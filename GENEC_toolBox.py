@@ -45,6 +45,7 @@
 
 import os
 import sys
+import commands
 import glob
 from scipy import interpolate
 import math
@@ -1848,7 +1849,7 @@ class Model(Outputs):
                 ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-3.e-3)[0][0]
                 if ind_begC != -1:
                     ind_midC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<(self.Variables['C12c'][0][ind_endHe]/2.))[0][0]
-                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-5)[0][0] # check and maybe keep 1.e-3?
+                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-3)[0][0] # check and maybe keep 1.e-3?
             if ind_endC != -1:
                 ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<self.Variables['Ne20c'][0][ind_endC]-3.e-3)[0][0]
                 if ind_begNe != -1:
@@ -1868,11 +1869,14 @@ class Model(Outputs):
             pass
         #lastv=True#False
         if key_structures:
-          #Grids_dir='/obs/evol9/Grids2010/'
-          Grids_dir='/lupus/hirschi/data/Grids2010/'
+          #Grids_dir='/projects/astro/evol/stellar_grids/' #Grids location in GVA
+          Grids_dir='/lupus/hirschi/data/Grids2010/' # Grids location in Keele
           Z_code=StarName[-4:-2]
           if Z_code  == 'm4':
-            Z_dir = 'Z0004/'
+#            Z_dir = 'Z0004/'
+            Z_dir = 'Z4m4/' # new soft link created to keep fixed directory name length
+          elif Z_code  == 'm5':
+            Z_dir = 'Z1m5/'
           else :
             Z_dir = 'Z0'+Z_code+'/'
           print Grids_dir,Z_dir
@@ -1883,65 +1887,221 @@ class Model(Outputs):
 
           print(index_lastv,ind_endC,ind_endHe,ind_endH, self.imax)
 
-          if np.mod(index_lastv,10) >0:
-            ind_vfile=index_lastv-np.mod(index_lastv,10)+1
-          else :
-            ind_vfile=index_lastv-9
-          vfile=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(ind_vfile)
+#          if np.mod(index_lastv,10) >0:
+#            ind_vfile=index_lastv-np.mod(index_lastv,10)+1
+#          else :
+#            ind_vfile=index_lastv-9
+#          ind_vfile=index_lastv
+          vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index_lastv+5)
+          vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
           v_dir=Grids_dir+'key_structures/lastv/'
-          if os.path.isfile(vfile+'.gz'):
-#          try:
-            print('cp '+vfile+'.gz '+v_dir)
-            os.system('cp -p '+vfile+'.gz '+v_dir)
-          else:
-            print('cp '+vfile+' '+v_dir)
-            os.system('cp -p '+vfile+' '+v_dir)
+          print('cp '+vfile+' '+v_dir)
+          os.system('cp -p '+vfile+' '+v_dir)
+
+#          if os.path.isfile(vfile+'.gz'):
+##          try:
+#            print('cp '+vfile+'.gz '+v_dir)
+#            os.system('cp -p '+vfile+'.gz '+v_dir)
+#          else:
+#            print('cp '+vfile+' '+v_dir)
+#            os.system('cp -p '+vfile+' '+v_dir)
 
           try:
             index = ind_begH
             v_dir=Grids_dir+'key_structures/ZAMS/'
-            if np.mod(index,10) >0:
-              ind_vfile=index-np.mod(index,10)+1
-            else :
-              ind_vfile=index-9
-            vfile=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(ind_vfile)
-            if os.path.isfile(vfile+'.gz'):
-              print('cp '+vfile+'.gz'+v_dir)
-              os.system('cp -p '+vfile+'.gz '+v_dir)
-            else:
-              print('test RH')
-              print('cp '+vfile+' '+v_dir)
-              os.system('cp -p '+vfile+' '+v_dir)
+            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+            vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            print('cp '+vfile+' '+v_dir)
+            os.system('cp -p '+vfile+' '+v_dir)
           except:
             pass
+
+          try:
+            index = ind_midH
+            v_dir=Grids_dir+'key_structures/midH/'
+            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+            vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            print('cp '+vfile+' '+v_dir)
+            os.system('cp -p '+vfile+' '+v_dir)
+          except:
+            pass
+
+          try:
+            index = ind_endH
+            v_dir=Grids_dir+'key_structures/endH/'
+            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+            vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            print('cp '+vfile+' '+v_dir)
+            os.system('cp -p '+vfile+' '+v_dir)
+          except:
+            pass
+
+          if ind_begHe != -1:
+            try:
+              index = ind_begHe
+              v_dir=Grids_dir+'key_structures/begHe/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_midHe != -1:
+            try:
+              index = ind_midHe
+              v_dir=Grids_dir+'key_structures/midHe/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
 
           if ind_endHe != -1:
             try:
               index = ind_endHe
               v_dir=Grids_dir+'key_structures/endHe/'
-              if np.mod(index,10) >0:
-                ind_vfile=index-np.mod(index,10)+1
-              else :
-                ind_vfile=index-9
-              vfile=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(ind_vfile)
-              if os.path.isfile(vfile+'.gz'):
-                print('cp '+vfile+'.gz'+v_dir)
-                os.system('cp -p '+vfile+'.gz '+v_dir)
-              else:
-                print('test RH')
-                print('cp '+vfile+' '+v_dir)
-                os.system('cp -p '+vfile+' '+v_dir)
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
             except:
               pass
 
 
-#              if ind_begC != -1:
-#            if ind_endC != -1:
-#              if ind_begNe != -1:
-#            if ind_endNe != -1:
-#              if ind_begO != -1:
-#            if ind_endO != -1:
-#              if ind_begSi != -1:
+          if ind_begC != -1:
+            try:
+              index = ind_begC
+              v_dir=Grids_dir+'key_structures/begC/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_midC != -1:
+            try:
+              index = ind_midC
+              v_dir=Grids_dir+'key_structures/midC/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_endC != -1:
+            try:
+              index = ind_endC
+              v_dir=Grids_dir+'key_structures/endC/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_begNe != -1:
+            try:
+              index = ind_begNe
+              v_dir=Grids_dir+'key_structures/begNe/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_midNe != -1:
+            try:
+              index = ind_midNe
+              v_dir=Grids_dir+'key_structures/midNe/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_endNe != -1:
+            try:
+              index = ind_endNe
+              v_dir=Grids_dir+'key_structures/endNe/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_begO != -1:
+            try:
+              index = ind_begO
+              v_dir=Grids_dir+'key_structures/begO/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_midO != -1:
+            try:
+              index = ind_midO
+              v_dir=Grids_dir+'key_structures/midO/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_endO != -1:
+            try:
+              index = ind_endO
+              v_dir=Grids_dir+'key_structures/endO/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_begSi != -1:
+            try:
+              index = ind_begSi
+              v_dir=Grids_dir+'key_structures/begSi/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_midSi != -1:
+            try:
+              index = ind_midSi
+              v_dir=Grids_dir+'key_structures/midSi/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+          if ind_endSi != -1:
+            try:
+              index = ind_endSi
+              v_dir=Grids_dir+'key_structures/endSi/'
+              vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              print('cp '+vfile+' '+v_dir)
+              os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
 
 
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_midH,ind_endH,ind_begHe,ind_midHe,ind_endHe,ind_begC,ind_midC,ind_endC,ind_begNe,ind_midNe,ind_endNe,ind_begO, \
