@@ -1868,14 +1868,14 @@ class Model(Outputs):
             pass
         #lastv=True#False
         if key_structures:
-          Grids_dir='/obs/evol9/Grids2010/'
-          Grids_dir='/home/data/Grids2010/'
+          #Grids_dir='/obs/evol9/Grids2010/'
+          Grids_dir='/lupus/hirschi/data/Grids2010/'
           Z_code=StarName[-4:-2]
           if Z_code  == 'm4':
             Z_dir = 'Z0004/'
           else :
             Z_dir = 'Z0'+Z_code+'/'
-#          print Grids_dir,Z_dir
+          print Grids_dir,Z_dir
 
           index_lastv = np.max([ind_endC,ind_endHe,ind_endH])
           if index_lastv != ind_endC:
@@ -1912,8 +1912,29 @@ class Model(Outputs):
               print('test RH')
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
+          except:
+            pass
 
-#            if ind_endHe != -1:
+          if ind_endHe != -1:
+            try:
+              index = ind_endHe
+              v_dir=Grids_dir+'key_structures/endHe/'
+              if np.mod(index,10) >0:
+                ind_vfile=index-np.mod(index,10)+1
+              else :
+                ind_vfile=index-9
+              vfile=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(ind_vfile)
+              if os.path.isfile(vfile+'.gz'):
+                print('cp '+vfile+'.gz'+v_dir)
+                os.system('cp -p '+vfile+'.gz '+v_dir)
+              else:
+                print('test RH')
+                print('cp '+vfile+' '+v_dir)
+                os.system('cp -p '+vfile+' '+v_dir)
+            except:
+              pass
+
+
 #              if ind_begC != -1:
 #            if ind_endC != -1:
 #              if ind_begNe != -1:
@@ -1921,8 +1942,6 @@ class Model(Outputs):
 #              if ind_begO != -1:
 #            if ind_endO != -1:
 #              if ind_begSi != -1:
-          except:
-            pass
 
 
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_midH,ind_endH,ind_begHe,ind_midHe,ind_endHe,ind_begC,ind_midC,ind_endC,ind_begNe,ind_midNe,ind_endNe,ind_begO, \
