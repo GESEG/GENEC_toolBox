@@ -1892,7 +1892,11 @@ class Model(Outputs):
 #          else :
 #            ind_vfile=index_lastv-9
 #          ind_vfile=index_lastv
-          vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index_lastv+5)
+
+          if index_lastv != ind_endC:
+            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index_lastv-3)
+          else:
+            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index_lastv+5)
           vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
           v_dir=Grids_dir+'key_structures/lastv/'
           print('cp '+vfile+' '+v_dir)
