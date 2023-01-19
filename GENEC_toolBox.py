@@ -3845,7 +3845,16 @@ def del_model(num_list):
     not_found=[i for i in flatten([num_list]) if i not in MyDriver.SelectedModels]
     if len(not_found) !=0:
         print('Model{1} {0} {2} not among the selected models.'.format(not_found[:],pluralise(not_found,'','s'),pluralise(not_found,'is','are')))
-    [MyDriver.SelectedModels.remove(i) for i in not_found]
+        to_delete = [i for i in num_list if i not in not_found]
+    else:
+        to_delete = num_list
+    [MyDriver.SelectedModels.remove(i) for i in to_delete]
+    if MyDriver.modeplot == 'evol':
+        MyDriver.SelectedModels_evol = MyDriver.SelectedModels
+    if MyDriver.modeplot == 'struc':
+        MyDriver.SelectedModels_struc = MyDriver.SelectedModels
+    if MyDriver.modeplot == 'cluster':
+        MyDriver.SelectedModels_cluster = MyDriver.SelectedModels
 
 def add_model(num_list):
     """Adds the model numbers given in argument to the list of selected models for plotting """
