@@ -6918,13 +6918,17 @@ def dist():
     else:
         print('dy/dx = infinity')
 
-def closest_index(num_star=0,Yvar=''):
+def closest_index(num_star=0,Yvar='',log_x=False,log_y=False):
     """Finds the closest index in the data from a cursor selection.
        Used by closest_line() and get_value()."""
     Xvar = MyDriver.lastXvar
     if not Yvar:
         Yvar = MyDriver.lastYvar
     xclic,yclic = cursor()
+    if log_x:
+      xclic=10.**xclic
+    if log_y:
+      yclic=10.**yclic
     best_mod_i = []
     closest_i = []
     distance_i = []
@@ -6973,12 +6977,18 @@ def closest_line(num_star=0,p=False,Yvar=''):
             print(str(file_line))
             return myline
 
-def get_value(var,num_star=0,Yvar=''):
+def get_value(var,num_star=0,Yvar='',log_x=False,log_y=False):
     """Finds the value of var at the location of a cursor selection.
        Note that var is intended to be different than the x and y variables of the plot."""
-    closest,best_mod=closest_index(num_star,Yvar)
+    closest,best_mod=closest_index(num_star,Yvar,log_x=log_x,log_y=log_y)
+    print('index: {}'.format(closest))
     value = Get_Var(var,best_mod)[closest]
-    myline = Get_Var('line',best_mod)[closest]
+    if MyDriver.modeplot=='evol':
+      myline = Get_Var('line',best_mod)[closest]
+    elif MyDriver.modeplot=='struc':
+      myline = Get_Var('shell',best_mod)[closest]
+    else:
+      myline = closest
     if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
         print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
     print('line: {0}, {1}: {2}'.format(myline,var,value))
