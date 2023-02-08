@@ -6252,7 +6252,7 @@ def timestep_marker(NewValue):
     else:
         print('The value you entered is not correct, please choose one of the following: o,^,s,p,v,d,>,<')
 
-def set_colourSequence(NewValue):
+def set_colourSequence(NewValue='c',num_colour=0):
     """Sets the colour sequence when plotting more than one model.
        The allowed values are the following: 'c' for contrast, 'i' for iris,
        'p' to create a new sequence (following instructions), or any existing sequence name."""
@@ -6277,8 +6277,15 @@ def set_colourSequence(NewValue):
             print('The value you entered is not correct. Existing sequences are:')
             for i in list(Rendering.Colours_list.keys()):
                 print('{0}: {1}'.format(i,Rendering.Colours_list[i][1]))
-        else:
-            MyDriver.colourSequence = NewValue
+            return
+    if not num_colour:
+      MyDriver.colourSequence = NewValue
+    else:
+      cseq_key = '{0}{1}'.format(NewValue,num_colour)
+      print('Colour sequence {0} cycled on {1}, new name: {2}'.format(NewValue,num_colour,cseq_key))
+      cseq_list = [Rendering.Colours_list[MyDriver.colourSequence][0][0:num_colour],Rendering.Colours_list[MyDriver.colourSequence][1][0:num_colour]]
+      Rendering.Colours_list[cseq_key] = cseq_list
+      MyDriver.colourSequence = cseq_key
 
 def set_colourMap(NewValue):
     """Sets the colour map for plots with Plot_colour.
