@@ -2077,8 +2077,7 @@ class Model(Outputs):
             self.Variables['t_rel'][0][ind_endH+1:ind_endHe+1] = 1. + ttauHe[ind_endH+1:ind_endHe+1]
         else:
             if self.Variables['t_rel'][0][-1] == 0.:
-                t_max = self.Variables['t'][0][-1]
-                self.Variables['t_rel'][0][ind_endH+1:] = 1.5*self.Variables['t'][0][ind_endH+1:]/t_max
+                self.Variables['t_rel'][0][ind_endH+1:] = 1 + (self.Variables['He4c'][0][ind_endH+1:]-1)/(1.e-5-1
         if ind_begC != -1:
             self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
             tauadv = self.Variables['t'][0][-1]
