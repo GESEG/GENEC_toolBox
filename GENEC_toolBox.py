@@ -2035,9 +2035,9 @@ class Model(Outputs):
             ind_begHe = ind_endH + np.where(self.Variables['He4c'][0][ind_endH:]<np.max(self.Variables['He4c'][0])-3.e-3)[0][0]
             ind_endHe = np.where(self.Variables['He4c'][0]<1.e-5)[0][0]
             if ind_endHe != -1:
-                ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-3.e-3)[0][0]
+                ind_begC = ind_endHe + np.where(self.Variables['C12c'][0][ind_endHe:]<self.Variables['C12c'][0][ind_endHe]-1.e-4)[0][0]
                 if ind_begC != -1:
-                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-4)[0][0]
+                    ind_endC = ind_begC + np.where(self.Variables['C12c'][0][ind_begC:]<1.e-5)[0][0]
             if ind_endC != -1:
                 ind_begNe = ind_endC + np.where(self.Variables['Ne20c'][0][ind_endC:]<np.max(self.Variables['Ne20c'][0])-3.e-3)[0][0]
                 if ind_begNe != -1:
@@ -2080,13 +2080,34 @@ class Model(Outputs):
                 self.Variables['t_rel'][0][ind_endH+1:] = 1 + (self.Variables['He4c'][0][ind_endH+1:]-1)/(1.e-5-1)
         if ind_begC != -1:
             self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
-            tauadv = self.Variables['t'][0][-1]
-            ttauadv = (self.Variables['t'][0]-tauHe)/(tauadv-tauHe)
-            self.Variables['t_rel'][0][ind_endHe+1:] = 2. + ttauadv[ind_endHe+1:]
+
+            # Pre-C contraction --> t_rel goes from 2.00 to 2.25
+            tauHeC = self.Variables['t'][0][ind_begC]
+            ttauHeC = (self.Variables['t'][0]-tauHe)/(tauHeC-tauHe)
+            self.Variables['t_rel'][0][ind_endHe+1:ind_begC+1] = 2. + ttauHeC[ind_endHe+1:ind_begC+1] * 0.25
+        
         else:
             if self.Variables['t_rel'][0][-1] == 0.:
-                t_max = self.Variables['t'][0][-1]
-                self.Variables['t_rel'][0][ind_endHe+1:] = 2.25*self.Variables['t'][0][ind_endHe+1:]/t_max
+                self.Variables['t_rel'][0][ind_endHe+1:] = 2 + (self.Variables['C12c'][0][ind_endHe] - 
+                                                                self.Variables['C12c'][0][ind_endHe+1:])/(0.003) * 0.25
+        if ind_endC != -1:
+            # C burning --> t_rel goes from 2.25 to 2.50, linear in C12c
+            tauC = self.Variables['t'][0][ind_endC]
+            xC_beg = self.Variables['C12c'][0][ind_begC]
+            xC_end = self.Variables['C12c'][0][ind_endC]
+            C_burning_frac = (xC_beg - self.Variables['C12c'][0])/(xC_beg-xC_end)
+
+            self.Variables['t_rel'][0][ind_begC+1:] = 2.25 + C_burning_frac[ind_begC+1:] * 0.25
+        else:
+            if self.Variables['t_rel'][0][-1] == 0.:
+                self.Variables['t_rel'][0][ind_begC+1:] = 2.25 + (1 - self.Variables['C12c'][0][ind_begC+1:] / 
+                                                                  self.Variables['C12c'][0][ind_begC]) * 0.25
+        if self.Variables['line'][0][-1] - self.Variables['line'][0][ind_endC] > 10: # GENEC ran at least 10 lines past C-burning
+            # Advanced phases --> t_rel goes from 2.50 to 3.00
+            tauadv = self.Variables['t'][0][-1]
+            ttauadv = (self.Variables['t'][0]-tauC)/(tauadv-tauC)
+            self.Variables['t_rel'][0][ind_endC+1:] = 2.5 + ttauadv[ind_endC+1:]*0.5
+
         if ind_endC != -1:
             self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
         if ind_begNe != -1:
