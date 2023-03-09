@@ -6298,14 +6298,15 @@ def set_colourSequence(NewValue='c',num_colour=0):
             for i in list(Rendering.Colours_list.keys()):
                 print('{0}: {1}'.format(i,Rendering.Colours_list[i][1]))
             return
-    if not num_colour:
+    if not num_colour and NewValue != 'p':
       MyDriver.colourSequence = NewValue
     else:
-      cseq_key = '{0}{1}'.format(NewValue,num_colour)
-      print('Colour sequence {0} cycled on {1}, new name: {2}'.format(NewValue,num_colour,cseq_key))
-      cseq_list = [Rendering.Colours_list[MyDriver.colourSequence][0][0:num_colour],Rendering.Colours_list[MyDriver.colourSequence][1][0:num_colour]]
-      Rendering.Colours_list[cseq_key] = cseq_list
-      MyDriver.colourSequence = cseq_key
+      if NewValue != 'p':
+        cseq_key = '{0}{1}'.format(NewValue,num_colour)
+        print('Colour sequence {0} cycled on {1}, new name: {2}'.format(NewValue,num_colour,cseq_key))
+        cseq_list = [Rendering.Colours_list[MyDriver.colourSequence][0][0:num_colour],Rendering.Colours_list[MyDriver.colourSequence][1][0:num_colour]]
+        Rendering.Colours_list[cseq_key] = cseq_list
+        MyDriver.colourSequence = cseq_key
 
 def set_colourMap(NewValue):
     """Sets the colour map for plots with Plot_colour.
