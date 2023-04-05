@@ -2944,7 +2944,7 @@ class Cluster(Outputs):
             self.Variables['M_G'] = [self.Variables['G-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{G}$','colours']
             self.Variables['M_Gbp'] = [self.Variables['Gbp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Gbp}$','colours']
             self.Variables['M_Grp'] = [self.Variables['Grp-V'][0]+self.Variables['M_V'][0],'M$_\mathrm{Grp}$','colours']
-            self.Variables['Gbp-Grp'] = [self.Variables['Gbp-V'][0]+self.Variables['Grp-V'][0],'G$_\mathrm{BP}$-G$_\mathrm{RP}$','colours']
+            self.Variables['Gbp-Grp'] = [self.Variables['Gbp-V'][0]-self.Variables['Grp-V'][0],'G$_\mathrm{BP}$-G$_\mathrm{RP}$','colours']
         return
 
     def Spec_var_cluster(self):
@@ -4697,6 +4697,9 @@ def CMD(c='',zcol='',binz=256,extend='neither',under=None,over=None,noised='',pl
     if c == '':
         vary = 'M_V'
         varx = 'B-V'
+    elif c == 'G':
+        vary = 'M_G'
+        varx = 'Gbp-Grp'
     elif len(c) < 3:
         return "You have to enter either nothing (for M_V versus B-V), or a triplet like 'BUB' or 'VBV'."
     else:
