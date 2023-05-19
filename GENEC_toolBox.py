@@ -2141,8 +2141,9 @@ class Model(Outputs):
             ttauSi = (self.Variables['t'][0]-tauO)/(tauSi-tauO)
             self.Variables['t_rel'][0][ind_endO+1:ind_endSi+1] = 2.95 + ttauSi[ind_endO+1:ind_endSi+1] * 0.05
         else:
-            if self.Variables['t_rel'][0][-1] == 0.:
-                self.Variables['t_rel'][0][ind_endO+1:] = 2.95 + (self.Variables['Si28c'][0][ind_endO+1:]-1)/(1.e-3-1) * 0.05
+            if wa == True:
+                if self.Variables['t_rel'][0][-1] == 0.:
+                    self.Variables['t_rel'][0][ind_endO+1:] = 2.95 + (self.Variables['Si28c'][0][ind_endO+1:]-1)/(1.e-3-1) * 0.05
 
         if ind_endC != -1:
             self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
