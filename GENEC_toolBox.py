@@ -1309,6 +1309,7 @@ class Driver():
         self.steps = False
         self.deltat = 1.e6
         self.timestep_marker = 'o'
+        self.minAbund = 1.e-15
 
         self.closeFig = True
         self.plotConfig = [1,1]
@@ -2442,7 +2443,7 @@ class Model(Outputs):
         # abundances array transformed into masked_arrays
         for myVar,myCat in zip([varList[0] for varList in Evol_varList],Evol_catList):
           if myCat == 'abundances':
-            self.Variables[myVar][0] = np.ma.array(self.Variables[myVar][0],mask=self.Variables[myVar][0]<1.e-15)
+            self.Variables[myVar][0] = np.ma.array(self.Variables[myVar][0],mask=self.Variables[myVar][0]<MyDriver.minAbund)
 
         return header
 
@@ -2904,6 +2905,10 @@ class Struc(Outputs):
 
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
+            
+        for myVar,myCat in zip([varList[0] for varList in Struc_varList],Struc_catList):
+            if myCat == 'abundances':
+                self.Variables[myVar][0] = np.ma.array(self.Variables[myVar][0],mask=self.Variables[myVar][0]<MyDriver.minAbund)
 
         if format in ['o2013','preMS','o2010','old_Hirschi']:
             self.Convection = BigArray[:,15]
@@ -3092,6 +3097,10 @@ class Cluster(Outputs):
         for i,myVar in zip([varList[1] for varList in Cluster_varList],[varList[0] for varList in Cluster_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
 
+        for myVar,myCat in zip([varList[0] for varList in Cluster_varList],Cluster_catList):
+            if myCat == 'abundances':
+                self.Variables[myVar][0] = np.ma.array(self.Variables[myVar][0],mask=self.Variables[myVar][0]<MyDriver.minAbund)
+
         ModelName = FileName[FileName.rfind('/')+1:]
         self.Variables['FileName'] = [FileName,ModelName,'model']
         self.Variables['format'] = [[format,header],'format and header lines','reading']
@@ -3103,26 +3112,12 @@ class Cluster(Outputs):
         if not quiet:
             print(str(imax)+' lines read.')
 
-        self.Variables['NH'] = [np.zeros((imax)),'log(N/H [numb.])+12','abundances']
-        for i,myN in enumerate(self.Variables['N14s'][0]):
-            if self.Variables['H1s'][0][i]<=1.e-15:
-                self.Variables['NH'][0][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
-            else:
-                self.Variables['NH'][0][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][i])+12. if myN > 0. else -30.
-        self.Variables['NC'] = [np.zeros((imax)),'log(N/C [numb.])','abundances']
-        mask = self.Variables['C12s'][0]<=0.
-        self.Variables['NC'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
-        self.Variables['NC'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)
+        self.Variables['NH'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['H1s'][0])+12.,'log(N/H [numb.])+12','abundances']
+        self.Variables['NC'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['C12s'][0]/12.),'log(N/C [numb.])','abundances']
         self.Variables['NCrel'] = [self.Variables['NC'][0]-np.log10(12.*Cst.Nsol/(14.*Cst.C12sol)),'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
-        self.Variables['NO'] = [np.zeros((imax)),'log(N/O [numb.])','abundances']
-        mask = self.Variables['O16s'][0]<=0.
-        self.Variables['NO'][0][mask] = np.log10(self.Variables['N14s'][0][mask]/14.)-30.
-        self.Variables['NO'][0][np.logical_not(mask)] = np.log10(self.Variables['N14s'][0][np.logical_not(mask)]/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)]/16.)
+        self.Variables['NO'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['O16s'][0]/16.),'log(N/O [numb.])','abundances']
         self.Variables['NOrel'] = [self.Variables['NO'][0]-np.log10(16.*Cst.Nsol/(14.*Cst.Osol)),'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
-        self.Variables['C12C13'] = [np.zeros((imax)),'log($^{12}$C/$^{13}$C [numb.])','abundances']
-        mask = self.Variables['C13s'][0]<=0.
-        self.Variables['C12C13'][0][mask] = np.log10(self.Variables['C12s'][0][mask]/12.)-30.
-        self.Variables['C12C13'][0][np.logical_not(mask)] = np.log10(self.Variables['C12s'][0][np.logical_not(mask)]/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)]/13.)
+        self.Variables['C12C13'] = [np.ma.log10(self.Variables['C12s'][0]/12.)-np.ma.log10(self.Variables['C13s'][0]/13.),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-np.log10(13.*Cst.C12sol/(12.*Cst.C13sol)),'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
@@ -6604,6 +6599,7 @@ def default_settings():
     MyDriver.Kipp_tol = 0.005
     MyDriver.steps = False
     MyDriver.deltat = 1.e6
+    MyDriver.minAbund = 1.e-15
     MyDriver.timestep_marker = 'o'
 
     if MyDriver.modeplot == 'evol':
