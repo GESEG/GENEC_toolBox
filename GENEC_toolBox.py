@@ -4677,7 +4677,9 @@ def Histo(var,bins,cum=False):
     plt.ylabel('$N_\star$')
     plt.show()
 
-def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,levels=None,size=(8,8),alpha=0.40):
+def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',\
+             under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,\
+             levels=None,size=(8,8),alpha_Ceph=0.40,force_Ceph=False):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4717,7 +4719,7 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
     else:
         Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift,size=size)
     if ceph and not spectro:
-        Cepheid_strip(alpha=alpha)
+        Cepheid_strip(alpha=alpha_Ceph,forced=force_Ceph)
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
@@ -5690,7 +5692,7 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
 
-def Cepheid_strip(Zzone='',alpha=0.40):
+def Cepheid_strip(Zzone='',alpha=0.40,forced=False):
     """Plots the limits of the instability strip in the HRD. The limits are those given by Tammann+ 2003,
        except at Zsol where we have the borders determined consistently on our models by H. Saio.
        Included by default in the HRD_tot() plot."""
@@ -5704,7 +5706,10 @@ def Cepheid_strip(Zzone='',alpha=0.40):
         for star in MyDriver.SelectedModels:
             MyStar = MyDriver.Model_list[star]
             if MyDriver.modeplot == 'evol':
-                if MyStar.Variables['Mini'][0] >= 2. and MyStar.Variables['Mini'][0] <= 18.:
+                if not forced:
+                    if MyStar.Variables['Mini'][0] >= 2. and MyStar.Variables['Mini'][0] <= 18.:
+                        mCeph = True
+                else:
                     mCeph = True
             elif MyDriver.modeplot == 'cluster':
                 mCeph = True
