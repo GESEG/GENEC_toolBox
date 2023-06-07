@@ -1950,14 +1950,14 @@ class Model(Outputs):
         self.Polar_Radius_f.Define_Interp_OOcShape()
 
         switcher = {
-            'o2013': self.Spec_var_o2013(),
-            'tgrids': self.Spec_var_tgrids(),
-            'tools': self.Spec_var_tools(),
-            'nami': self.Spec_var_nami(),
-            'bin': self.Spec_var_bin(),
-            'old_Hirschi': self.Spec_var_oldHirschi(),
-            'preMS': self.Spec_var_preMS(),
-            'starevol': self.Spec_var_starevol(),
+            'o2013': self.Spec_var_o2013,
+            'tgrids': self.Spec_var_tgrids,
+            'tools': self.Spec_var_tools,
+            'nami': self.Spec_var_nami,
+            'bin': self.Spec_var_bin,
+            'old_Hirschi': self.Spec_var_oldHirschi,
+            'preMS': self.Spec_var_preMS,
+            'starevol': self.Spec_var_starevol,
         }
 
         return switcher.get(fmt,'Unknown format')
@@ -2231,7 +2231,7 @@ class Model(Outputs):
         self.Variables['C12C13'] = [np.ma.log10(self.Variables['C12s'][0]/12.)-np.ma.log10(self.Variables['C13s'][0]/13.),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
-        self.SpecificVariables(format)
+        self.SpecificVariables(format)()
         self.Star_flag()
         if colour:
             self.ColoursCalc()
@@ -2523,7 +2523,7 @@ class Struc(Outputs):
             return
         self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
-        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
+        self.Variables['rprev'][0] = np.exp(self.Variables['rprev'][0])/Cst.Rsol
         self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
         if all(g==0. for g in self.Variables['g'][0]):
             self.Variables['g'][0] = Cst.G*self.Variables['Mr'][0]*Cst.Msol/self.Variables['r_cm'][0]**2.
@@ -2619,7 +2619,7 @@ class Struc(Outputs):
             return
         self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
         self.Variables['nshell'] = [self.n_shell,'Total shells','model']
-        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
+        self.Variables['rprev'][0] = np.exp(self.Variables['rprev'][0])/Cst.Rsol
         self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
         H_P = self.Variables['Hp'][0]
         if H_P[0] == 0.:
@@ -2822,12 +2822,12 @@ class Struc(Outputs):
         self.Omega_crit_f.Define_Interp_OblatOOc()
 
         switcher = {
-            'o2013': self.Spec_var_o2013(),
-            'preMS': self.Spec_var_o2013(),
-            'o2010': self.Spec_var_o2010(),
-            'old_Hirschi': self.Spec_var_oldHirschi(),
-            'full': self.Spec_var_full(),
-            'full_old': self.Spec_var_fullold(),
+            'o2013': self.Spec_var_o2013,
+            'preMS': self.Spec_var_o2013,
+            'o2010': self.Spec_var_o2010,
+            'old_Hirschi': self.Spec_var_oldHirschi,
+            'full': self.Spec_var_full,
+            'full_old': self.Spec_var_fullold,
         }
 
         return switcher.get(fmt,'Unknown format')
@@ -2946,7 +2946,7 @@ class Struc(Outputs):
         self.Variables['kappa'][0] = 10.**self.Variables['kappa'][0]
         self.Variables['rho'][0] = 10.**self.Variables['rho'][0]
 
-        self.SpecificVariables(format)
+        self.SpecificVariables(format)()
 
         if not quiet:
             print('File {0} successfully loaded.'.format(FileName))
@@ -3041,13 +3041,13 @@ class Cluster(Outputs):
     def SpecificVariables(self,fmt):
 
         switcher = {
-            'cluster': self.Spec_var_cluster(),
-            'cluster2016': self.Spec_var_cluster2016(),
-            'cluster_old': self.Spec_var_clusterold(),
-            'isochr': self.Spec_var_isochr(),
-            'isochr2016': self.Spec_var_isochr2016(),
-            'isochr_old': self.Spec_var_isochrold(),
-            'isochr_veryold': self.Spec_var_isochrveryold(),
+            'cluster': self.Spec_var_cluster,
+            'cluster2016': self.Spec_var_cluster2016,
+            'cluster_old': self.Spec_var_clusterold,
+            'isochr': self.Spec_var_isochr,
+            'isochr2016': self.Spec_var_isochr2016,
+            'isochr_old': self.Spec_var_isochrold,
+            'isochr_veryold': self.Spec_var_isochrveryold,
         }
 
         return switcher.get(fmt,'Unknown format')
@@ -3120,7 +3120,7 @@ class Cluster(Outputs):
         self.Variables['C12C13'] = [np.ma.log10(self.Variables['C12s'][0]/12.)-np.ma.log10(self.Variables['C13s'][0]/13.),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-np.log10(13.*Cst.C12sol/(12.*Cst.C13sol)),'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
-        self.SpecificVariables(format)
+        self.SpecificVariables(format)()
         self.ColoursCalc()
 
         if not quiet:
