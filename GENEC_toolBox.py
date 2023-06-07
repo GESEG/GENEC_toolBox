@@ -2216,40 +2216,18 @@ class Model(Outputs):
         self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
         if format in "starevol":
             self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
-        mask = self.Variables['H1s'][0]<=1.e-15
         if format != "starevol":
-            self.Variables['FeH'][0][mask] = -30.
-            self.Variables['FeH'][0][np.logical_not(mask)] = np.log10(self.Variables['Zsurf'][0][np.logical_not(mask)]/Cst.Zsol)-np.log10(self.Variables['H1s'][0][np.logical_not(mask)]/Cst.Hsol)
+            self.Variables['FeH'] = [np.ma.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.ma.log10(self.Variables['H1s'][0]/Cst.Hsol),'[Fe/H]','abundances']
         else:
+            self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
             self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
-        self.Variables['NH'] = [np.zeros((self.imax)),'log(N/H [numb.])+12','abundances']
-        for i,myN in enumerate(self.Variables['N14s'][0]):
-            if self.Variables['H1s'][0][i]<=1.e-15:
-                self.Variables['NH'][0][i] = np.log10(myN/14.)+42. if myN > 0. else -30.
-            else:
-                self.Variables['NH'][0][i] = np.log10(myN/14.)-np.log10(self.Variables['H1s'][0][i])+12. if myN > 0. else -30.
+        self.Variables['NH'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['H1s'][0])+12.,'log(N/H [numb.])+12','abundances']
         self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
-        self.Variables['NC'] = [np.zeros((self.imax)),'log(N/C [numb.])','abundances']
-        mask = self.Variables['C12s'][0]<=0.
-        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
-            self.Variables['NC'][0][mask][i] = np.log10(myN/14.)-30. if myN > 0. else -30.
-        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
-            self.Variables['NC'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['C12s'][0][np.logical_not(mask)][i]/12.) if myN > 0. else -30.
+        self.Variables['NC'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['C12s'][0]/12.),'log(N/C [numb.])','abundances']
         self.Variables['NCrel'] = [self.Variables['NC'][0]-self.Variables['NC'][0][0],'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
-        self.Variables['NO'] = [np.zeros((self.imax)),'log(N/O [numb.])','abundances']
-        mask = self.Variables['O16s'][0]<=0.
-        for i,myN in enumerate(self.Variables['N14s'][0][mask]):
-            self.Variables['NO'][0][mask][i] = np.log10(myN/14.)-30. if myN > 0. else -30.
-        for i,myN in enumerate(self.Variables['N14s'][0][np.logical_not(mask)]):
-            self.Variables['NO'][0][np.logical_not(mask)][i] = np.log10(myN/14.)-np.log10(self.Variables['O16s'][0][np.logical_not(mask)][i]/16.) if myN > 0. else -30.
+        self.Variables['NO'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['O16s'][0]/16.),'log(N/O [numb.])','abundances']
         self.Variables['NOrel'] = [self.Variables['NO'][0]-self.Variables['NO'][0][0],'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
-        self.Variables['C12C13'] = [np.zeros((self.imax)),'log($^{12}$C/$^{13}$C [numb.])','abundances']
-        mask = self.Variables['C13s'][0]<=0.
-        for i,myC in enumerate(self.Variables['C12s'][0][mask]):
-            self.Variables['C12C13'][0][mask][i] = np.log10(myC/12.)-30. if myC > 0. else -30.
-        for i,myC in enumerate(self.Variables['C12s'][0][np.logical_not(mask)]):
-            self.Variables['C12C13'][0][np.logical_not(mask)][i] = np.log10(myC/12.)-np.log10(self.Variables['C13s'][0][np.logical_not(mask)][i]/13.) if myC > 0. else -30.
+        self.Variables['C12C13'] = [np.ma.log10(self.Variables['C12s'][0]/12.)-np.ma.log10(self.Variables['C13s'][0]/13.),'log($^{12}$C/$^{13}$C [numb.])','abundances']
         self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
         self.SpecificVariables(format)
@@ -2460,6 +2438,11 @@ class Model(Outputs):
                                 BigArray[:num_fin,j+21],BigArray[:num_fin,j+23],BigArray[:num_fin,j+25],BigArray[:num_fin,j+27],BigArray[:num_fin,j+29],BigArray[:num_fin,j+31], \
                                 BigArray[:num_fin,j+33],BigArray[:num_fin,j+35],BigArray[:num_fin,j+37],BigArray[:num_fin,j+39]]])
         standard_columns()
+        
+        # abundances array transformed into masked_arrays
+        for myVar,myCat in zip([varList[0] for varList in Evol_varList],Evol_catList):
+          if myCat == 'abundances':
+            self.Variables[myVar][0] = np.ma.array(self.Variables[myVar][0],mask=self.Variables[myVar][0]<1.e-15)
 
         return header
 
