@@ -1879,7 +1879,7 @@ class Model(Outputs):
             Z_dir = 'Z1m5/'
           else :
             Z_dir = 'Z0'+Z_code+'/'
-          print Grids_dir,Z_dir
+          print(Grids_dir,Z_dir)
 
           index_lastv = np.max([ind_endC,ind_endHe,ind_endH])
           if index_lastv != ind_endC:
