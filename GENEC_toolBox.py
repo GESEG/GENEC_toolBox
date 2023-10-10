@@ -109,7 +109,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '8.4.2'
+    GtB_version = '2023.10.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -2439,7 +2439,7 @@ class Model(Outputs):
                                 BigArray[:num_fin,j+21],BigArray[:num_fin,j+23],BigArray[:num_fin,j+25],BigArray[:num_fin,j+27],BigArray[:num_fin,j+29],BigArray[:num_fin,j+31], \
                                 BigArray[:num_fin,j+33],BigArray[:num_fin,j+35],BigArray[:num_fin,j+37],BigArray[:num_fin,j+39]]])
         standard_columns()
-        
+
         # abundances array transformed into masked_arrays
         for myVar,myCat in zip([varList[0] for varList in Evol_varList],Evol_catList):
           if myCat == 'abundances':
@@ -2905,7 +2905,7 @@ class Struc(Outputs):
 
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
-            
+
         for myVar,myCat in zip([varList[0] for varList in Struc_varList],Struc_catList):
             if myCat == 'abundances':
                 self.Variables[myVar][0] = np.ma.array(self.Variables[myVar][0],mask=self.Variables[myVar][0]<MyDriver.minAbund)
@@ -3370,6 +3370,10 @@ def add_column(var,unit='',cat='',verbose=True):
 def standard_columns():
     """Removes the columns added by add_column()."""
     MyDriver.added_columns = {'varList':[],'unitsList':[],'catList':[]}
+
+def set_minValue(value):
+    """Sets the minimum value for masking the abundances arrays"""
+    MyDriver.minValue = value
 
 def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced=False,wa=False,quiet=False):
     """Loads a new evolution file in the database.
@@ -4657,7 +4661,7 @@ def Histo(var,bins,cum=False):
 
 def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,extend='neither',\
              under=None,over=None,plotif=['',''],ticks=[],forced_line=False,cshift=0,plot_CB=True,\
-             levels=None,size=(8,8),alpha_Ceph=0.40,force_Ceph=False):
+             levels=None,size=(8,8),alpha_Ceph=0.40,force_Ceph=False,isoR=False):
     """Plots a HR diagram in L and Teff.
        The optional parameters are:
           corr=True, for the drawing with Teffcorr instead of Teff;
@@ -4698,6 +4702,8 @@ def HRD_plot(corr=False,spectro=False,dark=False,ceph=True,zcol='',binz=256,exte
         Plot(yvar,plotif=plotif,forced_line=forced_line,cshift=cshift,size=size)
     if ceph and not spectro:
         Cepheid_strip(alpha=alpha_Ceph,forced=force_Ceph)
+    if isoR:
+        isoRadius()
     MyDriver.Xvar = Xvar_save
     no_axis_inv()
 
@@ -5665,7 +5671,6 @@ def isoRadius(colour='0.80',line=':',fontsize=0):
         else:
             lpos = lum_max
             ind = np.where(L_range<lum_max)[0]
-            print(str(ind))
             if len(ind)>0:
                 tpos = teff_range[ind[-1]]
                 add_label(tpos,lpos,str(i)+'$\,R_\odot$',fontsize=fontsize)
