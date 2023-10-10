@@ -7,10 +7,14 @@ Requires:
  - scipy >= 0.19
  - matplotlib >= 2.0
 
-Please read carefully the changes brought by version 8.3.0 to respect the syntax that allows
-both python2 and python3 compatibility.
-
 # CHANGES:
+v. 2023.10.0:
+ * new command show_where(var,value)
+ * new command set_lineWidth(value in pt)
+ * set_lineStyle accepts now the format (offset,(on,off,on,off,...))
+ * new colour-blind-safe colour sequences
+ * new argument num_colour in colourSequence, allowing for cycling on a shorter colour sequence
+
 v. 8.3.2:
  * new variable star_flag which displays the star type for evolution files
 
