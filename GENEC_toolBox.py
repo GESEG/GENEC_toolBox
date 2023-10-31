@@ -45,7 +45,6 @@
 
 import os
 import sys
-import commands
 import glob
 from scipy import interpolate
 import math
@@ -56,7 +55,7 @@ import matplotlib.colors as colors
 from matplotlib import rc
 from matplotlib import rcParams
 rc('font',**{'family':'serif','serif':['Times New Roman']})
-rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
+rcParams['text.latex.preamble']=r"\usepackage{bm} \usepackage{amsmath}"
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
 import time
@@ -601,7 +600,7 @@ class readList():
                      'catList':['model','rotation','rotation','rotation','rotation','surface','rotation','structure'],\
                      'header':7,'column_number':8}
 
-    Struc_fmt = ['o2013','o2010','old_Hirschi','full','full_old']
+    Struc_fmt = ['o2013','o2010','old_Hirschi','vms','full','full_old']
     Struc_formats = {}
     Struc_formats['o2013'] = {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
@@ -736,6 +735,54 @@ class readList():
                 'rotation','old','rotation','rotation','rotation','rotation','structure','rotation','old','thermo','rotation','old','old',\
                 'old','thermo','structure','old','old','old','rotation','structure','rotation','EOS','abundances','abundances','abundances',\
                 'abundances','abundances','abundances','abundances','abundances','EOS'],'header':1,'column_number':78}
+    Struc_formats['vms'] = {'varList':[['shell',0],['Mfrac',1],['Mr',50],['r',4],['rprev',60],['g',57],['P',2],['Hp',56], \
+                ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',52],['rho',14], \
+                ['drhodP',21],['delta',22],['mu',42],['mue',69],['Nabmu',44],['psi',23],['L',5], \
+                ['epsH',10],['epsHe',11],['epsC',12],['eps3a',24],['epsCagO',25],['epsOagNe',26],['epsgrav',27],['epsnu',16], \
+                ['dEdP',19],['dEdT',20],['H1',6],['He3',31],['He4',7],['C12',8],['C13',32],['C14',76],['N14',33],['N15',34], \
+                ['O16',9],['O17',35],['O18',36],['F18',77],['F19',70],['Ne20',37],['Ne21',71],['Ne22',38],['Na23',72],['Mg24',39], \
+                ['Mg25',40],['Mg26',41],['Al26',73],['Al27',74],['Si28_alu',75],['Si28',81],['S32',82],['Ar36',83],['Ca40',84], \
+                ['Ti44',85],['Cr48',86],['Fe52',87],['Ni56',88],['neutrons',78],['protons',79],['Omega',43], \
+                ['Omegaprev',59],['dlodlr',51],['Lang',89],['Ur',53],['Vr',54],['Richardson',45], \
+                ['Dconv',46],['Dshear',47],['Dh',58],['Deff',48],['Dcirc',55],['DmagO',62],['DmagX',63],['etask',64],['N2mag',65], \
+                ['Bphi',66],['alfven',67],['qmin',68]],\
+                'unitsList':['shell number','$M_r/M_\mathrm{tot}$','$M_r\ [M_\odot]$','$r\ [R_\odot]$', \
+                '$r_\mathrm{prev}\ [R_\odot]$','$g_r\ [\mathrm{cm\,s}^{-2}]$','$P\ [\mathrm{g\,cm}^{-1}\,\mathrm{s}^{-2}]$',\
+                '$H_P\ [\mathrm{cm}]$',r'$\beta=P_\mathrm{gas}/P_\mathrm{tot}$','$T\ [K]$',r'$\nabla_\mathrm{ad}$',\
+                r'$\nabla_\mathrm{rad}$','$\kappa\ [\mathrm{cm}^2\,\mathrm{g}^{-1}]$','$\mathrm{d}\ln\kappa/\mathrm{d}\ln P$', \
+                '$\mathrm{d}\ln\kappa/\mathrm{d}\ln T$','$K_\mathrm{ther}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$',r'$\rho\ [\mathrm{g\,cm}^3]$', \
+                r'$\mathrm{d}\ln\rho/\mathrm{d}\ln P$',r'$\delta=-\mathrm{d}\ln\rho/\mathrm{d}\ln T$','$\mu$','$\mu_e$',\
+                r'$\nabla_\mu$','$\psi$', \
+                '$L_r/L_\mathrm{tot}$','$\epsilon_\mathrm{H}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{He}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{C}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','$\epsilon_{3\alpha}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{12}C(\alpha,\gamma)^{16}O\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                r'$\epsilon_{^{16}O(\alpha,\gamma)^{20}Ne\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\epsilon_\mathrm{grav}\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$',r'$-\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$', \
+                '$\mathrm{d}\ln E/\mathrm{d}\ln P$','$\mathrm{d}\ln E/\mathrm{d}\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
+                '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
+                '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
+                '$^{19}$F [mass frac.]','$^{20}$Ne [mass frac.]','$^{21}$Ne [mass frac.]','$^{22}$Ne [mass frac.]','$^{23}$Na [mass frac.]', \
+                '$^{24}$Mg [mass frac.]','$^{25}$Mg [mass frac.]','$^{26}$Mg [mass frac.]','$^{26}$Al [mass frac.]', \
+                '$^{27}$Al [mass frac.]','$^{28}$Si [mass frac.]','$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]', \
+                '$^{40}$Ca [mass frac.]','$^{44}$Ti [mass frac.]','$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]', \
+                '$^{56}$Ni [mass frac.]','neutrons [mass frac.]','protons [mass frac.]','$\Omega\ [\mathrm{s}^{-1}]$', \
+                '$\Omega_\mathrm{prev}\ [\mathrm{s}^{-1}]$', '$\mathrm{d}\ln\Omega/\mathrm{d}\ln r$', \
+                '$\mathscr{L}_r\ [\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','$U_r\ [\mathrm{cm\,s}^{-1}]$', \
+                '$V_r\ [\mathrm{cm\,s}^{-1}]$','$\mathrm{Ri}=N^2/(\mathrm{d}V/\mathrm{d}z)^2$','$D_\mathrm{conv}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_\mathrm{shear}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{h}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_\mathrm{eff}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_\mathrm{circ}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$D_{\mathrm{mag,}\Omega}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$','$D_{\mathrm{mag,}X}\ [\mathrm{cm}^2\,\mathrm{s}^{-1}]$', \
+                '$\eta/K$','$N^2_\mathrm{mag}\ [\mathrm{s}^{-1}]$','$B_\phi\ [G]$','$\omega_\mathrm{Alfven}\ [\mathrm{s}^{-1}]$', \
+                '$q_\mathrm{min}$'],'catList':['structure','structure','structure','structure','structure','structure','thermo','thermo','thermo', \
+                'thermo','thermo','thermo','thermo','thermo','thermo','thermo','EOS','EOS','EOS','EOS','EOS','EOS','EOS','energy', \
+                'energy','energy','energy','energy','energy','energy','energy','energy','energy','energy','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
+                'abundances','abundances','abundances','abundances','rotation','rotation','rotation', \
+                'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
+                'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism'],'header':3,'column_number':90}
     Struc_formats['full'] = {'varList':[['shell',0],['Mr',2],['r',1],['P',5],['Pturb',24],['T',3],['Nabad',10],['Nabe',9],['kappa',13], \
                 ['dkdrho',14],['dkdT',15],['Cv',6],['rho',4],['dPdrho',7],['dPdT',8],['mu',21],['mu0',22],['L',12],['Lrad',11], \
                 ['epsilon',16],['dEdrho',17],['dEdT',18],['H1',19],['He4',20],['HII',27],['HeII',28],['HeIII',29],['Omega',23], \
@@ -1879,7 +1926,11 @@ class Model(Outputs):
             Z_dir = 'Z1m5/'
           else :
             Z_dir = 'Z0'+Z_code+'/'
+<<<<<<< HEAD
+          print (Grids_dir,Z_dir)
+=======
           print(Grids_dir,Z_dir)
+>>>>>>> c7c80943667a88b9a6fe9ecf5f398606c907c841
 
           index_lastv = np.max([ind_endC,ind_endHe,ind_endH])
           if index_lastv != ind_endC:
@@ -1896,11 +1947,11 @@ class Model(Outputs):
           if index_lastv != ind_endC:
             vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index_lastv-3)
           else:
-            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index_lastv+5)
-          vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
-          v_dir=Grids_dir+'key_structures/lastv/'
-          print('cp '+vfile+' '+v_dir)
-          os.system('cp -p '+vfile+' '+v_dir)
+            vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
+            #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+            print('cp '+vfile+' '+v_dir)
+            os.system('cp -p '+vfile+' '+v_dir)
 
 #          if os.path.isfile(vfile+'.gz'):
 ##          try:
@@ -1914,7 +1965,8 @@ class Model(Outputs):
             index = ind_begH
             v_dir=Grids_dir+'key_structures/ZAMS/'
             vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-            vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
             print('cp '+vfile+' '+v_dir)
             os.system('cp -p '+vfile+' '+v_dir)
           except:
@@ -1924,7 +1976,8 @@ class Model(Outputs):
             index = ind_midH
             v_dir=Grids_dir+'key_structures/midH/'
             vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-            vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
             print('cp '+vfile+' '+v_dir)
             os.system('cp -p '+vfile+' '+v_dir)
           except:
@@ -1934,7 +1987,8 @@ class Model(Outputs):
             index = ind_endH
             v_dir=Grids_dir+'key_structures/endH/'
             vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-            vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+            vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
             print('cp '+vfile+' '+v_dir)
             os.system('cp -p '+vfile+' '+v_dir)
           except:
@@ -1945,7 +1999,8 @@ class Model(Outputs):
               index = ind_begHe
               v_dir=Grids_dir+'key_structures/begHe/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -1956,7 +2011,8 @@ class Model(Outputs):
               index = ind_midHe
               v_dir=Grids_dir+'key_structures/midHe/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -1967,7 +2023,8 @@ class Model(Outputs):
               index = ind_endHe
               v_dir=Grids_dir+'key_structures/endHe/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -1979,7 +2036,8 @@ class Model(Outputs):
               index = ind_begC
               v_dir=Grids_dir+'key_structures/begC/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -1990,7 +2048,8 @@ class Model(Outputs):
               index = ind_midC
               v_dir=Grids_dir+'key_structures/midC/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2001,7 +2060,8 @@ class Model(Outputs):
               index = ind_endC
               v_dir=Grids_dir+'key_structures/endC/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2012,7 +2072,8 @@ class Model(Outputs):
               index = ind_begNe
               v_dir=Grids_dir+'key_structures/begNe/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2023,7 +2084,8 @@ class Model(Outputs):
               index = ind_midNe
               v_dir=Grids_dir+'key_structures/midNe/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2034,7 +2096,8 @@ class Model(Outputs):
               index = ind_endNe
               v_dir=Grids_dir+'key_structures/endNe/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2045,7 +2108,8 @@ class Model(Outputs):
               index = ind_begO
               v_dir=Grids_dir+'key_structures/begO/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2056,7 +2120,8 @@ class Model(Outputs):
               index = ind_midO
               v_dir=Grids_dir+'key_structures/midO/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2067,7 +2132,8 @@ class Model(Outputs):
               index = ind_endO
               v_dir=Grids_dir+'key_structures/endO/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2078,7 +2144,8 @@ class Model(Outputs):
               index = ind_begSi
               v_dir=Grids_dir+'key_structures/begSi/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2089,7 +2156,8 @@ class Model(Outputs):
               index = ind_midSi
               v_dir=Grids_dir+'key_structures/midSi/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2100,7 +2168,8 @@ class Model(Outputs):
               index = ind_endSi
               v_dir=Grids_dir+'key_structures/endSi/'
               vfile_search=Grids_dir+Z_dir+StarName+'/'+StarName+'.v'+"%07d"%(index+5)
-              vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              #vfile=commands.getoutput('ls -1 '+vfile_search[:-1]+'* | tail -n 1')
+              vfile=subprocess.Popen(['ls -1 '+vfile_search[:-1]+'* | tail -n 1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
               print('cp '+vfile+' '+v_dir)
               os.system('cp -p '+vfile+' '+v_dir)
             except:
@@ -2435,7 +2504,7 @@ class Struc(Outputs):
 
     def make_content_list(self,FileName,format=''):
         MyFile = open(FileName)
-        if format in ['o2013','o2010']:
+        if format in ['o2013','o2010','vms']:
             Struc_begin = "# modnb"
             Test_Length = 7
         elif format in ['old_Hirschi']:
@@ -2450,7 +2519,7 @@ class Struc(Outputs):
           Next_Line = False
           i = 1
           for MyLine in MyFile:
-              if Next_Line and (format in ['o2013','o2010']):
+              if Next_Line and (format in ['o2013','o2010','vms']):
                   Next_Line = False
                   Current_Model = int(MyLine.split()[0])
                   Time_Step_Dic[Current_Model] = [i-1,i-1]
@@ -2461,7 +2530,7 @@ class Struc(Outputs):
                           Time_Step_Dic[Current_Model][1] = End_Line
                       Current_Model = int(MyLine.split()[-1])
                       Time_Step_Dic[Current_Model] = [i,i]
-                  elif format in ['o2013','o2010']:
+                  elif format in ['o2013','o2010','vms']:
                       if i != 1:
                           End_Line = i-1
                           Time_Step_Dic[Current_Model][1] = End_Line
@@ -2579,7 +2648,118 @@ class Struc(Outputs):
                         /(self.Variables['NT2'][0][ntmask]*self.Variables['r'][0][ntmask])**2.)**(1./4.)
 
         return
+    # added from GtB_liza
+        
+    def Spec_var_vms(self):
+        if self.Variables['format'][0] != 'vms':
+            return
+        self.Variables['timestep'] = [self.time_step,'$\delta\,t$ [s]','model']
+        self.Variables['nshell'] = [self.n_shell,'Total shells','model']
+        self.Variables['rprev'][0] = 10.**self.Variables['rprev'][0]/Cst.Rsol
+        self.Variables['cs'] = [np.sqrt(self.Variables['P'][0]/(self.Variables['rho'][0]*self.Variables['drhodP'][0])),'$c_\mathrm{sound}\ [\mathrm{cm\,s}^{-1}]$','EOS']
+        if all(g==0. for g in self.Variables['g'][0]):
+            self.Variables['g'][0] = Cst.G*self.Variables['Mr'][0]*Cst.Msol/self.Variables['r_cm'][0]**2.
+        g_r = self.Variables['g'][0]
+        if g_r[0] == 0.:
+            g_r[0] = g_r[1]
+        if g_r[-1] == 0.:
+            g_r[-1] = g_r[-2]
+        if all(hp==0 for hp in self.Variables['Hp'][0]):
+            self.Variables['Hp'][0] = self.Variables['P'][0] / (self.Variables['rho'][0]*self.Variables['g'][0])
+        H_P = self.Variables['Hp'][0]
+        if H_P[0] == 0.:
+            H_P[0] = H_P[1]
+        if H_P[-1] == 0.:
+            H_P[-1] = H_P[-2]
+        self.Variables['N2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0] \
+                            -self.Variables['Nabrad'][0]+self.Variables['Nabmu'][0]/self.Variables['delta'][0]), \
+                            '$N^2\ [\mathrm{s}^{-1}]$','structure']
+        self.Variables['NT2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0]-self.Variables['Nabrad'][0]),'$N_T^2\ [\mathrm{s}^{-1}]$','structure']
+        self.Variables['Nmu2'] = [g_r/H_P*self.Variables['Nabmu'][0],'$N_\mu^2\ [\mathrm{s}^{-1}]$','structure']
+        self.Variables['Cp'] = [self.Variables['P'][0]*self.Variables['delta'][0]/(self.Variables['Nabad'][0]*self.Variables['rho'][0] \
+                                *self.Variables['T'][0]),r'$\mathrm{C}_P\ [\mathrm{ergs\,g}^{-1}\,\mathrm{K}^{-1}]$','thermo']
 
+    #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
+        U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
+            *self.Variables['Cp'][0]*self.Variables['kappa'][0]*(1.6*self.Variables['Hp'][0])**2.) \
+            *np.sqrt(8.*self.Variables['Hp'][0]/(g_r*self.Variables['delta'][0]))
+        U[np.logical_not(self.Convection)] = 0.
+        A = 2.*((4.*(self.Variables['Nabrad'][0]-self.Variables['Nabad'][0])/9. + ((19./27.)**3.-1./9.)*U**2.))*U
+        A[A<0.] = 0.
+        E = 3.*368./729. * U**2.
+        D = (A/2.)**2. + (E/3.)**3.
+        W = (1./2.*A + np.sqrt(D))**(1./3.)
+        x1 = np.zeros(len(U))
+
+        for i in range(len(U)):
+            po = np.array([1., -19./9.*U[i], 3.*U[i]**2., -(17./9.*U[i]**3.  \
+                    + 8./9.*U[i]*(self.Variables['Nabrad'][0][i]-self.Variables['Nabad'][0][i]))])
+            if self.Convection[i]:
+                sol = np.roots(po)
+                for j in range(3):
+                    if np.imag(sol[j]) == 0.:
+                        x1[i] = np.real(sol[j])
+            else:
+                x1[i] = 0.
+
+        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
+        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\mathrm{int}$','thermo']
+        for i in range(len(self.Variables['Nabla_int'][0])):
+            if self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.:
+                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2. \
+                        + 2.*U[i]*np.sqrt(self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2.)
+            else:
+                self.Variables['Nabla_int'][0][i] = self.Variables['Nabad'][0][i] - 2.*U[i]**2.
+        self.Variables['V_MLT'] = [np.zeros(len(self.Variables['delta'][0])),'$V_\mathrm{MLT}\ [\mathrm{cm\,s}^{-1}]$','thermo']
+        vmlt = g_r*self.Variables['delta'][0]*(self.Variables['Nabla'][0] \
+                    -self.Variables['Nabla_int'][0])*(1.6*self.Variables['Hp'][0])**2./(8.*self.Variables['Hp'][0])
+        vmlt[vmlt<0.] = 0.
+        self.Variables['V_MLT'][0] = np.sqrt(vmlt)
+        self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\epsilon_\mathrm{nucl}+\epsilon_\nu\ [\mathrm{erg\,g}^{-1}\mathrm{s}^{-1}]$','energy']
+        self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\mathrm{eq}\ [\mathrm{km\,s}^{-1}]$','rotation']
+        
+        try: 
+         if not (self.Variables['Omega'][0]==0.).all():
+             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\Omega_r/\Omega_\mathrm{crit}$','rotation']
+         else:
+             print ('omega surface is zero')
+        except:
+         print("OOc cannot be calculated")
+
+        try:
+         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+         self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+         self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+         Lin = np.cumsum(self.Variables['Lang'][0])
+         Mr = self.Variables['Mr'][0]
+         Mr[Mr == 0.] = 1.e-10
+# a/M with a from Shapiro & Teukolsky, eq. 12.7.2
+         a_om = Lin*Cst.c/(Cst.G*(Mr*Cst.Msol)**2.)
+         a_om = np.minimum(a_om,1.)
+# Shapiro & Teukolsky, eq. 12.7.24
+         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
+         z2 = np.sqrt(3.*a_om**2.+z1**2.)
+         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
+         self.Variables['jKmax'] = [self.Variables['jK'][0],\
+                        '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+         Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
+# Shapiro & Teukolsky, eq. 12.7.18
+         Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
+                                                 r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
+                                                 2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
+         self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
+         self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
+         ntmask = self.Variables['NT2'][0]!=0.
+         self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
+                        /(self.Variables['NT2'][0][ntmask]*self.Variables['r'][0][ntmask])**2.)**(1./4.)
+        except:
+         print("An exception occurred in J_S/K calculation")
+        return
+	
+	#end of added
+
+    
     def Spec_var_o2010(self):
         if self.Variables['format'][0] != 'o2010':
             return
@@ -2794,6 +2974,7 @@ class Struc(Outputs):
         switcher = {
             'o2013': self.Spec_var_o2013(),
             'o2010': self.Spec_var_o2010(),
+            'vms': self.Spec_var_vms(),
             'old_Hirschi': self.Spec_var_oldHirschi(),
             'full': self.Spec_var_full(),
             'full_old': self.Spec_var_fullold(),
@@ -2837,7 +3018,7 @@ class Struc(Outputs):
         for i in range((num_deb)):
             MyFile.readline()
 
-        if format in ['o2013','o2010']:
+        if format in ['o2013','o2010','vms']:
             MyFile.readline()
             self.num_model,self.age,self.mass,self.n_shell,self.time_step=MyFile.readline().split()
             self.num_model = int(self.num_model)
@@ -2875,7 +3056,7 @@ class Struc(Outputs):
         for i,myVar in zip([varList[1] for varList in Struc_varList],[varList[0] for varList in Struc_varList]):
             self.Variables[myVar][0] = BigArray[:,i]
 
-        if format in ['o2013','o2010','old_Hirschi']:
+        if format in ['o2013','o2010','vms','old_Hirschi']:
             self.Convection = BigArray[:,15]
             self.Convection = self.Convection >= 0.
         elif format in ['full','full_old']:
@@ -3441,12 +3622,14 @@ def loadS(FileName,num_star=1,toread=[],format='',forced=False,quiet=False):
 
     if format == '':
         if 'StrucData' in MyVFile:
-            for fmt in readList.Struc_fmt[3:4]:
+            #for fmt in readList.Struc_fmt[3:4]:
+            for fmt in readList.Struc_fmt[4:5]:
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
         else:
-            for fmt in readList.Struc_fmt[0:3]:
+            #for fmt in readList.Struc_fmt[0:3]:
+            for fmt in readList.Struc_fmt[0:4]:
                 if file_cols == readList.Struc_formats[fmt]['column_number'] + len(MyDriver.added_columns['varList']):
                     format = fmt
                     break
@@ -5019,7 +5202,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False):
         for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','vms','old_Hirschi']:
         print('This format does not contain informations on convective zones.')
         return
     else:
