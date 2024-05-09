@@ -177,8 +177,9 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','starevol']
+    Evol_fmt = ['g24nw','o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','starevol']
     Evol_formats = {}
+    Evol_formats['g24nw'] = {'header':0,'column_number':114}
     Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],\
                     ['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],['C12s',8],['C13s',9],['N14s',10],\
                     ['O16s',11],['O17s',12],['O18s',13],['Ne20s',14],['Ne22s',15],['Al26s',42],['H1c',21],['He3c',23],\
@@ -1950,6 +1951,7 @@ class Model(Outputs):
         self.Polar_Radius_f.Define_Interp_OOcShape()
 
         switcher = {
+            'g24nw': self.Spec_var_o2013,
             'o2013': self.Spec_var_o2013,
             'tgrids': self.Spec_var_tgrids,
             'tools': self.Spec_var_tools,
@@ -2362,6 +2364,16 @@ class Model(Outputs):
             add_column(['H2s',113],'$^2$H [surf. mass frac.]','abundances',False)
             add_column(['Li6s',114],'$^6$Li [surf. mass frac.]','abundances',False)
             add_column(['Li7s',115],'$^7$Li [surf. mass frac.]','abundances',False)
+            Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
+            Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
+            Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
+            col_num = readList.Evol_formats[format]['column_number']
+            format_ext = format
+        elif format == 'g24nw':
+            add_column(['is_MS',110],'is_MS','model',False)
+            add_column(['is_OB',111],'is_OB','model',False)
+            add_column(['is_RSG',112],'is_RSG','model',False)
+            add_column(['is_WR',113],'is_WR','model',False)
             Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
             Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
             Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
