@@ -1655,7 +1655,7 @@ class Model(Outputs):
         self.Variables['star_flag'] = [star_flag,'star type','model']
 
     def Spec_var_o2013(self):
-        if self.Variables['format'][0][0] != 'o2013':
+        if self.Variables['format'][0][0] not in ['g24nw','o2013','preMS','bin']:
             return
         line_skip = False
         self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
@@ -1682,6 +1682,7 @@ class Model(Outputs):
             self.Variables['Llostwinds'] = [np.add.accumulate(self.Variables['dlelex'][0]),'$\int\ \dot{\mathscr{L}}\,\mathrm{d}t\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
             self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','rotation']
         return
+
     def Spec_var_tgrids(self):
         if self.Variables['format'][0][0] != 'tgrids':
             return
@@ -1723,35 +1724,6 @@ class Model(Outputs):
         self.Variables['Rpol'] = [self.Variables['R'],'$R_\mathrm{pol}\ [R_\odot]$','surface']
         return
 
-    def Spec_var_bin(self):
-        if self.Variables['format'][0][0] != 'bin':
-            return
-        line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
-        self.Variables['Zsurf'][0] = self.Variables['Zsurf'][0]-self.Variables['He3s'][0]
-        self.Variables['Rpol'] = [np.zeros((self.imax)),'$R_\mathrm{pol}\ [R_\odot]$','surface']
-        self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
-
-        for i in range(self.imax):
-            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
-            try:
-                Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
-                r_pol = math.sqrt(Actual_Surface/Norm_Surface)
-                g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
-                self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
-                self.Variables['gpol'][0][i] = g_pol
-            except ValueError:
-                print('problem at line {0}'.format(i+1))
-                line_skip = True
-        if line_skip:
-            print('You need to check this file')
-            raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
-            return
-        if self.Variables['FileName'][0][-3:] == '.wg':
-            self.Variables['Llostwinds'] = [np.add.accumulate(self.Variables['dlelex'][0]),'$\int\ \dot{\mathscr{L}}\,\mathrm{d}t\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
-            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
-        return
-
     def Spec_var_oldHirschi(self):
         if self.Variables['format'][0][0] != 'old_Hirschi':
             return
@@ -1776,35 +1748,6 @@ class Model(Outputs):
             print('You need to check this file')
             raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
             return
-        return
-
-    def Spec_var_preMS(self):
-        if self.Variables['format'][0][0] != 'preMS':
-            return
-        line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
-        self.Variables['Zsurf'][0] = self.Variables['Zsurf'][0]-self.Variables['He3s'][0]
-        self.Variables['Rpol'] = [np.zeros((self.imax)),'$R_\mathrm{pol}\ [R_\odot]$','surface']
-        self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
-
-        for i in range(self.imax):
-            Actual_Surface = 10.**self.Variables['L'][0][i]*Cst.Lsol /(Cst.sigma*10.**(4.*self.Variables['Teff'][0][i]))
-            try:
-                Norm_Surface = self.Polar_Radius_f.interpolation(self.Variables['OOc'][0][i])
-                r_pol = math.sqrt(Actual_Surface/Norm_Surface)
-                g_pol = np.log10(Cst.G*Cst.Msol*self.Variables['M'][0][i]/r_pol**2.)
-                self.Variables['Rpol'][0][i] = r_pol/Cst.Rsol
-                self.Variables['gpol'][0][i] = g_pol
-            except ValueError:
-                print('problem at line {0}'.format(i+1))
-                line_skip = True
-        if line_skip:
-            print('You need to check this file')
-            raise IOError(2,'File seems uncomplete, check it',self.Variables['FileName'][0])
-            return
-        if self.Variables['FileName'][0][-3:] == '.wg':
-            self.Variables['Llostwinds'] = [np.add.accumulate(self.Variables['dlelex'][0]),'$\int\ \dot{\mathscr{L}}\,\mathrm{d}t\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
-            self.Variables['Ltotsys'] = [self.Variables['Ltot'][0] + self.Variables['Llostwinds'][0],'$\mathscr{L}_\mathrm{tot}\ [10^{53}\,\mathrm{g\,cm}^2\,\mathrm{s}^{-1}]$','winds']
         return
 
     def Spec_var_starevol(self):
@@ -1956,9 +1899,9 @@ class Model(Outputs):
             'tgrids': self.Spec_var_tgrids,
             'tools': self.Spec_var_tools,
             'nami': self.Spec_var_nami,
-            'bin': self.Spec_var_bin,
+            'bin': self.Spec_var_o2013,
             'old_Hirschi': self.Spec_var_oldHirschi,
-            'preMS': self.Spec_var_preMS,
+            'preMS': self.Spec_var_o2013,
             'starevol': self.Spec_var_starevol,
         }
 
@@ -3368,7 +3311,7 @@ def add_column(var,unit='',cat='',verbose=True):
         print('The column has to be added at the end of the file.')
         print('Its number must at least be the following (according to mode and format):')
         print('\t Evol mode')
-        print('\t\t o2013: 110\n\t\t tgrids: 43\n\t\t tools: 55\n\t\t bin: 117')
+        print('\t\t g24nw: 114\n\t\t o2013: 110\n\t\t tgrids: 43\n\t\t tools: 55\n\t\t preMS: 116\n\t\t bin: 117')
         print('\t Struc mode')
         print('\t\t o2013-o2010: 92\n\t\t full: 24')
         print('\t Cluster mode')
@@ -5108,7 +5051,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False,size=(8,8)):
         for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['o2013','bin','old_Hirschi','preMS']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['g24nw','o2013','bin','old_Hirschi','preMS']:
         print('This format does not contain informations on convective zones.')
         return
     else:
