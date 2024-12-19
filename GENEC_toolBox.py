@@ -3247,6 +3247,13 @@ class Analysis():
             if phase == 9 and MyStar.Variables['O16c'][0][i] < self.end_burn:
                 time[4,1] = MyStar.Variables['t'][0][i-1]
                 phase = 10
+                Si_ini = MyStar.Variables['Si28c'][0][i-1]
+            if phase == 10 and MyStar.Variables['Si28c'][0][i] < O_ini-self.beg_burn:
+                time[5,0] = MyStar.Variables['t'][0][i-1]
+                phase = 11
+            if phase == 11 and MyStar.Variables['Si28c'][0][i] < self.end_burn:
+                time[5,1] = MyStar.Variables['t'][0][i-1]
+                phase = 12
 
         Temp_Dic = {}
         if time[0,1] != 0.:
@@ -3269,6 +3276,10 @@ class Analysis():
             Temp_Dic['tauOb'] = time[4,1]-time[4,0]
         else:
             Temp_Dic['tauOb'] = 0.
+        if time[5,1] != 0.:
+            Temp_Dic['tauSib'] = time[5,1]-time[5,0]
+        else:
+            Temp_Dic['tauSib'] = 0.
         try:
             self.Data[Mini,Oini,Zini].update(Temp_Dic)
         except:
@@ -3283,6 +3294,7 @@ class Analysis():
             print('C-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauCb']))
             print('Ne-b lifetime: '+str(self.Data[Mini,Oini,Zini]['tauNeb']))
             print('O-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauOb']))
+            print('Si-b lifetime:  '+str(self.Data[Mini,Oini,Zini]['tauSib']))
             print('total lifetime: '+str(MyStar.Variables['t'][0][-1]))
             print('----------------------------------------------------------------')
 
@@ -3445,7 +3457,8 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
             tauC = MyData.Data[(Mini,Oini,Zini)]['tauCb']
             tauNe = MyData.Data[(Mini,Oini,Zini)]['tauNeb']
             tauO = MyData.Data[(Mini,Oini,Zini)]['tauOb']
-            Set_Var([tauH,tauHe,tauC,tauNe,tauO],'tau',num_star,label='lifetimes [yr]',category='model')
+            tauSi = MyData.Data[(Mini,Oini,Zini)]['tauSib']
+            Set_Var([tauH,tauHe,tauC,tauNe,tauO,tauSi],'tau',num_star,label='lifetimes [yr]',category='model')
             if tauH !=0.:
                 Set_Var(Get_Var('t',num_star)/tauH,'t_tauH',num_star,label=r'$t/\tau_\mathrm{H}$',category='model')
             else:
@@ -5839,6 +5852,7 @@ def get_lifetimes(num_star=0):
     print('     C-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][2])))
     print('     Ne-b:  {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][3])))
     print('     O-b:   {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][4])))
+    print('     Si-b:  {0: >13s}'.format(engineer_format(MyDriver.Model_list_evol[num_star].Variables['tau'][0][5])))
     print('---------------------------------------------------------------------')
 
 def convZones(num_star,colour='0.80'):
