@@ -1716,7 +1716,7 @@ class Model(Outputs):
         if self.Variables['format'][0][0] not in ['g24nw','o2013','preMS','bin']:
             return
         line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
+        #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
         self.Variables['Zsurf'][0] = self.Variables['Zsurf'][0]-self.Variables['He3s'][0]
         self.Variables['Rpol'] = [np.zeros((self.imax)),'$R_\mathrm{pol}\ [R_\odot]$','surface']
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
@@ -1745,7 +1745,7 @@ class Model(Outputs):
         if self.Variables['format'][0][0] != 'tgrids':
             return
         line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = 1.e-2
+        #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = 1.e-2
         self.Variables['Rpol'] = [np.zeros((self.imax)),'$R_\mathrm{pol}\ [R_\odot]$','surface']
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
 
@@ -1770,14 +1770,14 @@ class Model(Outputs):
         if self.Variables['format'][0][0] != 'tools':
             return
         line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = 1.e-2
+        #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = 1.e-2
         return
 
     def Spec_var_nami(self):
         if self.Variables['format'][0][0] != 'nami':
             return
         line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = 1.e-2
+        #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = 1.e-2
         self.Variables['gpol'] = [self.Variables['gsurf'][0],'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
         self.Variables['Rpol'] = [self.Variables['R'],'$R_\mathrm{pol}\ [R_\odot]$','surface']
         return
@@ -1786,7 +1786,7 @@ class Model(Outputs):
         if self.Variables['format'][0][0] != 'old_Hirschi':
             return
         line_skip = False
-        self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
+        #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
         self.Variables['Zsurf'][0] = self.Variables['Zsurf'][0]-self.Variables['He3s'][0]
         self.Variables['Rpol'] = [np.zeros((self.imax)),'$R_\mathrm{pol}\ [R_\odot]$','surface']
         self.Variables['gpol'] = [np.zeros((self.imax)),'$\log(g_\mathrm{pol}\ [\mathrm{cm\,s}^{-2}])$','surface']
@@ -2165,14 +2165,14 @@ class Model(Outputs):
             self.Variables['phase'][0][ind_endSi:-1] = 'collapse'
         self.Variables['t6'] = [self.Variables['t'][0]/1.e6,'t [Myr]','model']
         self.Variables['t9'] = [self.Variables['t'][0]/1.e9,'t [Gyr]','model']
-        self.Variables['ageadv'] = [self.Variables['t'][0][-1] - self.Variables['t'][0],'log(time before collapse [yr])','model']
-        ageadv_inf = []
-        try:
-            ageadv_inf = np.where(self.Variables['ageadv'][0]==-np.inf)[0][0]
-        except IndexError:
-            pass
-        if ageadv_inf:
-            self.Variables['ageadv'][0][ageadv_inf:] = self.Variables['ageadv'][0][ageadv_inf-1]
+        self.Variables['ageadv'] = [np.ma.array(self.Variables['t'][0][-1] - self.Variables['t'][0],mask=self.Variables['t'][0][-1] - self.Variables['t'][0]<=0.),'log(time before collapse [yr])','model']
+        # ageadv_inf = []
+        # try:
+        #     ageadv_inf = np.where(self.Variables['ageadv'][0]==-np.inf)[0][0]
+        # except IndexError:
+        #     pass
+        # if ageadv_inf:
+        #     self.Variables['ageadv'][0][ageadv_inf:] = self.Variables['ageadv'][0][ageadv_inf-1]
         if format != 'starevol':
             self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
         if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
@@ -2238,7 +2238,7 @@ class Model(Outputs):
         self.Star_flag()
         if colour:
             self.ColoursCalc()
-        self.Variables['ageadv'][0] = np.log10(self.Variables['ageadv'][0])
+        self.Variables['ageadv'][0] = np.ma.log10(self.Variables['ageadv'][0])
 
         current_time = self.Variables['t'][0][0]
         self.timestep = []
