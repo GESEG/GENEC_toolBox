@@ -64,6 +64,7 @@ import datetime
 import subprocess
 import six
 from six.moves import configparser,input
+from pathlib import Path
 
 rcParams['figure.subplot.left'] = 0.2
 rcParams['figure.subplot.bottom'] = 0.2
@@ -2081,11 +2082,14 @@ class Model(Outputs):
             print('File read, {0} lines.'.format(self.imax))
 
         if wa:
-            WAfile = FileName.replace('.wg','.wa')
-            if WAfile != FileName:
+            if '.wg' in Path(FileName).suffixes:
+                WAfile = FileName.replace('.wg','.wa')
+            elif '.dat' in Path(FileName).suffixes:
+                WAfile = FileName.replace('.dat','.wa.red')
+            if Path(WAfile).is_file():
                 self.read_wa(WAfile,num_deb-header,num_fin)
             else:
-                print('The wa option is valid only when charging a complete wg file.')
+                print('The corresponding wa file was not found. Check and try again.')
 
         ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO,ind_endO,ind_begSi,ind_endSi = 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
         self.Variables['phase'] = [np.array(['' for x in range(self.imax)],dtype=object),'combustion phase','energetics']
