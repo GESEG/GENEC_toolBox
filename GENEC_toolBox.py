@@ -7174,12 +7174,12 @@ def file_len(fname):
         raise IOError(err)
     return int(result.strip().split()[0])
 
-def plotExternal(fileName,colX,colY,size=(8,8),*argus,**args):
+def plotExternal(fileName,colX,colY,size=(8,8),**args):
     """Offers the possibility to overplot some external data.
        Usage: plotExternal(file_name,col_x,col_y[,skip=skip_header_lines,style=myStyle,log='xy']).
        The optional parameters are:
-         - 'new' (to generate a new figure, False by default).
-         - 'invS' (to get point size that are 1./cols)
+         - new (to generate a new figure, False by default).
+         - invS (to get point size that are 1./cols)
          - skip = n (to skip n lines at the beginning of the file)
          - last = n (last line to be read)
          - colz = n (to colour-code the points with the value of a variable at column n)
@@ -7188,6 +7188,7 @@ def plotExternal(fileName,colX,colY,size=(8,8),*argus,**args):
          - log = x,y,z, and/or s (for getting the log of the value read for x,y,z, or s)
          - clim = 'new' or 'old' to define new colour limits or keep the previous ones
          - zlabel = str to set the colour bar label."""
+    print(args.keys())
     skip = 0
     last = -1
     myStyle = ''
@@ -7250,11 +7251,10 @@ def plotExternal(fileName,colX,colY,size=(8,8),*argus,**args):
             binz=args[arg]
         if arg == 'clim':
             clim = args[arg]
-    for arg in argus:
         if arg == 'new':
-            newFig = True
+            newFig = args[arg]
         if arg == 'invS':
-            invS = True
+            invS = args[arg]
     if newFig:
         if MyDriver.closeFig:
             plt.close()
