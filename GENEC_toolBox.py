@@ -50,6 +50,8 @@ from scipy import interpolate
 from scipy import integrate
 import math
 import numpy as np
+if int(np.__version__[0]) > 1:
+    np.set_printoptions(legacy="1.25")
 import matplotlib.ticker as mptick
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -110,7 +112,7 @@ def engineer_format(value,precision=5,units='yr'):
     return digit_string+' {0}{1}{2}'.format(prefix,units,' ' if prefix=='' else '')
 
 class GtB_version():
-    GtB_version = '2023.10.0'
+    GtB_version = '2025.01.0'
 
 class Cst():
     """Physical and astrophysical constants used by GENEC_toolBox (units in cgs)"""
@@ -2025,7 +2027,7 @@ class Model(Outputs):
 
         return switcher.get(fmt,'Unknown format')
 
-    def read(self,FileName,num_deb,num_fin,format,colour,wa,quiet):
+    def read(self,FileName,num_deb,num_fin,format,colour,wa,quiet,raw):
         if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
             format = "starevol"
             file_cols = 0
@@ -2070,13 +2072,17 @@ class Model(Outputs):
         self.Variables['FileName'] = [FileName,StarName,'model']
         self.Variables['format'] = [[format,header],'format and header lines','reading']
         self.Variables['line_num'] = [[num_deb,num_fin_stored],'boundary lines','reading']
-        self.Variables['options'] = [[colour,wa],'options colour and wa','reading']
+        self.Variables['options'] = [[colour,wa,raw],'options colour, wa and raw','reading']
         self.Variables['line'][0] = self.Variables['line'][0].astype(int)
         if format == 'preMS':
           massini = np.max(self.Variables['M'][0])
         else:
           massini = self.Variables['M'][0][0]
         self.Variables['Mini'] = [massini,'$M_\mathrm{ini}\ [M_\odot]$','model']
+        if format != 'starevol':
+            self.Variables['Zini'] = [1.-self.Variables['H1s'][0][0]-self.Variables['He4s'][0][0],'$Z_\mathrm{ini}$ [mass frac.]','abundances']
+        else:
+            self.Variables['Zini'] = [1.-self.Variables['H1s'][0][0]-self.Variables['H2s'][0][0]-self.Variables['He4s'][0][0]-self.Variables['He3s'][0][0],'$Z_\mathrm{ini}$ [mass frac.]','abundances']
         self.imax = np.size(self.Variables['line'][0])
         if not quiet:
             print('File read, {0} lines.'.format(self.imax))
@@ -2229,78 +2235,73 @@ class Model(Outputs):
         self.Variables['t6'] = [self.Variables['t'][0]/1.e6,'t [Myr]','model']
         self.Variables['t9'] = [self.Variables['t'][0]/1.e9,'t [Gyr]','model']
         self.Variables['ageadv'] = [np.ma.array(self.Variables['t'][0][-1] - self.Variables['t'][0],mask=self.Variables['t'][0][-1] - self.Variables['t'][0]<=0.),'log(time before collapse [yr])','model']
-        # ageadv_inf = []
-        # try:
-        #     ageadv_inf = np.where(self.Variables['ageadv'][0]==-np.inf)[0][0]
-        # except IndexError:
-        #     pass
-        # if ageadv_inf:
-        #     self.Variables['ageadv'][0][ageadv_inf:] = self.Variables['ageadv'][0][ageadv_inf-1]
-        if format != 'starevol':
-            self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
-        if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
-            self.Variables['ZCext'] = [np.zeros((self.imax)),'$M_\mathrm{ZC,ext}$','surface']
-            for i in range(self.imax):
-                if self.CZ_array[1,-1,i] != 1.:
-                    self.Variables['ZCext'][0][i] = self.Variables['ZCext'][0][i-1]
-                else:
-                    for j in range(21):
-                        if self.CZ_array[1,j,i] == 1.:
-                            self.Variables['ZCext'][0][i] = self.CZ_array[0,j,i]
-                            break
-        if format in ['nami']:
-            self.Variables['Teffcorr'] = self.Variables['Teff']
-            self.Variables['rhom'][0] = 10.**self.Variables['rhom'][0]
-            self.Variables['OOc'] = [np.zeros((len(self.Variables['line'])))]
-        if format != 'starevol':
-            self.Variables['Mbol'] = [-2.5*self.Variables['L'][0]+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
-        else:
-            self.Variables['Mbol'] = [-2.5*np.log10(self.Variables['L'][0])+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
-        if format != 'nami':
-            if format != 'starevol':
-                self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff'][0])*Cst.Rsol),'$R\ [R_\odot]$','surface']
-            else:
-                self.Variables['R'] = [np.sqrt(self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(self.Variables['Teff'][0]**2.*Cst.Rsol),'$R\ [R_\odot]$','surface']
-            self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
-        self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
-        self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
-        self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
-        self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
-        if format not in ['nami','old_Hirschi','starevol']:
-            if not all(v==0. for v in self.Variables['Vsurf'][0]):
-                Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
-                self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\mathrm{crit}$','rotation']
-                self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\mathrm{P\,[d]}$','rotation']
-            self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\mathrm{esc}\ [\mathrm{km\,s}^{-1}]$','winds']
-            CTeff = np.zeros((self.imax))
-            CTeff[self.Variables['Teff'][0]>=np.log10(21000.)] = 2.65
-            CTeff[(self.Variables['Teff'][0] < np.log10(21000.)) & (self.Variables['Teff'][0] > 4.0)] = 1.40
-            CTeff[self.Variables['Teff'][0] <= 4.0] = 1.
-            self.Variables['Vinf'] = [CTeff*self.Variables['Vesc'][0],'$V_\infty\ [\mathrm{km\,s}^{-1}]$','winds']
-            self.Variables['Mdot'][0][self.Variables['Mdot'][0] == 0.] = -30.
-            self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
-            self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
-        self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        if format in "starevol":
-            self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
-        if format != "starevol":
-            self.Variables['FeH'] = [np.ma.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.ma.log10(self.Variables['H1s'][0]/Cst.Hsol),'[Fe/H]','abundances']
-        else:
-            self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
-            self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
-        self.Variables['NH'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['H1s'][0])+12.,'log(N/H [numb.])+12','abundances']
-        self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
-        self.Variables['NC'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['C12s'][0]/12.),'log(N/C [numb.])','abundances']
-        self.Variables['NCrel'] = [self.Variables['NC'][0]-self.Variables['NC'][0][0],'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
-        self.Variables['NO'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['O16s'][0]/16.),'log(N/O [numb.])','abundances']
-        self.Variables['NOrel'] = [self.Variables['NO'][0]-self.Variables['NO'][0][0],'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
-        self.Variables['C12C13'] = [np.ma.log10(self.Variables['C12s'][0]/12.)-np.ma.log10(self.Variables['C13s'][0]/13.),'log($^{12}$C/$^{13}$C [numb.])','abundances']
-        self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
 
-        self.SpecificVariables(format)()
-        self.Star_flag()
-        if colour:
-            self.ColoursCalc()
+        if not raw:
+          if format != 'starevol':
+              self.Variables['Mcc'] = [self.Variables['M'][0]*self.Variables['Mccrel'][0],'$M_\mathrm{cc}\ [M_\odot]$','centre']
+          if format not in ['tgrids','tools','nami','starevol','toolsGaia']:
+              self.Variables['ZCext'] = [np.zeros((self.imax)),'$M_\mathrm{ZC,ext}$','surface']
+              for i in range(self.imax):
+                  if self.CZ_array[1,-1,i] != 1.:
+                      self.Variables['ZCext'][0][i] = self.Variables['ZCext'][0][i-1]
+                  else:
+                      for j in range(21):
+                          if self.CZ_array[1,j,i] == 1.:
+                              self.Variables['ZCext'][0][i] = self.CZ_array[0,j,i]
+                              break
+          if format in ['nami']:
+              self.Variables['Teffcorr'] = self.Variables['Teff']
+              self.Variables['rhom'][0] = 10.**self.Variables['rhom'][0]
+              self.Variables['OOc'] = [np.zeros((len(self.Variables['line'])))]
+          if format != 'starevol':
+              self.Variables['Mbol'] = [-2.5*self.Variables['L'][0]+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
+          else:
+              self.Variables['Mbol'] = [-2.5*np.log10(self.Variables['L'][0])+4.7554,'$\mathrm{M}_\mathrm{bol}$','surface']
+          if format != 'nami':
+              if format != 'starevol':
+                  self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff'][0])*Cst.Rsol),'$R\ [R_\odot]$','surface']
+              else:
+                  self.Variables['R'] = [np.sqrt(self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(self.Variables['Teff'][0]**2.*Cst.Rsol),'$R\ [R_\odot]$','surface']
+              self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\mathrm{m}\ [\mathrm{g\,cm}^3]$','model']
+          self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\tau_{KH}$ [yr]','model']
+          self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\log(g_\mathrm{surf}\ [\mathrm{cm\,s}^{-2}])$','surface']
+          self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\log(g/(T_\mathrm{eff}/10'000\,\mathrm{K})^4)$",'surface']
+          self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\mathscr{L}/\mathscr{L}_\odot$','surface']
+          if format not in ['nami','old_Hirschi','starevol']:
+              if not all(v==0. for v in self.Variables['Vsurf'][0]):
+                  Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
+                  self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\mathrm{crit}$','rotation']
+                  self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\mathrm{P\,[d]}$','rotation']
+              self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\mathrm{esc}\ [\mathrm{km\,s}^{-1}]$','winds']
+              CTeff = np.zeros((self.imax))
+              CTeff[self.Variables['Teff'][0]>=np.log10(21000.)] = 2.65
+              CTeff[(self.Variables['Teff'][0] < np.log10(21000.)) & (self.Variables['Teff'][0] > 4.0)] = 1.40
+              CTeff[self.Variables['Teff'][0] <= 4.0] = 1.
+              self.Variables['Vinf'] = [CTeff*self.Variables['Vesc'][0],'$V_\infty\ [\mathrm{km\,s}^{-1}]$','winds']
+              self.Variables['Mdot'][0][self.Variables['Mdot'][0] == 0.] = -30.
+              self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\mathrm{winds}\ [\mathrm{erg\,s}^{-1}]$','winds']
+              self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\mathrm{min}\ [\mathrm{G}]$','winds']
+          self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
+          if format in "starevol":
+              self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['H2s'][0]-self.Variables['He4s'][0]-self.Variables['He3s'][0],'$Z_\mathrm{surf}$ [mass frac.]','abundances']
+          if format != "starevol":
+              self.Variables['FeH'] = [np.ma.log10(self.Variables['Zsurf'][0]/Cst.Zsol)-np.ma.log10(self.Variables['H1s'][0]/Cst.Hsol),'[Fe/H]','abundances']
+          else:
+              self.Variables['FeH'] = [np.zeros((self.imax)),'[Fe/H]','abundances']
+              self.Variables['FeH'][0] = self.Variables['Zsurf'][0]*0.-0.3
+          self.Variables['NH'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['H1s'][0])+12.,'log(N/H [numb.])+12','abundances']
+          self.Variables['NHrel'] = [self.Variables['NH'][0]-self.Variables['NH'][0][0],'log(N/H)-log(N/H)$_\mathrm{ini}$','abundances']
+          self.Variables['NC'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['C12s'][0]/12.),'log(N/C [numb.])','abundances']
+          self.Variables['NCrel'] = [self.Variables['NC'][0]-self.Variables['NC'][0][0],'log(N/C)-log(N/C)$_\mathrm{ini}$','abundances']
+          self.Variables['NO'] = [np.ma.log10(self.Variables['N14s'][0]/14.)-np.ma.log10(self.Variables['O16s'][0]/16.),'log(N/O [numb.])','abundances']
+          self.Variables['NOrel'] = [self.Variables['NO'][0]-self.Variables['NO'][0][0],'log(N/O)-log(N/O)$_\mathrm{ini}$','abundances']
+          self.Variables['C12C13'] = [np.ma.log10(self.Variables['C12s'][0]/12.)-np.ma.log10(self.Variables['C13s'][0]/13.),'log($^{12}$C/$^{13}$C [numb.])','abundances']
+          self.Variables['C12C13rel'] = [self.Variables['C12C13'][0]-self.Variables['C12C13'][0][0],'log($^{12}$C/$^{13}$C)-log($^{12}$C/$^{13}$C)$_\mathrm{ini}$','abundances']
+
+          self.SpecificVariables(format)()
+          self.Star_flag()
+          if colour:
+              self.ColoursCalc()
         self.Variables['ageadv'][0] = np.ma.log10(self.Variables['ageadv'][0])
 
         current_time = self.Variables['t'][0][0]
@@ -3467,7 +3468,7 @@ def set_minValue(value):
     """Sets the minimum value for masking the abundances arrays"""
     MyDriver.minValue = value
 
-def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced=False,wa=False,quiet=False):
+def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced=False,wa=False,quiet=False,raw=False):
     """Loads a new evolution file in the database.
        Usage: loadE(FileName,num_star[,num_deb,num_fin,format=tgrids])
        Optional arguments are:
@@ -3477,7 +3478,8 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
           colour (False by default, colours computation if True)
           forced (False by default, True to avoid the checking of the star number)
           wa (False by default, True to read the abundances in the wa file)
-          quiet (False by default, True to avoid all the babbling)."""
+          quiet (False by default, True to avoid all the babbling)
+          raw (False by default, True to not compute additional variables)"""
     MyModel = Model()
     if ".wg" not in FileName and ".grids" not in FileName and ".dat" not in FileName:
         format = "starevol"
@@ -3508,7 +3510,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
         Checked, num_star = Driver.checknumber(MyDriver,num_star)
     if Checked or forced:
         try:
-            MyModel.read(MyEFile,num_deb,num_fin,format,colour,wa,quiet)
+            MyModel.read(MyEFile,num_deb,num_fin,format,colour,wa,quiet,raw)
             MyDriver.store_model(MyModel,num_star)
             if not num_star in MyDriver.SelectedModels:
                 MyDriver.SelectedModels.append(num_star)
@@ -3696,7 +3698,7 @@ def loadC(FileName,num_star=1,num_deb=0,num_fin=-1,format='',forced=False,quiet=
                 except IOError as IOerr:
                     print('[Error {0}] {1}: {2}'.format(IOerr.errno,IOerr.strerror,IOerr.filename))
 
-def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False,colour=False):
+def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=False,colour=False,raw=False):
     """ Loads a list of models from a file.
         The file shall contain on each line the path to the wanted model.
         By default, the models are loaded with index 1 for the first one up to n,
@@ -3709,7 +3711,7 @@ def loadEFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
     for Path in ListFile:
         MyPath = str(Path.split()[0])
         try:
-            loadE(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour)
+            loadE(MyPath,index,num_deb,format=format,forced=forced,quiet=quiet,colour=colour,raw=raw)
             index += 1
         except FormatError as WF:
             print('[Error {0}] {1}: {2}'.format(WF.errno,WF.strerror,WF.filename))
@@ -3770,7 +3772,7 @@ def loadCFromList(FileName,ini_index=1,num_deb=0,format='',forced=False,quiet=Fa
         print('')
         Loaded('cluster')
 
-def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,forced=False,quiet=True,colour=False):
+def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,forced=False,quiet=True,colour=False,raw=False):
     """Loads all models (.wg, .dat, or .wg.grids) in the directory given in argument.
         By default, the models are loaded with index 1 for the first one up to n,
             but setting 'ini_index=i' modifies the numbering from i to i+n.
@@ -3791,7 +3793,7 @@ def loadEFromDir(DirName,select='*',ini_index=1,num_deb=0,format='',wa=False,for
         file_short = file[file.rfind('/')+1:]
         print('file '+file_short)
         try:
-            loadE(file,index,num_deb,format=format,wa=wa,forced=forced,quiet=quiet,colour=colour)
+            loadE(file,index,num_deb,format=format,wa=wa,forced=forced,quiet=quiet,colour=colour,raw=raw)
             if not quiet:
                 print('File {0} successfully loaded.'.format(file_short))
             index += 1
@@ -5790,9 +5792,9 @@ def Cepheid_strip(Zzone='',alpha=0.40,forced=False):
             elif MyDriver.modeplot == 'cluster':
                 mCeph = True
             if MyDriver.modeplot == 'evol':
-                if MyStar.Variables['Zsurf'][0][0] <= 0.004:
+                if MyStar.Variables['Zini'][0] <= 0.004:
                     Zzone_star = 'SMC'
-                elif MyStar.Variables['Zsurf'][0][0] <= 0.010:
+                elif MyStar.Variables['Zini'][0] <= 0.010:
                     Zzone_star = 'LMC'
                 else:
                     Zzone_star = 'MW'
