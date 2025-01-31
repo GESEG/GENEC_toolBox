@@ -180,7 +180,7 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['g24nw','o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','starevol']
+    Evol_fmt = ['g24nw','o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','preMSnw','starevol']
     Evol_formats = {}
     Evol_formats['g24nw'] = {'header':0,'column_number':114}
     Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],\
@@ -398,6 +398,7 @@ class readList():
                     'rotation','rotation','abundances','abundances','rotation','energetics','energetics','energetics'],\
                     'header':0,'column_number':89}
     Evol_formats['preMS'] = {'header':0,'column_number':116}
+    Evol_formats['preMSnw'] = {'header':0,'column_number':120}
     Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['Tbce',5],['THe',6],\
                      ['numax',7],['Dpg',8]],\
                      'unitsList':['model num','$\\Delta\\nu_\\mathrm{asym.}\\ [\\mu\\mathrm{Hz}]$',\
@@ -2022,6 +2023,7 @@ class Model(Outputs):
             'bin': self.Spec_var_o2013,
             'old_Hirschi': self.Spec_var_oldHirschi,
             'preMS': self.Spec_var_o2013,
+            'preMSnw': self.Spec_var_o2013,
             'starevol': self.Spec_var_starevol,
         }
 
@@ -2074,7 +2076,7 @@ class Model(Outputs):
         self.Variables['line_num'] = [[num_deb,num_fin_stored],'boundary lines','reading']
         self.Variables['options'] = [[colour,wa,raw],'options colour, wa and raw','reading']
         self.Variables['line'][0] = self.Variables['line'][0].astype(int)
-        if format == 'preMS':
+        if format in ['preMS','preMSnw']:
           massini = np.max(self.Variables['M'][0])
         else:
           massini = self.Variables['M'][0][0]
@@ -2102,7 +2104,7 @@ class Model(Outputs):
         if self.Variables['H1c'][0][0] == self.Variables['H1s'][0][0] and format!='preMS':
             ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
         try:
-            if format == 'preMS':
+            if format in ['preMS','preMSnw']:
                 ind_begH = np.where(self.Variables['H1c'][0]<np.max(self.Variables['H1c'][0])-3.e-3)[0][0]
             ind_endH = np.where(self.Variables['H1c'][0]<1.e-5)[0][0]
             ind_begHe = ind_endH + np.where(self.Variables['He4c'][0][ind_endH:]<np.max(self.Variables['He4c'][0])-3.e-3)[0][0]
@@ -2431,6 +2433,22 @@ class Model(Outputs):
             add_column(['H2s',113],'$^2$H [surf. mass frac.]','abundances',False)
             add_column(['Li6s',114],'$^6$Li [surf. mass frac.]','abundances',False)
             add_column(['Li7s',115],'$^7$Li [surf. mass frac.]','abundances',False)
+            Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
+            Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
+            Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
+            col_num = readList.Evol_formats[format]['column_number']
+            format_ext = format
+        if format == 'preMSnw':
+            add_column(['H2c',110],'$^2$H [centr. mass frac.]','abundances',False)
+            add_column(['Li6c',111],'$^6$Li [centr. mass frac.]','abundances',False)
+            add_column(['Li7c',112],'$^7$Li [centr. mass frac.]','abundances',False)
+            add_column(['H2s',113],'$^2$H [surf. mass frac.]','abundances',False)
+            add_column(['Li6s',114],'$^6$Li [surf. mass frac.]','abundances',False)
+            add_column(['Li7s',115],'$^7$Li [surf. mass frac.]','abundances',False)
+            add_column(['is_MS',116],'is_MS','model',False)
+            add_column(['is_OB',117],'is_OB','model',False)
+            add_column(['is_RSG',118],'is_RSG','model',False)
+            add_column(['is_WR',119],'is_WR','model',False)
             Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
             Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
             Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
