@@ -5209,7 +5209,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False,size=(8,8)):
         for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['g24nw','o2013','bin','old_Hirschi','preMS']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['g24nw','o2013','bin','old_Hirschi','preMS','preMSnw']:
         print('This format does not contain informations on convective zones.')
         return
     else:
