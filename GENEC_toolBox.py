@@ -1776,7 +1776,7 @@ class Model(Outputs):
         self.Variables['star_flag'] = [star_flag,'star type','model']
 
     def Spec_var_o2013(self):
-        if self.Variables['format'][0][0] not in ['g24nw','o2013','preMS','bin']:
+        if self.Variables['format'][0][0] not in ['g24nw','o2013','preMS','preMSnw','bin']:
             return
         line_skip = False
         #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
