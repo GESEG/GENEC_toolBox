@@ -2156,7 +2156,7 @@ class Model(Outputs):
             if self.Variables['t_rel'][0][-1] == 0.:
                 # z_i = r_min + (x_i – min(x)) / (max(x) – min(x))
                 # for range [r_min,r_max] with r_max being integer
-                self.Variables['t_rel'][0][ind_endH+1:] = 1 + (self.Variables['He4c'][0][ind_endH+1:]-1)/(1.e-5-1)
+                self.Variables['t_rel'][0][ind_endH+1:] = 1. + (self.Variables['He4c'][0][ind_endH+1:]-1.)/(1.e-5-1.)
         ### 2 < t_rel < 2.5, for the C-burning phase [advanced burning phases] ###
         if ind_begC != -1:
             self.Variables['phase'][0][ind_begC:ind_endC] = 'C'
@@ -2167,7 +2167,7 @@ class Model(Outputs):
             self.Variables['t_rel'][0][ind_endHe+1:ind_begC+1] = 2. + ttauHeC[ind_endHe+1:ind_begC+1] * 0.25
         else:
             if self.Variables['t_rel'][0][-1] == 0.:
-                self.Variables['t_rel'][0][ind_endHe+1:] = 2 + (self.Variables['C12c'][0][ind_endHe] -
+                self.Variables['t_rel'][0][ind_endHe+1:] = 2. + (self.Variables['C12c'][0][ind_endHe] -
                                                                 self.Variables['C12c'][0][ind_endHe+1:])/(0.003) * 0.25
         if ind_endC != -1:
             # C burning --> t_rel goes from 2.25 to 2.50, linear in C12c
@@ -2184,6 +2184,7 @@ class Model(Outputs):
                                                                   self.Variables['C12c'][0][ind_begC]) * 0.25
         ### 2.5 < t_rel < 2.75, for the Ne-burning phase [advanced burning phases] ###
         if self.Variables['line'][0][-1] - self.Variables['line'][0][ind_endC] > 10: # GENEC ran at least 10 lines past C-burning
+            print('more than 10 lines after C-b')
             if ind_begNe != -1:
                 self.Variables['phase'][0][ind_begNe:ind_endNe] = 'Ne'
             if ind_endNe != -1:
@@ -2191,34 +2192,34 @@ class Model(Outputs):
                 tauNe = self.Variables['t'][0][ind_endNe]
                 ttauNe = (self.Variables['t'][0]-tauC)/(tauNe-tauC)
                 self.Variables['t_rel'][0][ind_endC+1:ind_endNe+1] = 2.5 + ttauNe[ind_endC+1:ind_endNe+1] * 0.25
+                if ind_begO != -1:
+                    self.Variables['phase'][0][ind_begO:ind_endO] = 'O'
+        ### 2.75 < t_rel < 2.95, for the O-burning phase [advanced burning phases] ###
+                if ind_endO != -1:
+                    self.Variables['phase'][0][ind_endO:ind_begSi] = 'OSi'
+                    tauO = self.Variables['t'][0][ind_endO]
+                    ttauO = (self.Variables['t'][0]-tauNe)/(tauO-tauNe)
+                    self.Variables['t_rel'][0][ind_endNe+1:ind_endO+1] = 2.75 + ttauO[ind_endNe+1:ind_endO+1] * 0.2
+        ### 2.95 < t_rel < 3, for the Si-burning phase [advanced burning phases] ###
+                    if ind_begSi != -1:
+                        self.Variables['phase'][0][ind_begSi:ind_endSi] = 'Si'
+                    if ind_endSi != -1:
+                        self.Variables['phase'][0][ind_endSi:-1] = 'collapse'
+                        tauSi = self.Variables['t'][0][ind_endSi]
+                        ttauSi = (self.Variables['t'][0]-tauO)/(tauSi-tauO)
+                        self.Variables['t_rel'][0][ind_endO+1:ind_endSi+1] = 2.95 + ttauSi[ind_endO+1:ind_endSi+1] * 0.05
+                    else:
+                        if wa == True:
+                            if self.Variables['t_rel'][0][-1] == 0.:
+                                self.Variables['t_rel'][0][ind_endO+1:] = 2.95 + (self.Variables['Si28c'][0][ind_endO+1:]-1.)/(1.e-3-1.) * 0.05
+                else:
+                    if self.Variables['t_rel'][0][-1] == 0.:
+                        self.Variables['t_rel'][0][ind_endNe+1:] = 2.75 + (self.Variables['O16c'][0][ind_endNe+1:]-1.)/(1.e-3-1.) * 0.2
             else:
                 if self.Variables['t_rel'][0][-1] == 0.:
                     # z_i = (x_i – min(x)) / (max(x) – min(x)) * (r_max - r_min) + r_min
                     # for range [r_min,r_max] decimals
-                    self.Variables['t_rel'][0][ind_endC+1:] = 2.5 + (self.Variables['Ne20c'][0][ind_endC+1:]-1)/(1.e-3-1) * 0.25
-        ### 2.75 < t_rel < 2.95, for the O-burning phase [advanced burning phases] ###
-        if ind_begO != -1:
-            self.Variables['phase'][0][ind_begO:ind_endO] = 'O'
-        if ind_endO != -1:
-            self.Variables['phase'][0][ind_endO:ind_begSi] = 'OSi'
-            tauO = self.Variables['t'][0][ind_endO]
-            ttauO = (self.Variables['t'][0]-tauNe)/(tauO-tauNe)
-            self.Variables['t_rel'][0][ind_endNe+1:ind_endO+1] = 2.75 + ttauO[ind_endNe+1:ind_endO+1] * 0.2
-        else:
-            if self.Variables['t_rel'][0][-1] == 0.:
-                self.Variables['t_rel'][0][ind_endNe+1:] = 2.75 + (self.Variables['O16c'][0][ind_endNe+1:]-1)/(1.e-3-1) * 0.2
-        ### 2.95 < t_rel < 3, for the Si-burning phase [advanced burning phases] ###
-        if ind_begSi != -1:
-            self.Variables['phase'][0][ind_begSi:ind_endSi] = 'Si'
-        if ind_endSi != -1:
-            self.Variables['phase'][0][ind_endSi:-1] = 'collapse'
-            tauSi = self.Variables['t'][0][ind_endSi]
-            ttauSi = (self.Variables['t'][0]-tauO)/(tauSi-tauO)
-            self.Variables['t_rel'][0][ind_endO+1:ind_endSi+1] = 2.95 + ttauSi[ind_endO+1:ind_endSi+1] * 0.05
-        else:
-            if wa == True:
-                if self.Variables['t_rel'][0][-1] == 0.:
-                    self.Variables['t_rel'][0][ind_endO+1:] = 2.95 + (self.Variables['Si28c'][0][ind_endO+1:]-1)/(1.e-3-1) * 0.05
+                    self.Variables['t_rel'][0][ind_endC+1:] = 2.5 + (self.Variables['Ne20c'][0][ind_endC+1:]-1.)/(1.e-3-1.) * 0.25
 
         if ind_endC != -1:
             self.Variables['phase'][0][ind_endC:ind_begNe] = 'CNe'
