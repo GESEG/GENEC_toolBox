@@ -688,7 +688,7 @@ class readList():
                 'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation', \
                 'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
                 'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism','magnetism','EOS','EOS'],'header':3,'column_number':95}    
-	Struc_formats['g24eos_net23'] =  {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
+    Struc_formats['g24eos_net23'] =  {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
                 ['drhodP',21],['delta',22],['mu',42],['mue',68],['muprev',100],['mufit',99],['Nabmu',44],['psi',23],['L',5], \
                 ['epsH',10],['epsHe',11],['epsC',12],['eps3a',24],['epsCagO',25],['epsOagNe',26],['epsgrav',27],['epsnu',16], \
