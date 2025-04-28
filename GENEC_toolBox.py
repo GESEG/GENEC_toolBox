@@ -180,8 +180,9 @@ class Rendering():
 class readList():
     """Lists the columns and their descriptions in the various files that can be read,
           according to the specific mode and formats."""
-    Evol_fmt = ['g24nw','o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','preMSnw','starevol']
+    Evol_fmt = ['g25k2','g24nw','o2013','tgrids','tools','toolsGaia','nami','bin','old_Hirschi','preMS','preMSnw','starevol']
     Evol_formats = {}
+    Evol_formats['g25k2'] = {'header':0,'column_number':115}
     Evol_formats['g24nw'] = {'header':0,'column_number':114}
     Evol_formats['o2013'] = {'varList':[['line',0],['t',1],['M',2],['L',3],['Teffcorr',4],['Teff',17],['GammaEdd',59],\
                     ['Mccrel',16],['rhoc',19],['Tc',20],['H1s',5],['He3s',7],['He4s',6],['C12s',8],['C13s',9],['N14s',10],\
@@ -1832,7 +1833,7 @@ class Model(Outputs):
         self.Variables['star_flag'] = [star_flag,'star type','model']
 
     def Spec_var_o2013(self):
-        if self.Variables['format'][0][0] not in ['g24nw','o2013','preMS','preMSnw','bin']:
+        if self.Variables['format'][0][0] not in ['g25k2','g24nw','o2013','preMS','preMSnw','bin']:
             return
         line_skip = False
         #self.Variables['ageadv'][0][self.Variables['ageadv'][0]<=0.] = self.Variables['t'][0][-1] - self.Variables['t'][0][-2]
@@ -2071,6 +2072,7 @@ class Model(Outputs):
         self.Polar_Radius_f.Define_Interp_OOcShape()
 
         switcher = {
+            'g25k2': self.Spec_var_o2013,
             'g24nw': self.Spec_var_o2013,
             'o2013': self.Spec_var_o2013,
             'tgrids': self.Spec_var_tgrids,
@@ -2516,6 +2518,17 @@ class Model(Outputs):
             add_column(['is_OB',111],'is_OB','model',False)
             add_column(['is_RSG',112],'is_RSG','model',False)
             add_column(['is_WR',113],'is_WR','model',False)
+            Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
+            Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
+            Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
+            col_num = readList.Evol_formats[format]['column_number']
+            format_ext = format
+        elif format == 'g25k2':
+            add_column(['is_MS',110],'is_MS','model',False)
+            add_column(['is_OB',111],'is_OB','model',False)
+            add_column(['is_RSG',112],'is_RSG','model',False)
+            add_column(['is_WR',113],'is_WR','model',False)
+            add_column(['k2_AMC',114],'$k_2$','model',False)
             Evol_varList = readList.Evol_formats['o2013']['varList'] + MyDriver.added_columns['varList']
             Evol_unitsList = readList.Evol_formats['o2013']['unitsList'] + MyDriver.added_columns['unitsList']
             Evol_catList = readList.Evol_formats['o2013']['catList'] + MyDriver.added_columns['catList']
@@ -3525,7 +3538,7 @@ def add_column(var,unit='',cat='',verbose=True):
         print('The column has to be added at the end of the file.')
         print('Its number must at least be the following (according to mode and format):')
         print('\t Evol mode')
-        print('\t\t g24nw: 114\n\t\t o2013: 110\n\t\t tgrids: 43\n\t\t tools: 55\n\t\t preMS: 116\n\t\t bin: 117')
+        print('\t\t g25k2: 115\n\t\t g24nw: 114\n\t\t o2013: 110\n\t\t tgrids: 43\n\t\t tools: 55\n\t\t preMS: 116\n\t\t bin: 117')
         print('\t Struc mode')
         print('\t\t o2013-o2010: 92\n\t\t full: 24')
         print('\t Cluster mode')
@@ -5267,7 +5280,7 @@ def Kippen(num_star=1,burn=False,shift=1,hatch='',noshade=False,size=(8,8)):
         for i in list(MyDriver.Model_list.keys()):
             print('{0:4d}: {1}'.format(i,MyDriver.Model_list[i].Variables['FileName']))
         return
-    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['g24nw','o2013','bin','old_Hirschi','preMS','preMSnw']:
+    elif MyDriver.Model_list[num_star].Variables['format'][0][0] not in ['g25k2','g24nw','o2013','bin','old_Hirschi','preMS','preMSnw']:
         print('This format does not contain informations on convective zones.')
         return
     else:
