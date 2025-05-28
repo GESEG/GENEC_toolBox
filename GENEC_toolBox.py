@@ -688,7 +688,7 @@ class readList():
                 'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances', \
                 'abundances','abundances','abundances','abundances','rotation','rotation','rotation','rotation','rotation', \
                 'rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','rotation','magnetism', \
-                'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism','magnetism','EOS','EOS'],'header':3,'column_number':95}    
+                'magnetism','magnetism','magnetism','magnetism','magnetism','magnetism','magnetism','EOS','EOS'],'header':3,'column_number':95}
     Struc_formats['g24eos_net23'] =  {'varList':[['shell',0],['Mfrac',1],['Mr',49],['r',4],['rprev',59],['g',56],['P',2],['Hp',55], \
                 ['beta',30],['T',3],['Nabad',28],['Nabrad',13],['kappa',29],['dkdP',17],['dkdT',18],['Kther',51],['rho',14], \
                 ['drhodP',21],['delta',22],['mu',42],['mue',68],['muprev',100],['mufit',99],['Nabmu',44],['psi',23],['L',5], \
@@ -4748,7 +4748,7 @@ def Plot_colour(y,z,binz=0,extend='neither',over='k',under='k',s='',logs=False,p
     if levels != None:
         CBticks = levels
     if plot_CB:
-        MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ticks=CBticks,extend=extend)
+        MyCB = MyDriver.current_Fig.colorbar(ColorBarSettings,fraction=0.08,ax=New_Axes,ticks=CBticks,extend=extend)
         if MyDriver.ilog[2]:
             MyCB.ax.set_ylabel('log('+MyDriver.Model_list[Star_list[0]].Variables[z][1]+')',fontsize=MyDriver.fontSize-2)
             MyCB.ax.yaxis.set_label_position('right')
@@ -6110,6 +6110,11 @@ def put_legend(loc=1,label=[],bbox=(0,0,1,1),ncol=1,fontsize=''):
     handles,labels = MyDriver.Previous_Axe.get_legend_handles_labels()
     if label != []:
         labels = label
+    else:
+        label = []
+        for mod in MyDriver.Model_list:
+            label = label + [MyDriver.Model_list[mod].Variables['FileName'][0]]
+        labels = label
     if fontsize == '':
         fontsize = MyDriver.fontSize/1.5
     plt.legend(handles,labels,loc=loc,bbox_to_anchor=bbox,ncol=ncol,fontsize=fontsize)
@@ -7219,21 +7224,35 @@ def closest_line(num_star=0,p=False,Yvar=''):
             print(str(file_line))
             return myline
 
-def get_value(var,num_star=0,Yvar='',log_x=False,log_y=False):
+def get_value(var='',num_star=0,Yvar='',log_x=False,log_y=False):
     """Finds the value of var at the location of a cursor selection.
        Note that var is intended to be different than the x and y variables of the plot."""
     closest,best_mod=closest_index(num_star,Yvar,log_x=log_x,log_y=log_y)
     print('index: {}'.format(closest))
-    value = Get_Var(var,best_mod)[closest]
     if MyDriver.modeplot=='evol':
       myline = Get_Var('line',best_mod)[closest]
+      myzone = 'line'
+      if not var:
+          var = 'line'
+          myline = ''
     elif MyDriver.modeplot=='struc':
       myline = Get_Var('shell',best_mod)[closest]
+      myzone = 'shell'
+      if not var:
+          var = 'shell'
+          myline = ''
     else:
       myline = closest
+      myzone = 'index'
+      if not var:
+          var = 'Mini'
+    value = Get_Var(var,best_mod)[closest]
     if MyDriver.modeplot == 'evol' and os.path.splitext(MyDriver.Model_list[best_mod].Variables['FileName'][0])[1] != '.wg':
         print('Beware: the value will not be as accurate as if you used the complete .wg file.\n')
-    print('line: {0}, {1}: {2}'.format(myline,var,value))
+    if myline:
+        print('{3}: {0}, {1}: {2}'.format(myline,var,value,myzone))
+    else:
+        print('{1}: {2}'.format(myline,var,value))
 
 def show_where(var,value,num_star=0,c='0.80',marker='o',label='',edge=None):
     Xvar = MyDriver.lastXvar
