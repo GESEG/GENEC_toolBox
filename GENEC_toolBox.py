@@ -4190,7 +4190,7 @@ def Get_Var(var,num_star):
        Usage: toto = Get_Var('Var_Name',num_star)"""
     return MyDriver.Model_list[num_star].Variables[var][0]
 
-def Set_Var(var,var_name,num_star,**args):
+def Set_Var(var,var_name,num_star,forced=False,**args):
     """Passes a newly defined variable into the available variables dictionary.
        Typically used after Get_Var() and operations on the retrieved variable.
        To generalise this to all the selected models (or structures), write a loop:
@@ -4211,7 +4211,7 @@ def Set_Var(var,var_name,num_star,**args):
         else:
             print('Bad argument for function Set_Var. Should be label="..." and category="..." .')
 
-    if var_name not in list(MyDriver.Model_list[num_star].Variables.keys()):
+    if var_name not in list(MyDriver.Model_list[num_star].Variables.keys()) or forced:
         MyDriver.Model_list[num_star].Variables[var_name] = [var,MyLabel,MyCat]
     else:
         print('The key '+var_name+' already exists in this dictionary.')
