@@ -2754,7 +2754,7 @@ class Struc(Outputs):
         if not (self.Variables['Omega'][0]==0.).all():
             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\Omega_r/\Omega_\mathrm{crit}$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
+        self.Variables['jKmax'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']# Max Kerr angular momentum\
         self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
         Lin = np.cumsum(self.Variables['Lang'][0])
         Mr = self.Variables['Mr'][0]
@@ -2766,14 +2766,14 @@ class Struc(Outputs):
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        self.Variables['jKmax'] = [self.Variables['jK'][0],\
-                       '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
+        self.Variables['jK'] = [self.Variables['jK'][0],\
+                       '$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] # Exact Kerr angular momentum according to A/M\
+        Numerical_Factor = np.zeros((len(self.Variables['jK'][0]))) + 2./math.sqrt(3)
 # Shapiro & Teukolsky, eq. 12.7.18
         Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
                                                  r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
                                                  2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
-        self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
+        self.Variables['jK'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
         self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
         ntmask = self.Variables['NT2'][0]!=0.
         self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
