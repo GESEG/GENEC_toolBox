@@ -57,7 +57,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib import rc
 from matplotlib import rcParams
-rc('font',**{'family':'serif','serif':['Times New Roman']})
+# Set serif fonts, fallback to DejaVu Serif if Times New Roman is not available
+rc('font', family='serif', serif=['Times New Roman', 'DejaVu Serif', 'Times', 'Computer Modern Roman'])
 rcParams['text.latex.preamble']=r"\usepackage{amsmath}"
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
@@ -2754,26 +2755,37 @@ class Struc(Outputs):
         if not (self.Variables['Omega'][0]==0.).all():
             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\Omega_r/\Omega_\mathrm{crit}$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\mathscr{j}_{r}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        Lin = np.cumsum(self.Variables['Lang'][0])
+        self.Variables['jKmax'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']# Max Kerr angular momentum\ Hirschi etal 05 (Hi05) did not use 2/sqrt(3)
+        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$\mathscr{j}_\mathrm{Schwarzschild}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] #  Hi05 used 6 rather than sqrt(12)
+        self.Variables['aom'] = [0.*np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$a/M$','rotation']
+        Lin = np.cumsum(self.Variables['Lang'][0][::-1])
         Mr = self.Variables['Mr'][0]
         Mr[Mr == 0.] = 1.e-10
-# a/M with a from Shapiro & Teukolsky, eq. 12.7.2
-        a_om = Lin*Cst.c/(Cst.G*(Mr*Cst.Msol)**2.)
+# a/M with a from Shapiro & Teukolsky, eq. 12.7.2 ; updated to equations from https://ui.adsabs.harvard.edu/abs/2019arXiv190404835B/abstract
+        a_om = Lin[::-1]*Cst.c/(Cst.G*(Mr*Cst.Msol)**2.)
         a_om = np.minimum(a_om,1.)
 # Shapiro & Teukolsky, eq. 12.7.24
         z1 = 1.+(1.-a_om**2.)**(1./3.)*((1.+a_om)**(1./3.)+(1.-a_om)**(1./3.))
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
+        r_msco = 3.+z2+np.sqrt((3.-z1)*(3.+z1+2.*z2))
+        self.Variables['jK_retrograde'] = [2./(3.**(1.5))*(1.+2*(3*r_msco-2.)**0.5)*Cst.G*Mr*Cst.Msol/Cst.c,\
+                       '$\mathscr{j}_\mathrm{Kerr,retrograde}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] # Exact Kerr angular momentum according to A/M from https://ui.adsabs.harvard.edu/abs/2019arXiv190404835B/abstract\
+        self.Variables['jK_Hi05_retro'] = [r_msco*Cst.G*Mr*Cst.Msol/Cst.c,\
+                       '$\mathscr{j}_\mathrm{Kerr,Hi05,retrograde}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] # Exact Kerr angular momentum according to A/M used in Hi05 but retrograde case
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
-        self.Variables['jKmax'] = [self.Variables['jK'][0],\
-                       '$\mathscr{j}_\mathrm{Kerr}^\mathrm{max}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation']
-        Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
+        self.Variables['jK_prograde'] = [2./(3.**(1.5))*(1.+2*(3*r_msco-2.)**0.5)*Cst.G*Mr*Cst.Msol/Cst.c,\
+                       '$\mathscr{j}_\mathrm{Kerr,prograde}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] # Exact Kerr angular momentum according to A/M from https://ui.adsabs.harvard.edu/abs/2019arXiv190404835B/abstract\
+        self.Variables['jK_Hi05_pro'] = [r_msco*Cst.G*Mr*Cst.Msol/Cst.c,\
+                       '$\mathscr{j}_\mathrm{Kerr,Hi05,prograde}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] # Exact Kerr angular momentum according to A/M  used in Hi05
+        self.Variables['jK'] = [self.Variables['jKmax'][0],\
+                       '$\mathscr{j}_\mathrm{Kerr}\ [\mathrm{cm}^2 \mathrm{s}^{-1}]$','rotation'] # Exact Kerr angular momentum according to A/M  (=jK_prograde)
+        Numerical_Factor = np.zeros((len(self.Variables['jK'][0]))) + 2./math.sqrt(3)
 # Shapiro & Teukolsky, eq. 12.7.18
         Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
                                                  r_msco[np.where(a_om < 1.)]**2.)/np.sqrt(r_msco[np.where(a_om < 1.)]**2.*(r_msco[np.where(a_om < 1.)]-3.)+ \
                                                  2*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)]**3.))
-        self.Variables['jKmax'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
+        self.Variables['jK'][0] = Numerical_Factor*Cst.G*Mr*Cst.Msol/Cst.c
+        self.Variables['aom'][0] = a_om
         self.Variables['Br'] = [np.zeros((self.n_shell)),'$B_r\ [G]$','magnetism']
         ntmask = self.Variables['NT2'][0]!=0.
         self.Variables['Br'][0][ntmask] = self.Variables['Bphi'][0][ntmask]*(2.*self.Variables['Omega'][0][ntmask]*self.Variables['Kther'][0][ntmask] \
