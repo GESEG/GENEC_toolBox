@@ -196,7 +196,7 @@ class readList():
                     ['Epot',66],['Egaz',67],['Erad',68],['snube7',36],['snub8',37]],\
                     'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$','$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$',\
                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\Gamma_\\mathrm{Edd}$','$M_\\mathrm{cc}/M_\\mathrm{tot}$',\
-                    r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
+                    '$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
                     '$^1$H [surf. mass frac.]','$^3$He [surf. mass frac.]','$^4$He [surf. mass frac.]',\
                     '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
                     '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
