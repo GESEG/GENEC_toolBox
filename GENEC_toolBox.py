@@ -5850,14 +5850,14 @@ def constant_entropy(*args):
     if 'legend' in args:
         put_legend(loc=2,fontsize=MyDriver.fontSize/1.5)
 
-def isoRadius(colour='0.80',line=':',fontsize=0):
+def isoRadius(rad=[0.01,0.1,1.,10.,100.,1000.,10000.],colour='0.80',line=':',fontsize=0):
     """Plots iso-radius lines in a HRD"""
     if fontsize==0:
         fontsize=MyDriver.fontSize
     teff_min,teff_max,lum_min,lum_max = get_limits()
     teff_range=np.arange(teff_min,teff_max,0.1)
     teff_range=np.hstack((teff_range,teff_max))
-    for i in [0.01,0.1,1.,10.,100.,1000.,10000.]:
+    for i in rad:
         L_range = 4.*math.pi*Cst.sigma* 10.**(4.*teff_range) *(i*Cst.Rsol)**2.
         L_range = np.log10(L_range/Cst.Lsol)
         plt.plot(teff_range,L_range,color=colour,ls=line)
