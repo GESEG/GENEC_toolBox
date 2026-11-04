@@ -59,7 +59,7 @@ from matplotlib import rc
 from matplotlib import rcParams
 # Set serif fonts, fallback to DejaVu Serif if Times New Roman is not available
 rc('font', family='serif', serif=['Times New Roman', 'DejaVu Serif', 'Times', 'Computer Modern Roman'])
-rcParams['text.latex.preamble']=r"\usepackage{amsmath}"
+rcParams['text.latex.preamble']="\\usepackage{amsmath}"
 from matplotlib.collections import LineCollection
 import matplotlib.cm as cm
 import time
@@ -219,7 +219,7 @@ class readList():
                     '$(\\log(\\dot{M})_\\mathrm{mech}\\ [M_\\odot\\,\\mathrm{yr}^{-1}])$',\
                     '$\\Delta\\,\\mathscr{L}_\\mathrm{rad+aniso+mech}\\ [10^{53}\\,\\mathrm{g\\,cm}^2\\,\\mathrm{s}^{-1}]$',\
                     '$E_\\mathrm{rot}\\ [E_{51}]$','$E_\\mathrm{pot}\\ [E_{51}]$','$E_\\mathrm{th,gaz}\\ [E_{51}]$',\
-                    '$E_\\mathrm{rad}\\ [E_{51}]$',r'$F_\nu(^7\\mathrm{Be})\\ [\\mathrm{SNU}]$',r'$F_\nu(^8\\mathrm{B})\\ [\\mathrm{SNU}]$'],\
+                    '$E_\\mathrm{rad}\\ [E_{51}]$','$F_\\nu(^7\\mathrm{Be})\\ [\\mathrm{SNU}]$','$F_\\nu(^8\\mathrm{B})\\ [\\mathrm{SNU}]$'],\
                     'catList':['model','model','model','surface','surface','surface','surface','centre','centre','centre',
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
                     'abundances','abundances','abundances','abundances','abundances','abundances','abundances','abundances',\
@@ -233,7 +233,7 @@ class readList():
                     ['Vsurf',38],['Vcrit1',36],['Vcrit2',37],['OOc',39],['Omega_surf',32],['Omega_cen',33],['oblat',34],['rot_corr',35],['Ltot',42],\
                     ['Mdot',18],['Mdot_mech',41]],'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$','$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$',\
                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\Gamma_\\mathrm{Edd}$','$M_\\mathrm{cc}/M_\\mathrm{tot}$',\
-                    r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
+                    '$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
                     '$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]',\
                     '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
                     '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
@@ -261,7 +261,7 @@ class readList():
                     'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$','$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$',\
                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\Gamma_\\mathrm{Edd}$','$R_\\mathrm{pol}\\ [R_\\odot]$',\
                     '$\\log(g_\\mathrm{pol}\\ [\\mathrm{cm\\,s}^{-2}])$','$M_\\mathrm{cc}/M_\\mathrm{tot}$',\
-                    r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
+                    '$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
                     '$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]',\
                     '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
                     '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
@@ -292,7 +292,7 @@ class readList():
                     'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$','$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$',\
                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\Gamma_\\mathrm{Edd}$','$R_\\mathrm{pol}\\ [R_\\odot]$',\
                     '$\\log(g_\\mathrm{pol}\\ [\\mathrm{cm\\,s}^{-2}])$','$M_\\mathrm{cc}/M_\\mathrm{tot}$',\
-                    r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
+                    '$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
                     '$^1$H [surf. mass frac.]','$^4$He [surf. mass frac.]',\
                     '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
                     '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
@@ -317,8 +317,8 @@ class readList():
     Evol_formats['nami'] = {'varList':[['line',0],['t',2],['M',3],['rhom',37],['L',4],['Teff',5],['R',36],['rhoc',6],['Tc',7],['Mccrel',8],['H1c',9],['He3c',10],\
                     ['He4c',11],['C12c',12],['C13c',13],['N14c',14],['O16c',15],['O17c',16],['O18c',17],['Ne20c',18],['Ne22c',19],\
                     ['H1s',20],['He3s',21],['He4s',22],['C12s',23],['C13s',24],['N14s',25],['O16s',26],['O17s',27],['O18s',28],['Ne20s',29],\
-                    ['Ne22s',30],['Zsurf',35]],'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$',r'$\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$',\
-                    '$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$R\\ [R_\\odot]$',r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$',\
+                    ['Ne22s',30],['Zsurf',35]],'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$','$\\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$',\
+                    '$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$R\\ [R_\\odot]$','$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$',\
                     '$\\log(T_\\mathrm{c}\\ [K])$','$M_\\mathrm{cc}/M_\\mathrm{tot}$',\
                     '$^1$H [centr. mass frac.]','$^3$He [centr. mass frac.]','$^4$He [centr. mass frac.]',\
                     '$^{12}$C [centr. mass frac.]','$^{13}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]',\
@@ -341,7 +341,7 @@ class readList():
                     ['Erot',72],['Epot',73],['Egaz',74],['Erad',75],['Period',5],['Sep',6],['q',7],['RRoche1',8],['R1',9],['R1_r2t4',10],['Mdot_bin',11]],\
                     'unitsList':['model num','t [yr]','$M\\ [M_\\odot]$','$\\log(L/L_\\odot)$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$',\
                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\Gamma_\\mathrm{Edd}$','$M_\\mathrm{cc}/M_\\mathrm{tot}$',\
-                    r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
+                    '$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$',\
                     '$^1$H [surf. mass frac.]','$^3$He [surf. mass frac.]','$^4$He [surf. mass frac.]',\
                     '$^{12}$C [surf. mass frac.]','$^{13}$C [surf. mass frac.]','$^{14}$N [surf. mass frac.]',\
                     '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
@@ -386,7 +386,7 @@ class readList():
                     '$^{16}$O [surf. mass frac.]','$^{17}$O [surf. mass frac.]','$^{18}$O [surf. mass frac.]',\
                     '$^{20}$Ne [surf. mass frac.]','$^{22}$Ne [surf. mass frac.]',\
                     '$M_\\mathrm{cc}/M_\\mathrm{tot}$','$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\log(\\dot{M}\\ [M_\\odot\\,\\mathrm{yr}^{-1}])$',\
-                    r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$','$^1$H [centr. mass frac.]',\
+                    '$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$','$\\log(T_\\mathrm{c}\\ [K])$','$^1$H [centr. mass frac.]',\
                     '$^4$He [centr. mass frac.]','$^3$He [centr. mass frac.]''$^7$Be [centr. mass frac.]','$^8$B [centr. mass frac.]',\
                     '$^{12}$C [centr. mass frac.]','$^{13}$C [centr. mass frac.]','$^{14}$N [centr. mass frac.]','$^{16}$O [centr. mass frac.]',\
                     '$^{17}$O [centr. mass frac.]','$^{18}$O [centr. mass frac.]','$^{20}$Ne [centr. mass frac.]',\
@@ -404,11 +404,11 @@ class readList():
     Evol_formats['preMSnw'] = {'header':0,'column_number':120}
     Evol_formats['starevol_as'] = {'varList':[['line',0],['Dnu',1],['Dnu_ech',2],['Dnu_error',3],['Ttot',4],['Tbce',5],['THe',6],\
                      ['numax',7],['Dpg',8]],\
-                     'unitsList':['model num','$\\Delta\nu_\\mathrm{asym.}\\ [\\mu\\mathrm{Hz}]$',\
-                     '$\\Delta\nu_\\mathrm{scal.}\\ [\\mu\\mathrm{Hz}]$',\
-                     '$\frac{\\Delta\nu_\\mathrm{asym.}-\\Delta\nu_\\mathrm{scal.}}{\\Delta\nu_\\mathrm{asym.}}$',\
+                     'unitsList':['model num','$\\Delta\\nu_\\mathrm{asym.}\\ [\\mu\\mathrm{Hz}]$',\
+                     '$\\Delta\\nu_\\mathrm{scal.}\\ [\\mu\\mathrm{Hz}]$',\
+                     '$\\frac{\\Delta\\nu_\\mathrm{asym.}-\\Delta\\nu_\\mathrm{scal.}}{\\Delta\\nu_\\mathrm{asym.}}$',\
                      'Total accoustic radius [s]','Accoustic radius$_\\mathrm{BCE}$ [s]',\
-                     'Accoustic radius$_\\mathrm{He\\ ion}$ [s]','$\nu_\\mathrm{max}\\ [\\mu\\mathrm{Hz}]$',\
+                     'Accoustic radius$_\\mathrm{He\\ ion}$ [s]','$\\nu_\\mathrm{max}\\ [\\mu\\mathrm{Hz}]$',\
                      '$\\Delta\\Pi_\\mathrm{g\\ modes}\\ [\\mathrm{s}]$'],
                      'catList':['model','astero','astero','astero','astero','astero','astero','astero','astero'],\
                      'header':7,'column_number':9}
@@ -416,7 +416,7 @@ class readList():
                      ['gsurf',7],['Mdot',8],['M',9],['deltat',10],['t',11],['iter',12],['crash',13],['shells',14],\
                      ['cputime',15]],
                      'unitsList':['model num','phase number','$\\log(L/L_\\odot)$','$R_\\mathrm{eff} \\ [R_\\odot]$','$R \\ [R_\\odot]$',\
-                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$',r'$\\log(\rho_\\mathrm{eff}\\ [\\mathrm{g\\,cm}^{-3}])$',\
+                     '$\\log(T_\\mathrm{eff}\\ [\\mathrm{K}])$','$\\log(\\rho_\\mathrm{eff}\\ [\\mathrm{g\\,cm}^{-3}])$',\
                      '$\\log(g_\\mathrm{surf}\\ [\\mathrm{cm\\,s}^{-2}])$','$\\log(\\dot{M}\\ [M_\\odot\\,\\mathrm{yr}^{-1}])$',\
                      '$M\\ [M_\\odot]$','$\\Delta t \\ [\\mathrm{yr}]$','t [yr]','number of iterations','number of crashes',\
                      'number of shells','t [s]'],\
@@ -509,20 +509,20 @@ class readList():
                      '$t_\\mathrm{TO}\\ [\\mathrm{yr}]$','$R_\\mathrm{conv}\\ [R_\\odot]$','$t_\\mathrm{TO}\\ [\\mathrm{yr}]$',\
                      '$R_\\mathrm{conv}\\ [R_\\odot]$','$t_\\mathrm{TO}\\ [\\mathrm{yr}]$','$R_\\mathrm{conv}\\ [R_\\odot]$',\
                      '$t_\\mathrm{TO}\\ [\\mathrm{yr}]$','$R_\\mathrm{conv}\\ [R_\\odot]$','$t_\\mathrm{TO}\\ [\\mathrm{yr}]$',\
-                     '$\bar{\\Omega}_\\mathrm{cen.\\ reg.}\\ [\\mathrm{s}^{-1}]$'],
+                     '$\\bar{\\Omega}_\\mathrm{cen.\\ reg.}\\ [\\mathrm{s}^{-1}]$'],
                      'catList':['model','model','model','model','model','model','model','model','model','model','model',\
                      'model','rotation'],
                      'header':7,'column_number':13}
     Evol_formats['starevol_v1'] = {'varList':[['line',0],['Tc',1],['Tmax',2],['MrTmax',3],['rhoc',4],['rhoTmax',5],\
                      ['Pc',6],['betac',7],['etac',8],['degpec',9],['eps_nu',10],['eps_nuc',11],['eps_grav',12]],\
                      'unitsList':['model num','$\\log(T_\\mathrm{c}\\ [K])$','$\\log(T_\\mathrm{max}\\ [K])$',\
-                     '$M_r(T_\\mathrm{max})\\ [M_\\odot]$',r'$\\log(\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$',\
-                     r'$\\log(\rho(T_\\mathrm{max})\\ [\\mathrm{g\\,cm}^{-3}])$',\
+                     '$M_r(T_\\mathrm{max})\\ [M_\\odot]$','$\\log(\\rho_\\mathrm{c}\\ [\\mathrm{g\\,cm}^{-3}])$',\
+                     '$\\log(\\rho(T_\\mathrm{max})\\ [\\mathrm{g\\,cm}^{-3}])$',\
                      '$\\log(P_\\mathrm{c}\\ [\\mathrm{erg}\\,\\mathrm{cm}^{-3}])$',\
-                     r'$\beta_\\mathrm{c}$','$\\eta_\\mathrm{c}$','central degree of degeneracy',\
-                     r'$\\epsilon_{\nu,\\mathrm{c}}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                     r'$\\epsilon_\\mathrm{grav,c}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                     r'$\\epsilon_\\mathrm{nucl,c}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$'], \
+                     '$\\beta_\\mathrm{c}$','$\\eta_\\mathrm{c}$','central degree of degeneracy',\
+                     '$\\epsilon_{\\nu,\\mathrm{c}}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                     '$\\epsilon_\\mathrm{grav,c}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                     '$\\epsilon_\\mathrm{nucl,c}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$'], \
                      'catList':['model','centre','model','model','centre','model','centre','centre','centre','centre',\
                      'centre','centre','centre'],
                      'header':7,'column_number':13}
@@ -530,7 +530,7 @@ class readList():
                      ['LSi',6],['Lnu',7],['Lnucl',8],['Lgrav',9],['Iradmax',10]],\
                      'unitsList':['model num','$\\log(L_\\mathrm{H}\\ [L_\\odot])$','$\\log(L_\\mathrm{He}\\ [L_\\odot])$',\
                      '$\\log(L_\\mathrm{C}\\ [L_\\odot])$','$\\log(L_\\mathrm{Ne}\\ [L_\\odot])$','$\\log(L_\\mathrm{O}\\ [L_\\odot])$',\
-                     '$\\log(L_\\mathrm{Si}\\ [L_\\odot])$','$\\log(L_\nu\\ [L_\\odot])$',\
+                     '$\\log(L_\\mathrm{Si}\\ [L_\\odot])$','$\\log(L_\\nu\\ [L_\\odot])$',\
                      '$\\log(L_\\mathrm{nucl.}\\ [L_\\odot])$','$\\log(L_\\mathrm{grav.}\\ [L_\\odot])$','Max neutron irradiation'], \
                      'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
                      'energetics','energetics','energetics','energetics'],
@@ -539,11 +539,11 @@ class readList():
                      ['conv1_Mt',5],['conv1_Rt',6],['conv1_Tt',7],['conv1_rot',8],['env_Mb',9],['env_Rb',10],\
                      ['env_Tb',11],['env_rob',12]],\
                      'unitsList':['model num','$M_\\mathrm{CZ1,bottom}\\ [M_\\odot]$','$R_\\mathrm{CZ1,bottom}/R_\\star$',\
-                     '$\\log(T_\\mathrm{CZ1,bottom}\\ [\\mathrm{K}]])$',r'$\\log(\rho_\\mathrm{CZ1,bottom}\\ [\\mathrm{g\\,cm}^{-3}])$',\
+                     '$\\log(T_\\mathrm{CZ1,bottom}\\ [\\mathrm{K}]])$','$\\log(\\rho_\\mathrm{CZ1,bottom}\\ [\\mathrm{g\\,cm}^{-3}])$',\
                      '$M_\\mathrm{CZ1,top}\\ [M_\\odot]$','$R_\\mathrm{CZ1,top}/R_\\star$',\
-                     '$\\log(T_\\mathrm{CZ1,top}\\ [\\mathrm{K}]])$',r'$\\log(\rho_\\mathrm{CZ1,top}\\ [\\mathrm{g\\,cm}^{-3}])$',\
+                     '$\\log(T_\\mathrm{CZ1,top}\\ [\\mathrm{K}]])$','$\\log(\\rho_\\mathrm{CZ1,top}\\ [\\mathrm{g\\,cm}^{-3}])$',\
                      '$M_\\mathrm{env,bottom}\\ [M_\\odot]$','$R_\\mathrm{env,bottom}/R_\\star$',\
-                     '$\\log(T_\\mathrm{env,bottom}\\ [\\mathrm{K}]])$',r'$\\log(\rho_\\mathrm{env,bottom}\\ [\\mathrm{g\\,cm}^{-3}])$'],\
+                     '$\\log(T_\\mathrm{env,bottom}\\ [\\mathrm{K}]])$','$\\log(\\rho_\\mathrm{env,bottom}\\ [\\mathrm{g\\,cm}^{-3}])$'],\
                      'catList':['model','convection','convection','convection','convection','convection','convection',\
                      'convection','convection','convection','convection','convection','convection'],\
                      'header':7,'column_number':13}
@@ -563,9 +563,9 @@ class readList():
                      ['Hburn_Mt',5],['Hburn_Rt',6],['Hburn_Tt',7],['Hburn_rot',8],['Hburn_Mm',9],['Hburn_em',10],\
                      ['Lpp',11]],\
                      'unitsList':['model num','$M_\\mathrm{H-b,bottom}\\ [M_\\odot]$','$R_\\mathrm{H-b,bottom}/R_\\star$',\
-                     '$T_\\mathrm{H-b,bottom}\\ [\\mathrm{K}]$','$\rho_\\mathrm{H-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{H-b,bottom}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{H-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{H-b,top}\\ [M_\\odot]$','$R_\\mathrm{H-b,top}/R_\\star$',\
-                     '$T_\\mathrm{H-b,top}\\ [\\mathrm{K}]$','$\rho_\\mathrm{H-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{H-b,top}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{H-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{H-b,max}\\ [M_\\odot]$','$\\epsilon_\\mathrm{H,max}\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
                      '$\\epsilon_\\mathrm{pp}/\\epsilon_\\mathrm{H}$'],\
                      'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
@@ -575,11 +575,11 @@ class readList():
                      ['Heburn_Mt',5],['Heburn_Rt',6],['Heburn_Tt',7],['Heburn_rot',8],['Heburn_Mm',9],['Heburn_em',10],\
                      ['Heburn_enum',11],['Heburn_etam',12]],\
                      'unitsList':['model num','$M_\\mathrm{He-b,bottom}\\ [M_\\odot]$','$R_\\mathrm{He-b,bottom}/R_\\star$',\
-                     '$T_\\mathrm{He-b,bottom}\\ [\\mathrm{K}]$','$\rho_\\mathrm{He-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{He-b,bottom}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{He-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{He-b,top}\\ [M_\\odot]$','$R_\\mathrm{He-b,top}/R_\\star$',\
-                     '$T_\\mathrm{He-b,top}\\ [\\mathrm{K}]$','$\rho_\\mathrm{He-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{He-b,top}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{He-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{He-b,max}\\ [M_\\odot]$','$\\epsilon_\\mathrm{He,max}\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
-                     '$\\epsilon_\nu(\\mathrm{He-b}\\,\\mathrm{max})\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\nu(\\mathrm{He-b}\\,\\mathrm{max})\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
                      '$\\phi(\\mathrm{He-b}\\,\\mathrm{max})$'],\
                      'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
                      'energetics','energetics','energetics','energetics','energetics','energetics'],\
@@ -588,11 +588,11 @@ class readList():
                      ['Cburn_Mt',5],['Cburn_Rt',6],['Cburn_Tt',7],['Cburn_rot',8],['Cburn_Mm',9],['Cburn_em',10],\
                      ['Cburn_enum',11],['Cburn_etam',12]],\
                      'unitsList':['model num','$M_\\mathrm{C-b,bottom}\\ [M_\\odot]$','$R_\\mathrm{C-b,bottom}/R_\\star$',\
-                     '$T_\\mathrm{C-b,bottom}\\ [\\mathrm{K}]$','$\rho_\\mathrm{C-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{C-b,bottom}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{C-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{C-b,top}\\ [M_\\odot]$','$R_\\mathrm{C-b,top}/R_\\star$',\
-                     '$T_\\mathrm{C-b,top}\\ [\\mathrm{K}]$','$\rho_\\mathrm{C-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{C-b,top}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{C-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{C-b,max}\\ [M_\\odot]$','$\\epsilon_\\mathrm{C,max}\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
-                     '$\\epsilon_\nu(\\mathrm{C-b}\\,\\mathrm{max})\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\nu(\\mathrm{C-b}\\,\\mathrm{max})\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
                      '$\\phi(\\mathrm{C-b}\\,\\mathrm{max})$'],\
                      'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
                      'energetics','energetics','energetics','energetics','energetics','energetics'],\
@@ -601,11 +601,11 @@ class readList():
                      ['Neburn_Mt',5],['Neburn_Rt',6],['Neburn_Tt',7],['Neburn_rot',8],['Neburn_Mm',9],['Neburn_em',10],\
                      ['Neburn_enum',11],['Neburn_etam',12]],\
                      'unitsList':['model num','$M_\\mathrm{Ne-b,bottom}\\ [M_\\odot]$','$R_\\mathrm{Ne-b,bottom}/R_\\star$',\
-                     '$T_\\mathrm{Ne-b,bottom}\\ [\\mathrm{K}]$','$\rho_\\mathrm{Ne-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{Ne-b,bottom}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{Ne-b,bottom}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{Ne-b,top}\\ [M_\\odot]$','$R_\\mathrm{Ne-b,top}/R_\\star$',\
-                     '$T_\\mathrm{Ne-b,top}\\ [\\mathrm{K}]$','$\rho_\\mathrm{Ne-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
+                     '$T_\\mathrm{Ne-b,top}\\ [\\mathrm{K}]$','$\\rho_\\mathrm{Ne-b,top}\\ [\\mathrm{g}\\ \\mathrm{cm}^{-3}]$',\
                      '$M_\\mathrm{Ne-b,max}\\ [M_\\odot]$','$\\epsilon_\\mathrm{Ne,max}\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
-                     '$\\epsilon_\nu(\\mathrm{Ne-b}\\,\\mathrm{max})\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
+                     '$\\epsilon_\\nu(\\mathrm{Ne-b}\\,\\mathrm{max})\\ [\\mathrm{erg}\\ \\mathrm{g}^{-1}\\ \\mathrm{s}^{-1}]$',\
                      '$\\phi(\\mathrm{Ne-b}\\,\\mathrm{max})$'],\
                      'catList':['model','energetics','energetics','energetics','energetics','energetics','energetics',\
                      'energetics','energetics','energetics','energetics','energetics','energetics'],\
@@ -615,7 +615,7 @@ class readList():
                      'unitsList':['model num','$\\log(\\dot{M}_\\mathrm{accr.}\\ [M_\\odot\\,\\mathrm{yr}^{-1}])$',\
                      '$R_\\mathrm{accr.}/R_\\star$','$M_\\mathrm{accr.}/M_\\star$','$\\log(L_\\mathrm{accr.}\\ [L_\\odot])$',\
                      '$k_\\mathrm{2,conv}$','$k_\\mathrm{2,rad}$','Rossby number','$\\Omega_\\mathrm{surf}\\ [\\mathrm{s}^{-1}]$',\
-                     '$V_\\mathrm{surf}\\ [\\mathrm{km\\,s}^{-1}]$',r'$\\mathcal{L}_\\mathrm{tot}\\ [10^{53}\\,\\mathrm{g\\,cm}^2\\,\\mathrm{s}^{-1}]$',\
+                     '$V_\\mathrm{surf}\\ [\\mathrm{km\\,s}^{-1}]$','$\\mathcal{L}_\\mathrm{tot}\\ [10^{53}\\,\\mathrm{g\\,cm}^2\\,\\mathrm{s}^{-1}]$',\
                      '$\\mathcal{F}_\\mathrm{E}(\\ell,\\omega)\\ [\\mathrm{erg\\ s}^{-1}]$',\
                      '$\\mathcal{T}_\\mathrm{s}\\ [\\mathrm{g\\ cm}^2\\mathrm{s}^{-1}]$'],
                      'catList':['model','surface','surface','surface','surface','surface','surface','rotation', \
@@ -633,7 +633,7 @@ class readList():
                      'header':7,'column_number':11}
     Evol_formats['starevol_v13'] = {'varList':[['line',0],['omegacore',1],['Jtrue',2],['Jobs',3],['Jrad',4],\
                      ['Bequi',5],['omegamax',6],['Nmax',7]],\
-                     'unitsList':['model num','$\bar{\\Omega}_\\mathrm{core}\\ [\\mathrm{s}^{-1}]$',\
+                     'unitsList':['model num','$\\bar{\\Omega}_\\mathrm{core}\\ [\\mathrm{s}^{-1}]$',\
                      '$j_\\mathrm{true}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',\
                      '$j_\\mathrm{env}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$j_\\mathrm{rad}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',\
                      '$B_\\mathrm{equi}\\ [\\mathrm{G}]$','$\\Omega_\\mathrm{max}\\ [\\mathrm{s}^{-1}]$',\
@@ -655,17 +655,17 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['Alfven',66],['qmin',67],['gamma',93],['s',94]],'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$', \
                 '$r_\\mathrm{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
-                '$H_P\\ [\\mathrm{cm}]$',r'$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$',r'$\\nabla_\\mathrm{ad}$',\
-                r'$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
-                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',r'$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
-                r'$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$',r'$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
-                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$',r'$\\nabla_\\mu$','$\psi$', \
+                '$H_P\\ [\\mathrm{cm}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$',\
+                '$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
+                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
+                '$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$','$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
+                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$','$\\nabla_\\mu$','$\\psi$', \
                 '$L_r/L_\\mathrm{tot}$','$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
                 '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
@@ -704,17 +704,17 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['Alfven',66],['qmin',67],['gamma',102],['s',103]],'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$', \
                 '$r_\\mathrm{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
-                '$H_P\\ [\\mathrm{cm}]$',r'$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$',r'$\\nabla_\\mathrm{ad}$',\
-                r'$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
-                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',r'$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
-                r'$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$',r'$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
-                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$',r'$\\nabla_\\mu$','$\\psi$', \
+                '$H_P\\ [\\mathrm{cm}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$',\
+                '$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
+                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
+                '$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$','$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
+                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$','$\\nabla_\\mu$','$\\psi$', \
                 '$L_r/L_\\mathrm{tot}$','$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
                 '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
@@ -757,17 +757,17 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['Alfven',66],['qmin',67],['gamma',111],['s',112]],'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$', \
                 '$r_\\mathrm{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
-                '$H_P\\ [\\mathrm{cm}]$',r'$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$',r'$\\nabla_\\mathrm{ad}$',\
-                r'$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
-                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',r'$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
-                r'$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$',r'$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
-                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$',r'$\\nabla_\\mu$','$\\psi$', \
+                '$H_P\\ [\\mathrm{cm}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$',\
+                '$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
+                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
+                '$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$','$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
+                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$','$\\nabla_\\mu$','$\\psi$', \
                 '$L_r/L_\\mathrm{tot}$','$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
                 '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
@@ -813,17 +813,17 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$', \
                 '$r_\\mathrm{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
-                '$H_P\\ [\\mathrm{cm}]$',r'$\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$',r'$\nabla_\\mathrm{ad}$',\
-                r'$\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
-                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',r'$\rho\\ [\\mathrm{g\\,cm}^3]$', \
-                r'$\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln P$',r'$\\delta=-\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
-                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$',r'$\nabla_\\mu$','$\\psi$', \
+                '$H_P\\ [\\mathrm{cm}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$',\
+                '$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
+                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
+                '$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$','$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
+                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$','$\\nabla_\\mu$','$\\psi$', \
                 '$L_r/L_\\mathrm{tot}$','$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$\\epsilon_{3\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{12}C(\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{16}O(\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$-\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
                 '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
@@ -861,18 +861,18 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$', \
                 '$r_\\mathrm{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','RG corr.','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
-                '$H_P\\ [\\mathrm{cm}]$',r'$\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$',r'$\nabla_\\mathrm{ad}$',\
-                r'$\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
-                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',r'$\rho\\ [\\mathrm{g\\,cm}^3]$', \
-                r'$\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln P$',r'$\\delta=-\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
-                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$',r'$\nabla_\\mu$','$\\psi$', \
+                '$H_P\\ [\\mathrm{cm}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$',\
+                '$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
+                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
+                '$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$','$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
+                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$','$\\nabla_\\mu$','$\\psi$', \
                 '$L_r/L_\\mathrm{tot}$','$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{Dpg}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_\\mathrm{DDn}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{12}C(\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                r'$\\epsilon_{^{16}O(\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$-\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^2$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^6$Li [mass frac.]','$^7$Li [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
                 '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
@@ -910,18 +910,18 @@ class readList():
                 ['Dconv',46],['Dshear',47],['Dh',57],['Deff',48],['Dcirc',54],['DmagO',61],['DmagX',62],['etask',63],['N2mag',64], \
                 ['Bphi',65],['alfven',66],['qmin',67]],\
                 'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$', \
-                '$r_\\mathr{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
-                '$H_P\\ [\\mathrm{cm}]$',r'$\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$',r'$\nabla_\\mathrm{ad}$',\
-                r'$\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
-                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',r'$\rho\\ [\\mathrm{g\\,cm}^3]$', \
-                r'$\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln P$',r'$\\delta=-\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
-                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$',r'$\nabla_\\mu$','$\\psi$', \
+                '$r_\\mathrm{prev}\\ [R_\\odot]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$',\
+                '$H_P\\ [\\mathrm{cm}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$',\
+                '$\\nabla_\\mathrm{rad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$', \
+                '$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$', \
+                '$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$','$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_e$',\
+                '$\\mu_\\mathrm{prev}$','$\\mu_\\mathrm{fit}$','$\\nabla_\\mu$','$\\psi$', \
                 '$L_r/L_\\mathrm{tot}$','$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_{^{12}C(\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_{^{16}O(\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$-\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^3$He [mass frac.]', \
                 '$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{13}$C [mass frac.]','$^{14}$C [mass frac.]','$^{14}$N [mass frac.]', \
                 '$^{15}$N [mass frac.]','$^{16}$O [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]','$^{18}$F [mass frac.]', \
@@ -959,21 +959,21 @@ class readList():
                 'unitsList':['shell number','$M_r/M_\\mathrm{tot}$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$','$T\\ [K]$','$r\\ [R_\\odot]$',\
                 '$L_r/L_\\mathrm{tot}$','$^1$H [mass frac.]','$^4$He [mass frac.]','$^{12}$C [mass frac.]','$^{16}$O [mass frac.]',\
                 '$\\epsilon_\\mathrm{H}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_\\mathrm{He}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',\
-                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$\nabla_\\mathrm{rad}$',r'$\rho\\ [\\mathrm{g\\,cm}^3]$',\
-                r'$-\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$',\
-                '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$',r'$\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln P$',\
-                r'$\\delta=-\\mathrm{d}\\ln\rho/\\mathrm{d}\\ln T$','$\\psi$','$\\epsilon_{3\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_{^{12}C(\alpha,\\gamma)^{16}O\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
-                '$\\epsilon_{^{16}O(\alpha,\\gamma)^{20}Ne\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',\
-                r'$\nabla_\\mathrm{ad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$',r'$\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$^3$He [mass frac.]',\
+                '$\\epsilon_\\mathrm{C}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\nabla_\\mathrm{rad}$','$\\rho\\ [\\mathrm{g\\,cm}^3]$',\
+                '$-\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$',\
+                '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln P$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln P$',\
+                '$\\delta=-\\mathrm{d}\\ln\\rho/\\mathrm{d}\\ln T$','$\\psi$','$\\epsilon_{3\\alpha}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{12}C(\\alpha,\\gamma)^{16}O}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$', \
+                '$\\epsilon_{^{16}O(\\alpha,\\gamma)^{20}Ne}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\epsilon_\\mathrm{grav}\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',\
+                '$\\nabla_\\mathrm{ad}$','$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\beta=P_\\mathrm{gas}/P_\\mathrm{tot}$','$^3$He [mass frac.]',\
                 '$^{13}$C [mass frac.]','$^{14}$N [mass frac.]','$^{15}$N [mass frac.]','$^{17}$O [mass frac.]','$^{18}$O [mass frac.]',\
                 '$^{20}$Ne [mass frac.]','$^{22}$Ne [mass frac.]','$^{24}$Mg [mass frac.]','$^{25}$Mg [mass frac.]','$^{26}$Mg [mass frac.]',\
-                '$\\mu$','$\\Omega\\ [\\mathrm{s}^{-1}]$',r'$\nabla_\\mu$','gamxxx','$\\mathrm{Ri}=N^2/(\\mathrm{d}V/\\mathrm{d}z)^2$','xnabyy',\
+                '$\\mu$','$\\Omega\\ [\\mathrm{s}^{-1}]$','$\\nabla_\\mu$','gamxxx','$\\mathrm{Ri}=N^2/(\\mathrm{d}V/\\mathrm{d}z)^2$','xnabyy',\
                 '$D_\\mathrm{conv}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$D_\\mathrm{semi}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$',\
                 '$D_\\mathrm{shear}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$D_\\mathrm{eff}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$M_r\\ [M_\\odot]$',\
                 '$\\mathrm{d}\\ln\\Omega/\\mathrm{d}\\ln r$','xnprim','$K_\\mathrm{ther}\\ [\\mathrm{cm}^2\\,\\mathrm{s}^{-1}]$','$U_r\\ [\\mathrm{cm\\,s}^{-1}]$',\
                 'asheay','bsheay','csheay','$H_P\\ [\\mathrm{cm}]$','$g_r\\ [\\mathrm{cm\\,s}^{-2}]$','wpenvy','ameriy','dsesy',\
-                '$\\Omega_{\\mathscr{L}\\mathrm{,cons.}}\\ [\\mathrm{s}^{-1}]$','$r_\\mathr{prev}\\ [R_\\odot]$','$\\Omega_\\mathrm{prev}\\ [\\mathrm{s}^{-1}]$',\
+                '$\\Omega_{\\mathscr{L}\\mathrm{,cons.}}\\ [\\mathrm{s}^{-1}]$','$r_\\mathrm{prev}\\ [R_\\odot]$','$\\Omega_\\mathrm{prev}\\ [\\mathrm{s}^{-1}]$',\
                 '$\\mu_\\mathrm{prev}$','$^{28}$Si [mass frac.]','$^{32}$S [mass frac.]','$^{36}$Ar [mass frac.]','$^{40}$Ca [mass frac.]',\
                 '$^{44}$Ti [mass frac.]','$^{48}$Cr [mass frac.]','$^{52}$Fe [mass frac.]','$^{56}$Ni [mass frac.]','$\\mu_e$'],\
                 'catList':['structure','structure','thermo','thermo','structure','thermo','abundances','abundances','abundances',\
@@ -988,11 +988,11 @@ class readList():
                 ['epsilon',16],['dEdrho',17],['dEdT',18],['H1',19],['He4',20],['HII',27],['HeII',28],['HeIII',29],['Omega',23], \
                 ['V_MLT',25],['TOtime',26]],\
                 'unitsList':['shell number','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$', \
-                '$P_\\mathrm{turb}\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$','$T\\ [K]$',r'$\nabla_\\mathrm{ad}$',r'$\nabla_\\mathrm{e}$', \
-                '$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$',r'$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln\rho$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$', \
-                r'$\\mathrm{C}_V\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$',r'$\rho\\ [\\mathrm{g\\,cm}^3]$',r'$\\mathrm{d}\\ln P/\\mathrm{d}\\ln\rho$', \
-                r'$\\mathrm{d}\\ln P/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_0$','$\\log(L/L_\\odot)$','$\\log(L_\\mathrm{rad}/L_\\odot)$', \
-                r'$\\epsilon_\\mathrm{nucl}+\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$\\mathrm{d}\\ln E/\\mathrm{d}\\ln\rho$', \
+                '$P_\\mathrm{turb}\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$','$\\nabla_\\mathrm{e}$', \
+                '$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln\\rho$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$', \
+                '$\\mathrm{C}_V\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$','$\\mathrm{d}\\ln P/\\mathrm{d}\\ln\\rho$', \
+                '$\\mathrm{d}\\ln P/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_0$','$\\log(L/L_\\odot)$','$\\log(L_\\mathrm{rad}/L_\\odot)$', \
+                '$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln\\rho$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^4$He [mass frac.]','HII/H','HeII/He','HeIII/He', \
                 '$\\Omega\\ [\\mathrm{s}^{-1}]$','$V_\\mathrm{MLT}\\ [\\mathrm{cm\\,s}^{-1}]$','$t_\\mathrm{turn\\,over}\\ [\\mathrm{s}]$'],\
                 'catList':['structure','structure','structure','thermo','thermo','thermo','thermo','thermo','thermo','thermo','thermo', \
@@ -1003,11 +1003,11 @@ class readList():
                 ['dkdrho',14],['dkdT',15],['Cv',6],['rho',4],['dPdrho',7],['dPdT',8],['mu',21],['mu0',22],['L',12],['Lrad',11], \
                 ['epsilon',16],['dEdrho',17],['dEdT',18],['H1',19],['He4',20],['Omega',23]],\
                 'unitsList':['shell number','$M_r\\ [M_\\odot]$','$r\\ [R_\\odot]$','$P\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$', \
-                '$P_\\mathrm{turb}\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$','$T\\ [K]$',r'$\nabla_\\mathrm{ad}$',r'$\nabla_\\mathrm{e}$', \
-                '$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$',r'$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln\rho$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$', \
-                r'$\\mathrm{C}_V\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$',r'$\rho\\ [\\mathrm{g\\,cm}^3]$',r'$\\mathrm{d}\\ln P/\\mathrm{d}\\ln\rho$', \
-                r'$\\mathrm{d}\\ln P/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_0$','$\\log(L/L_\\odot)$','$\\log(L_\\mathrm{rad}/L_\\odot)$', \
-                r'$\\epsilon_\\mathrm{nucl}+\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$',r'$\\mathrm{d}\\ln E/\\mathrm{d}\\ln\rho$', \
+                '$P_\\mathrm{turb}\\ [\\mathrm{g\\,cm}^{-1}\\,\\mathrm{s}^{-2}]$','$T\\ [K]$','$\\nabla_\\mathrm{ad}$','$\\nabla_\\mathrm{e}$', \
+                '$\\kappa\\ [\\mathrm{cm}^2\\,\\mathrm{g}^{-1}]$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln\\rho$','$\\mathrm{d}\\ln\\kappa/\\mathrm{d}\\ln T$', \
+                '$\\mathrm{C}_V\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','$\\rho\\ [\\mathrm{g\\,cm}^3]$','$\\mathrm{d}\\ln P/\\mathrm{d}\\ln\\rho$', \
+                '$\\mathrm{d}\\ln P/\\mathrm{d}\\ln T$','$\\mu$','$\\mu_0$','$\\log(L/L_\\odot)$','$\\log(L_\\mathrm{rad}/L_\\odot)$', \
+                '$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','$\\mathrm{d}\\ln E/\\mathrm{d}\\ln\\rho$', \
                 '$\\mathrm{d}\\ln E/\\mathrm{d}\\ln T$','$^1$H [mass frac.]','$^4$He [mass frac.]','$\\Omega\\ [\\mathrm{s}^{-1}]$'], \
                 'catList':['structure','structure','structure','thermo','thermo','thermo','thermo','thermo','thermo','thermo','thermo', \
                 'thermo','EOS','EOS','EOS','EOS','EOS','energy','energy','energy','energy','energy','abundances','abundances','rotation'], \
@@ -2220,7 +2220,7 @@ class Model(Outputs):
             pass
         self.Variables['ind_burning_phases'] = [[ind_begH,ind_endH,ind_begHe,ind_endHe,ind_begC,ind_endC,ind_begNe,ind_endNe,ind_begO, \
                                                 ind_endO,ind_begSi,ind_endSi],'phases limits','reading']
-        self.Variables['t_rel'] = [np.zeros((self.imax)),r'$t/\tau_\\mathrm{H}+t/\tau_\\mathrm{He}+t/\tau_\\mathrm{adv}$','model']
+        self.Variables['t_rel'] = [np.zeros((self.imax)),'$t/\\tau_\\mathrm{H}+t/\\tau_\\mathrm{He}+t/\\tau_\\mathrm{adv}$','model']
         if not quiet:
             print('limits of burning phases:'+str(self.Variables['ind_burning_phases'][0][:]))
         if ind_begH != 0:
@@ -2356,8 +2356,8 @@ class Model(Outputs):
                   self.Variables['R'] = [np.sqrt(10.**self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff'][0])*Cst.Rsol),'$R\\ [R_\\odot]$','surface']
               else:
                   self.Variables['R'] = [np.sqrt(self.Variables['L'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(self.Variables['Teff'][0]**2.*Cst.Rsol),'$R\\ [R_\\odot]$','surface']
-              self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','model']
-          self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),r'$\\tau_{KH}$ [yr]','model']
+              self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),'$\\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','model']
+          self.Variables['tauKH'] = [3.*Cst.G*(self.Variables['M'][0]*Cst.Msol)**2./(4.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['L'][0]*Cst.Lsol*Cst.year),'$\\tau_{KH}$ [yr]','model']
           self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\\log(g_\\mathrm{surf}\\ [\\mathrm{cm\\,s}^{-2}])$','surface']
           self.Variables['fwg'] = [self.Variables['gsurf'][0]-self.Variables['Teff'][0]*4.+16.,"$\\log(g/(T_\\mathrm{eff}/10'000\\,\\mathrm{K})^4)$",'surface']
           self.Variables['sL'] = [4.*self.Variables['Teff'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\mathscr{L}/\\mathscr{L}_\\odot$','surface']
@@ -2365,7 +2365,7 @@ class Model(Outputs):
               if not all(v==0. for v in self.Variables['Vsurf'][0]):
                   Vcrit = [min(vcrit1,vcrit2) if vcrit2 > 0. else vcrit1 for [vcrit1,vcrit2] in zip(self.Variables['Vcrit1'][0],self.Variables['Vcrit2'][0])]
                   self.Variables['VVc'] = [np.array([veq/vc if vc>0. else 0. for [veq,vc] in zip(self.Variables['Vsurf'][0],Vcrit)]),'$V/V_\\mathrm{crit}$','rotation']
-                  self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\mathrm{P\,[d]}$','rotation']
+                  self.Variables['period'] = [2.*math.pi/(self.Variables['Omega_surf'][0]*3600.*24.),'$\\mathrm{P\\,[d]}$','rotation']
               self.Variables['Vesc'] = [np.sqrt(2.*self.Variables['R'][0]*Cst.Rsol*10.**self.Variables['gsurf'][0])/1.e5,'$V_\\mathrm{esc}\\ [\\mathrm{km\\,s}^{-1}]$','winds']
               CTeff = np.zeros((self.imax))
               CTeff[self.Variables['Teff'][0]>=np.log10(21000.)] = 2.65
@@ -2373,7 +2373,7 @@ class Model(Outputs):
               CTeff[self.Variables['Teff'][0] <= 4.0] = 1.
               self.Variables['Vinf'] = [CTeff*self.Variables['Vesc'][0],'$V_\\infty\\ [\\mathrm{km\\,s}^{-1}]$','winds']
               self.Variables['Mdot'][0][self.Variables['Mdot'][0] == 0.] = -30.
-              self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\\mathrm{winds}\ [\\mathrm{erg\\,s}^{-1}]$','winds']
+              self.Variables['Pwinds'] = [0.5*(10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*(self.Variables['Vinf'][0]*1.e5)**2.,'$P_\\mathrm{winds}\\ [\\mathrm{erg\\,s}^{-1}]$','winds']
               self.Variables['Bmin'] = [np.sqrt((10.**self.Variables['Mdot'][0]*Cst.Msol/Cst.year)*self.Variables['Vinf'][0]*1.e5/(self.Variables['R'][0]*Cst.Rsol)),'$B_\\mathrm{min}\\ [\\mathrm{G}]$','winds']
           self.Variables['Zsurf'] = [1.-self.Variables['H1s'][0]-self.Variables['He4s'][0],'$Z_\\mathrm{surf}$ [mass frac.]','abundances']
           if format in "starevol":
@@ -2745,7 +2745,7 @@ class Struc(Outputs):
         self.Variables['NT2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0]-self.Variables['Nabrad'][0]),'$N_T^2\\ [\\mathrm{s}^{-1}]$','structure']
         self.Variables['Nmu2'] = [g_r/H_P*self.Variables['Nabmu'][0],'$N_\\mu^2\\ [\\mathrm{s}^{-1}]$','structure']
         self.Variables['Cp'] = [self.Variables['P'][0]*self.Variables['delta'][0]/(self.Variables['Nabad'][0]*self.Variables['rho'][0] \
-                                *self.Variables['T'][0]),r'$\\mathrm{C}_P\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','thermo']
+                                *self.Variables['T'][0]),'$\\mathrm{C}_P\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','thermo']
 
     #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
         U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
@@ -2770,8 +2770,8 @@ class Struc(Outputs):
             else:
                 x1[i] = 0.
 
-        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
-        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\\mathrm{int}$','thermo']
+        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,'$\\nabla$','thermo']
+        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),'$\\nabla_\\mathrm{int}$','thermo']
         nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
         self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
                         + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
@@ -2782,7 +2782,7 @@ class Struc(Outputs):
         vmlt[vmlt<0.] = 0.
         self.Variables['V_MLT'][0] = np.sqrt(vmlt)
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
-        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\\epsilon_\\mathrm{nucl}+\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],'$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\\mathrm{eq}\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         if not (self.Variables['Omega'][0]==0.).all():
             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\\Omega_r/\\Omega_\\mathrm{crit}$','rotation']
@@ -2848,7 +2848,7 @@ class Struc(Outputs):
         self.Variables['NT2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0]-self.Variables['Nabrad'][0]),'$N_T^2\\ [\\mathrm{s}^{-1}]$','structure']
         self.Variables['Nmu2'] = [g_r/H_P*self.Variables['Nabmu'][0],'$N_\\mu^2\\ [\\mathrm{s}^{-1}]$','structure']
         self.Variables['Cp'] = [self.Variables['P'][0]*self.Variables['delta'][0]/(self.Variables['Nabad'][0]*self.Variables['rho'][0] \
-                                *self.Variables['T'][0]),r'$\\mathrm{C}_P\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','thermo']
+                                *self.Variables['T'][0]),'$\\mathrm{C}_P\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','thermo']
 
     #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
         U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
@@ -2873,8 +2873,8 @@ class Struc(Outputs):
             else:
                 x1[i] = 0.
 
-        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
-        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\\mathrm{int}$','thermo']
+        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,'$\\nabla$','thermo']
+        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),'$\\nabla_\\mathrm{int}$','thermo']
         nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
         self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
                         + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
@@ -2884,7 +2884,7 @@ class Struc(Outputs):
                     '$V_\\mathrm{MLT}\\ [\\mathrm{cm\\,s}^{-1}]$','thermo']
 
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
-        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\\epsilon_\\mathrm{nucl}+\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],'$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\\mathrm{eq}\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\\mathscr{j}_{r}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
         self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\\mathscr{j}_\\mathrm{Kerr}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
@@ -2935,7 +2935,7 @@ class Struc(Outputs):
         self.Variables['NT2'] = [g_r*self.Variables['delta'][0]/H_P*(self.Variables['Nabad'][0]-self.Variables['Nabrad'][0]),'$N_T^2\\ [\\mathrm{s}^{-1}]$','structure']
         self.Variables['Nmu2'] = [g_r/H_P*self.Variables['Nabmu'][0],'$N_\\mu^2\\ [\\mathrm{s}^{-1}]$','structure']
         self.Variables['Cp'] = [self.Variables['P'][0]*self.Variables['delta'][0]/(self.Variables['Nabad'][0]*self.Variables['rho'][0] \
-                                *self.Variables['T'][0]),r'$\\mathrm{C}_P\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','thermo']
+                                *self.Variables['T'][0]),'$\\mathrm{C}_P\\ [\\mathrm{ergs\\,g}^{-1}\\,\\mathrm{K}^{-1}]$','thermo']
 
     #U =cst_a*cst_c*T_red**4.*NablaAd_red/(rho_red*kappa_red*MixLength_red**2.*P_red*delta_red)*np.sqrt(8.*Hp_red/(g_red*delta_red))
         U = 3.*Cst.a*Cst.c*self.Variables['T'][0]**3./(self.Variables['rho'][0]**2. \
@@ -2960,8 +2960,8 @@ class Struc(Outputs):
             else:
                 x1[i] = 0.
 
-        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,r'$\nabla$','thermo']
-        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),r'$\nabla_\\mathrm{int}$','thermo']
+        self.Variables['Nabla'] = [self.Variables['Nabad'][0] + x1**2. - U**2.,'$\\nabla$','thermo']
+        self.Variables['Nabla_int'] = [np.zeros(len(self.Variables['Nabla'][0])),'$\\nabla_\\mathrm{int}$','thermo']
         nabla_mask = self.Variables['Nabla'][0][i]-self.Variables['Nabad'][0][i]+U[i]**2. >= 0.
         self.Variables['Nabla_int'][0][nabla_mask] = self.Variables['Nabad'][0][nabla_mask] - 2.*U[nabla_mask]**2. \
                         + 2.*U[nabla_mask]*np.sqrt(self.Variables['Nabla'][0][nabla_mask]-self.Variables['Nabad'][0][nabla_mask]+U[nabla_mask]**2.)
@@ -2971,11 +2971,11 @@ class Struc(Outputs):
                     '$V_\\mathrm{MLT}\\ [\\mathrm{cm\\,s}^{-1}]$','thermo']
 
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
-        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],r'$\\epsilon_\\mathrm{nucl}+\\epsilon_\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],'$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\\mathrm{eq}\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
-        self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,r'$j_{r}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
-        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),r'$j_\\mathrm{Kerr}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
-        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,r'$j_\\mathrm{Schwarzschild}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
+        self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$j_{r}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
+        self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$j_\\mathrm{Kerr}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
+        self.Variables['jS'] = [np.sqrt(12.)*Cst.G*self.Variables['Mr'][0]*Cst.Msol/Cst.c,'$j_\\mathrm{Schwarzschild}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
         self.Variables['Lang'] = [np.zeros(imax),'Lang','toto']
         Mrsol = self.Variables['Mr'][0]*Cst.Msol
         Mrsol[Mrsol == 0.] = 1.e-10
@@ -2995,7 +2995,7 @@ class Struc(Outputs):
         z2 = np.sqrt(3.*a_om**2.+z1**2.)
         r_msco = 3.+z2-np.sqrt((3.-z1)*(3.+z1+2.*z2))
         self.Variables['jKmax'] = [self.Variables['jK'][0],\
-                       r'$j_\\mathrm{Kerr}^\\mathrm{max}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
+                       '$j_\\mathrm{Kerr}^\\mathrm{max}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
         Numerical_Factor = np.zeros((len(self.Variables['jKmax'][0]))) + 2./math.sqrt(3)
 # Shapiro & Teukolsky, eq. 12.7.18
         Numerical_Factor[np.where(a_om < 1.)] = (a_om[np.where(a_om < 1.)]**2. - 2.*a_om[np.where(a_om < 1.)]*np.sqrt(r_msco[np.where(a_om < 1.)])+ \
@@ -3191,7 +3191,7 @@ class Cluster(Outputs):
             return
         self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\\,\\sin\\,i\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\\ [R_\\odot]$','global properties']
-        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),'$\\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','global properties']
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\\log(g_\\mathrm{surf}\\ [\\mathrm{cm\\,s}^{-2}])$','global properties']
         self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\log(\\mathscr{L}/\\mathscr{L}_\\odot)$','global properties']
         self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\log(\\mathscr{L}/\\mathscr{L}_\\odot)$','global properties']
@@ -3204,7 +3204,7 @@ class Cluster(Outputs):
             return
         self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\\,\\sin\\,i\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\\ [R_\\odot]$','global properties']
-        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),'$\\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','global properties']
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\\log(g_\\mathrm{surf}\\ [\\mathrm{cm\\,s}^{-2}])$','global properties']
         self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\log(\\mathscr{L}/\\mathscr{L}_\\odot)$','global properties']
         self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\log(\\mathscr{L}/\\mathscr{L}_\\odot)$','global properties']
@@ -3217,7 +3217,7 @@ class Cluster(Outputs):
             return
         self.Variables['Vsini'] = [self.Variables['Vsurf'][0]*np.sin(np.radians(self.Variables['Angle'][0])),'$V\\,\\sin\\,i\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         self.Variables['R'] = [np.sqrt(10.**self.Variables['L_lgd'][0]*Cst.Lsol/(4.*math.pi*Cst.sigma))/(10.**(2.*self.Variables['Teff_lgd'][0])*Cst.Rsol),'$R\\ [R_\\odot]$','global properties']
-        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),r'$\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','global properties']
+        self.Variables['rhom'] = [3.*self.Variables['M'][0]*Cst.Msol/(4.*math.pi*(self.Variables['R'][0]*Cst.Rsol)**3.),'$\\rho_\\mathrm{m}\\ [\\mathrm{g\\,cm}^3]$','global properties']
         self.Variables['gsurf'] = [np.log10(Cst.G*self.Variables['M'][0]*Cst.Msol/(self.Variables['R'][0]*Cst.Rsol)**2.),'$\\log(g_\\mathrm{surf}\\ [\\mathrm{cm\\,s}^{-2}])$','global properties']
         self.Variables['sL'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gsurf'][0]-(np.log10(5778.**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\log(\\mathscr{L}/\\mathscr{L}_\\odot)$','global properties']
         self.Variables['sLmean'] = [4.*self.Variables['Teff_lgd'][0]-self.Variables['gmean'][0]-(np.log10(Cst.Teffsol**4.*Cst.Rsol**2./(Cst.G*Cst.Msol))),'$\\log(\\mathscr{L}/\\mathscr{L}_\\odot)$','global properties']
@@ -3661,7 +3661,7 @@ def loadE(FileName,num_star=1,num_deb=0,num_fin=-1,format='',colour=False,forced
             tauSi = MyData.Data[(Mini,Oini,Zini)]['tauSib']
             Set_Var([tauH,tauHe,tauC,tauNe,tauO,tauSi],'tau',num_star,label='lifetimes [yr]',category='model')
             if tauH !=0.:
-                Set_Var(Get_Var('t',num_star)/tauH,'t_tauH',num_star,label=r'$t/\\tau_\\mathrm{H}$',category='model')
+                Set_Var(Get_Var('t',num_star)/tauH,'t_tauH',num_star,label='$t/\\tau_\\mathrm{H}$',category='model')
             else:
                 print('MS not finished, the variable t_tauH will not be available')
         except IOError as IOerr:
@@ -4182,7 +4182,7 @@ def VarEvol(num=''):
     if num == '':
         num = list(MyDriver.Model_list_evol.keys())[0]
     Category_list = []
-    replaceDic = {1:['\\mathrm',''],2:['\\mathscr',''],3:['$',''],4:['\\\\,',' '],5:['\\','']}
+    replaceDic = {1:['\\mathrm',''],2:['\\mathscr',''],3:['$',''],4:['\\,',' '],5:['\\','']}
     for i in range(len(list(MyDriver.Model_list_evol[num].Variables.keys()))):
         if not list(MyDriver.Model_list_evol[num].Variables.values())[i][2] in Category_list:
             Category_list.append(list(MyDriver.Model_list_evol[num].Variables.values())[i][2])
@@ -4199,7 +4199,7 @@ def VarStruc(num=''):
        Needs at least one loaded structure."""
     if num == '':
         num = list(MyDriver.Model_list_struc.keys())[0]
-    replaceDic = {1:['\\mathrm',''],2:['\\mathscr',''],3:['$',''],4:['\\\\,',' '],5:['\\','']}
+    replaceDic = {1:['\\mathrm',''],2:['\\mathscr',''],3:['$',''],4:['\\,',' '],5:['\\','']}
     Category_list = []
     for i in range(len(list(MyDriver.Model_list_struc[num].Variables.keys()))):
         if not list(MyDriver.Model_list_struc[num].Variables.values())[i][2] in Category_list:
@@ -4217,7 +4217,7 @@ def VarCluster(num=''):
     if num == '':
         num = list(MyDriver.Model_list_cluster.keys())[0]
     Category_list = []
-    replaceDic = {1:['\\mathrm',''],2:['\\mathscr',''],3:['$',''],4:['\\\\,',' '],5:['\\','']}
+    replaceDic = {1:['\\mathrm',''],2:['\\mathscr',''],3:['$',''],4:['\\,',' '],5:['\\','']}
     for i in range(len(list(MyDriver.Model_list_cluster[num].Variables.keys()))):
         if not list(MyDriver.Model_list_cluster[num].Variables.values())[i][2] in Category_list:
             Category_list.append(list(MyDriver.Model_list_cluster[num].Variables.values())[i][2])
@@ -5263,7 +5263,7 @@ def Nablas():
     Plot('Nabrad')
     set_colourFlag('Green')
     Plot('Nabmu')
-    change_label('y',r'Nablas: $\nabla_\\mathrm{ad},\nabla_\\mathrm{rad},\nabla_\\mu$')
+    change_label('y','Nablas: $\\nabla_\\mathrm{ad},\\nabla_\\mathrm{rad},\\nabla_\\mu$')
     keep_plot(False)
     set_colourFlag(colourflag_save)
     set_lineStyle(lineflag_save)
@@ -5297,7 +5297,7 @@ def j_profiles(*args):
     Plot('jKmax')
     if 'legend' in args:
         put_legend(loc=4,fontsize=MyDriver.fontSize)
-    change_label('y',r'$j_r,\\ j_\\mathrm{Schw.},\\ j_\\mathrm{Kerr}, j_\\mathrm{Kerr}^\\mathrm{max}$')
+    change_label('y','$j_r,\\ j_\\mathrm{Schw.},\\ j_\\mathrm{Kerr}, j_\\mathrm{Kerr}^\\mathrm{max}$')
     no_logVar('y')
     noLimits()
     keep_plot(False)
@@ -5574,7 +5574,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         Plot('rhoc')
         if 'legend' in args:
             put_legend(6,fontsize=MyDriver.fontSize/1.5)
-        change_label('y',r'$\\log(T_\\mathrm{c},\\,\rho_\\mathrm{c})$')
+        change_label('y','$\\log(T_\\mathrm{c},\\,\\rho_\\mathrm{c})$')
         keep_plot(False)
         MyDriver.Xvar = save_Xvar
         no_logVar("x")
@@ -5625,7 +5625,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         no_logVar('y')
         if 'legend' in args:
             put_legend(loc=1,fontsize=MyDriver.fontSize/1.5)
-        change_label('y',r'$\\log(T,\\,r,\\,P,\\,\rho)$')
+        change_label('y','$\\log(T,\\,r,\\,P,\\,\\rho)$')
         keep_plot(False)
         print('-----------------------------------------------')
         print('STR3: L+eps, T vs rho, eps_reac+epsgrav, nablas+kappa')
@@ -5655,7 +5655,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         if 'legend' in args:
             put_legend(loc=4,fontsize=MyDriver.fontSize,handle=handles,label=labels)
         MyDriver.Previous_Axe.yaxis.set_label_coords(1.05, 0.5)
-        change_label('y',r'$\\log(\\epsilon)$')
+        change_label('y','$\\log(\\epsilon)$')
         noLimits()
         no_logVar('y')
         plot1var()
@@ -5673,7 +5673,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         Plot('eps_reac',plotif=['eps_reac','>=0.'])
         keep_plot(True)
         for i in MyDriver.SelectedModels:
-            Set_Var(-Get_Var('eps_reac',i),'eps_reac_neg',i,label=r'$-(\\epsilon_\\mathrm{nucl}+\\epsilon_\nu)\\,[\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$')
+            Set_Var(-Get_Var('eps_reac',i),'eps_reac_neg',i,label='$-(\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu)\\,[\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$')
             Set_Var(-Get_Var('epsgrav',i),'epsgrav_neg',i,label='-'+MyDriver.Model_list[i].Variables['epsgrav'][1])
         set_colourFlag('Orange')
         Plot('eps_reac_neg',plotif=['eps_reac_neg','>0.'])
@@ -5684,7 +5684,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         Plot('epsgrav_neg',plotif=['epsgrav_neg','>0.'])
         if 'legend' in args:
             put_legend(loc=3,fontsize=MyDriver.fontSize)
-        change_label('y',r'$\\log(\\epsilon_\\mathrm{reac},\\,\\epsilon_\\mathrm{grav})$')
+        change_label('y','$\\log(\\epsilon_\\mathrm{reac},\\,\\epsilon_\\mathrm{grav})$')
         for i in MyDriver.SelectedModels:
             Del_Var('eps_reac_neg',i,True)
             Del_Var('epsgrav_neg',i,True)
@@ -5725,7 +5725,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         Plot('Kther')
         if 'legend' in args:
             put_legend(loc=3,fontsize=MyDriver.fontSize)
-        change_label('y',r'$D,\\,K_\\mathrm{ther}$')
+        change_label('y','$D,\\,K_\\mathrm{ther}$')
         keep_plot(False)
         no_logVar('y')
         noLimits()
@@ -5741,7 +5741,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
             Plot('N2mag')
         if 'legend' in args:
             put_legend(loc=4,fontsize=MyDriver.fontSize)
-        change_label('y',r'$N^2$')
+        change_label('y','$N^2$')
         keep_plot(False)
         logVar('y')
         Limits(ymin=0.)
@@ -5766,7 +5766,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         Plot('alfven')
         if 'legend' in args:
             put_legend(loc=3,fontsize=MyDriver.fontSize)
-        change_label('y',r'$log(B_\\phi,\\,B_r,\\,\\omega_\\mathrm{A})$')
+        change_label('y','$log(B_\\phi,\\,B_r,\\,\\omega_\\mathrm{A})$')
         no_logVar('y')
         keep_plot(False)
         if not norot:
@@ -5863,7 +5863,7 @@ def degenerate_line(*args):
        If 'legend' is passed as an argument, it draws the legend of the lines."""
     rhoDNR = np.arange(-7,9.,0.1)
     TDNR = (2./3.)*rhoDNR+np.log10(1.207e5*1.8/(2.**(5./3.)))
-    plt.plot(rhoDNR,TDNR,'-.',color='0.6',label=r'$P_{\\mathrm{ion}}=P_{\\mathrm{el. deg.}}\\ (T\\sim \rho^{2/3})$')
+    plt.plot(rhoDNR,TDNR,'-.',color='0.6',label='$P_{\\mathrm{ion}}=P_{\\mathrm{el. deg.}}\\ (T\\sim \\rho^{2/3})$')
     if 'legend' in args:
         put_legend(loc=2,fontsize=MyDriver.fontSize)
 
@@ -5875,9 +5875,9 @@ def constant_entropy(*args):
     T_Sg01 = (1./3.)*(np.log10(3.*0.1/4.)+rho_Sg-np.log10(Cst.a)+np.log10(Cst.R_gaz))
     T_Sg1 = (1./3.)*(np.log10(3./4.)+rho_Sg-np.log10(Cst.a)+np.log10(Cst.R_gaz))
     T_Sg10 = (1./3.)*(np.log10(3.*10./4.)+rho_Sg-np.log10(Cst.a)+np.log10(Cst.R_gaz))
-    plt.plot(rho_Sg,T_Sg01,'--',color='0.6',label=r'$S_\\gamma/N_Ak\\ (T\\sim\rho^{1/3})=0.1$')
-    plt.plot(rho_Sg,T_Sg1,'-',color='0.6',label=r'$S_\\gamma/N_Ak\\ (T\\sim\rho^{1/3})=1$')
-    plt.plot(rho_Sg,T_Sg10,'--',color='0.6',label=r'$S_\\gamma/N_Ak\\ (T\\sim\rho^{1/3})=10$')
+    plt.plot(rho_Sg,T_Sg01,'--',color='0.6',label='$S_\\gamma/N_Ak\\ (T\\sim\\rho^{1/3})=0.1$')
+    plt.plot(rho_Sg,T_Sg1,'-',color='0.6',label='$S_\\gamma/N_Ak\\ (T\\sim\\rho^{1/3})=1$')
+    plt.plot(rho_Sg,T_Sg10,'--',color='0.6',label='$S_\\gamma/N_Ak\\ (T\\sim\\rho^{1/3})=10$')
     if 'legend' in args:
         put_legend(loc=2,fontsize=MyDriver.fontSize/1.5)
 
