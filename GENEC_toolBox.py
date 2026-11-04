@@ -2787,7 +2787,8 @@ class Struc(Outputs):
         vmlt[vmlt<0.] = 0.
         self.Variables['V_MLT'][0] = np.sqrt(vmlt)
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
-        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],'$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0], \
+                                      '$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\\mathrm{eq}\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         if not (self.Variables['Omega'][0]==0.).all():
             self.Variables['OOc'] = [self.Omega_crit_f.interpolation(self.Variables['obla'][0]),'$\\Omega_r/\\Omega_\\mathrm{crit}$','rotation']
@@ -2889,7 +2890,8 @@ class Struc(Outputs):
                     '$V_\\mathrm{MLT}\\ [\\mathrm{cm\\,s}^{-1}]$','thermo']
 
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
-        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],'$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0], \
+                                       '$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\\mathrm{eq}\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$\\mathscr{j}_{r}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
         self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$\\mathscr{j}_\\mathrm{Kerr}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
@@ -2976,7 +2978,8 @@ class Struc(Outputs):
                     '$V_\\mathrm{MLT}\\ [\\mathrm{cm\\,s}^{-1}]$','thermo']
 
         self.Variables['epsnu'][0] = -self.Variables['epsnu'][0]
-        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0],'$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
+        self.Variables['eps_reac'] = [self.Variables['epsH'][0]+self.Variables['epsHe'][0]+self.Variables['epsC'][0]+self.Variables['epsnu'][0], \
+                                      '$\\epsilon_\\mathrm{nucl}+\\epsilon_\\nu\\ [\\mathrm{erg\\,g}^{-1}\\mathrm{s}^{-1}]$','energy']
         self.Variables['Veq'] = [self.Variables['Omega'][0]*self.Variables['r_cm'][0]/1.e5,'$V_\\mathrm{eq}\\ [\\mathrm{km\\,s}^{-1}]$','rotation']
         self.Variables['jr'] = [(2./3.)*self.Variables['Omega'][0]*self.Variables['r_cm'][0]**2.,'$j_{r}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
         self.Variables['jK'] = [2.*Cst.G*self.Variables['Mr'][0]*Cst.Msol/(Cst.c*math.sqrt(3.)),'$j_\\mathrm{Kerr}\\ [\\mathrm{cm}^2 \\mathrm{s}^{-1}]$','rotation']
@@ -5249,6 +5252,7 @@ def eps(mode=1,conv=True):
     Plot('epsnu')
     if conv:
         convZones(num_star[0])
+    change_label('y','$\\epsilon_\\mathrm{H},\\epsilon_\\mathrm{He},\\epsilon_\\mathrm{C},\\epsilon_\\nu$')
     keep_plot(False)
     no_logVar()
     MyDriver.Xvar = Xvar_save
@@ -5774,7 +5778,7 @@ def Summary_plots(ixaxis=0,*args,**kwargs):
         Plot('alfven')
         if 'legend' in args:
             put_legend(loc=3,fontsize=MyDriver.fontSize)
-        change_label('y','$log(B_\\phi,\\,B_r,\\,\\omega_\\mathrm{A})$')
+        change_label('y','$\\log(B_\\phi,\\,B_r,\\,\\omega_\\mathrm{A})$')
         no_logVar('y')
         keep_plot(False)
         if not norot:
