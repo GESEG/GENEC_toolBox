@@ -1289,6 +1289,11 @@ class readList():
                        'ZList':['H','He','He','C','C','C','N','N','O','O','O','F','F','Ne','Ne','Ne','Na','Mg','Mg','Mg',\
                                 'Al','Al','Si\\_a','n','Si','Si','P','S','S','Cl','Ar','Ar','K','Ca','Ca','Ti','Ti',\
                                 'Cr','Cr','Cr','Fe','Fe','Fe','Fe','Fe','Co','Co','Co','Ni']}
+    Abund['g24eos_net47'] = {'AList':[1,3,4,12,13,14,14,15,16,17,18,18,19,20,21,22,23,24,25,26,26,27,28,\
+                                     28,30,31,32,34,35,36,38,39,40,42,44,46,48,50,56,52,53,54,55,56,55,56,57,56],\
+                       'ZList':['H','He','He','C','C','C','N','N','O','O','O','F','F','Ne','Ne','Ne','Na','Mg','Mg','Mg',\
+                                'Al','Al','Si\\_a','Si','Si','P','S','S','Cl','Ar','Ar','K','Ca','Ca','Ti','Ti',\
+                                'Cr','Cr','Cr','Fe','Fe','Fe','Fe','Fe','Co','Co','Co','Ni']}
 
 class ShapeInterpolation():
     """Data and methods needed to determine the surface of a rotating star."""
@@ -2452,7 +2457,7 @@ class Model(Outputs):
         converters = {}
         for i in range(afile_cols):
             converters[i] = lambda s: self.TestFloat(s)
-        afile_format = {29:'o2013',31:'g24eos',39:'g24eos_net23',49:'g24eos_net48'}
+        afile_format = {29:'o2013',31:'g24eos',39:'g24eos_net23',49:'g24eos_net48',47:'g24eos_net47'}
 
         BigArray = np.loadtxt(wafile,skiprows=num_deb,converters=converters)
         if num_fin == -1:
@@ -3403,6 +3408,7 @@ class Analysis():
     def lifetime(self,num,mode=['list','grids'],quiet=False):
         """Computes the lifetime in the different burning phases."""
         MyStar = MyDriver.Model_list[num]
+        wa = MyStar.Variables['options'][0][1]
         Mini,Oini,Zini = self.setEntry(MyStar,mode)
         if not [Mini,Oini,Zini] in list(self.Data.keys()) and not quiet:
             print('Entry for M= {0} with OOc= {1} at Z= {2} added.'.format(Mini,Oini,Zini))
@@ -3447,13 +3453,15 @@ class Analysis():
             if phase == 9 and MyStar.Variables['O16c'][0][i] < self.end_burn:
                 time[4,1] = MyStar.Variables['t'][0][i-1]
                 phase = 10
-                Si_ini = MyStar.Variables['Si28c'][0][i-1]
-            if phase == 10 and MyStar.Variables['Si28c'][0][i] < O_ini-self.beg_burn:
-                time[5,0] = MyStar.Variables['t'][0][i-1]
-                phase = 11
-            if phase == 11 and MyStar.Variables['Si28c'][0][i] < self.end_burn:
-                time[5,1] = MyStar.Variables['t'][0][i-1]
-                phase = 12
+                if wa==True:
+                  Si_ini = MyStar.Variables['Si28c'][0][i-1]
+            if wa==True:
+              if phase == 10 and MyStar.Variables['Si28c'][0][i] < O_ini-self.beg_burn:
+                  time[5,0] = MyStar.Variables['t'][0][i-1]
+                  phase = 11
+              if phase == 11 and MyStar.Variables['Si28c'][0][i] < self.end_burn:
+                  time[5,1] = MyStar.Variables['t'][0][i-1]
+                  phase = 12
 
         Temp_Dic = {}
         if time[0,1] != 0.:
